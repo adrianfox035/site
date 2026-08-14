@@ -2,18 +2,14 @@
    CONFIGURAÇÃO DO SUPABASE
 ===================================================== */
 
-const SUPABASE_URL =
-    "https://pdjbwcjehmqregimlryq.supabase.co";
+const SUPABASE_URL = "https://pdjbwcjehmqregimlryq.supabase.co";
 
-const SUPABASE_KEY =
-    "sb_publishable_d-ODS7kpWKsuBVTLYpDcjA_UyT9FEZJ";
+const SUPABASE_KEY = "sb_publishable_d-ODS7kpWKsuBVTLYpDcjA_UyT9FEZJ";
 
-
-const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
 
 /* =====================================================
