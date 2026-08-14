@@ -3,10 +3,10 @@
 ===================================================== */
 
 const SUPABASE_URL =
-    "COLE_AQUI_A_URL_DO_SEU_SUPABASE";
+    "https://pdjbwcjehmqregimlryq.supabase.co";
 
 const SUPABASE_KEY =
-    "COLE_AQUI_A_CHAVE_PUBLICA_DO_SEU_SUPABASE";
+    "sb_publishable_d-ODS7kpWKsuBVTLYpDcjA_UyT9FEZJ";
 
 
 const supabaseClient =
@@ -17,7 +17,7 @@ const supabaseClient =
 
 
 /* =====================================================
-   ESTADO
+   ESTADO DO SITE
 ===================================================== */
 
 let folders = [];
@@ -25,6 +25,8 @@ let folders = [];
 let currentFolderId = null;
 
 let adminMode = false;
+
+let currentAdminPassword = "";
 
 let editingFolderId = null;
 
@@ -82,6 +84,8 @@ async function initialize() {
 
 function setupEvents() {
 
+    /* ADMIN */
+
     adminButton.addEventListener(
         "click",
         openAdminModal
@@ -95,34 +99,34 @@ function setupEvents() {
 
 
     document
-        .getElementById("addFolderButton")
-        .addEventListener(
-            "click",
-            () => openFolderModal()
-        );
-
-
-    document
-        .getElementById("addLinkButton")
-        .addEventListener(
-            "click",
-            () => openLinkModal()
-        );
-
-
-    document
-        .getElementById("backButton")
-        .addEventListener(
-            "click",
-            showHome
-        );
-
-
-    document
         .getElementById("confirmAdminButton")
         .addEventListener(
             "click",
             loginAdmin
+        );
+
+
+    document
+        .getElementById("adminPassword")
+        .addEventListener(
+            "keydown",
+            event => {
+
+                if (event.key === "Enter") {
+                    loginAdmin();
+                }
+
+            }
+        );
+
+
+    /* PASTAS */
+
+    document
+        .getElementById("addFolderButton")
+        .addEventListener(
+            "click",
+            () => openFolderModal()
         );
 
 
@@ -134,6 +138,16 @@ function setupEvents() {
         );
 
 
+    /* LINKS */
+
+    document
+        .getElementById("addLinkButton")
+        .addEventListener(
+            "click",
+            () => openLinkModal()
+        );
+
+
     document
         .getElementById("saveLinkButton")
         .addEventListener(
@@ -141,6 +155,18 @@ function setupEvents() {
             saveLink
         );
 
+
+    /* NAVEGAÇÃO */
+
+    document
+        .getElementById("backButton")
+        .addEventListener(
+            "click",
+            showHome
+        );
+
+
+    /* CORES */
 
     document
         .getElementById("folderColor")
@@ -170,19 +196,7 @@ function setupEvents() {
         );
 
 
-    document
-        .getElementById("adminPassword")
-        .addEventListener(
-            "keydown",
-            event => {
-
-                if (event.key === "Enter") {
-                    loginAdmin();
-                }
-
-            }
-        );
-
+    /* BOTÕES DE FECHAR */
 
     document
         .querySelectorAll("[data-close]")
@@ -201,6 +215,8 @@ function setupEvents() {
 
         });
 
+
+    /* FECHAR MODAL CLICANDO FORA */
 
     document
         .querySelectorAll(".modal-overlay")
@@ -235,18 +251,23 @@ async function loadFolders() {
     showLoading(foldersGrid);
 
 
-    const { data, error } =
-        await supabaseClient
-            .from("folders")
-            .select("*")
-            .order("created_at", {
-                ascending: true
-            });
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("folders")
+        .select("*")
+        .order("created_at", {
+            ascending: true
+        });
 
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            "Erro ao carregar pastas:",
+            error
+        );
 
         showError(
             foldersGrid,
@@ -274,19 +295,24 @@ async function loadLinks(folderId) {
     showLoading(linksGrid);
 
 
-    const { data, error } =
-        await supabaseClient
-            .from("links")
-            .select("*")
-            .eq("folder_id", folderId)
-            .order("created_at", {
-                ascending: true
-            });
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("links")
+        .select("*")
+        .eq("folder_id", folderId)
+        .order("created_at", {
+            ascending: true
+        });
 
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            "Erro ao carregar links:",
+            error
+        );
 
         showError(
             linksGrid,
@@ -330,12 +356,18 @@ function renderFolders() {
         const card =
             document.createElement("div");
 
+
         card.className = "card";
 
 
         card.style.background =
             makeGradient(folder.color);
 
+
+        /*
+         * Os botões de edição/exclusão
+         * só aparecem no modo administrador.
+         */
 
         const actions =
             adminMode
@@ -344,7 +376,7 @@ function renderFolders() {
 
                         <button
                             class="card-action"
-                            title="Editar"
+                            title="Editar pasta"
                             data-action="edit"
                         >
                             ✏️
@@ -352,7 +384,7 @@ function renderFolders() {
 
                         <button
                             class="card-action delete"
-                            title="Excluir"
+                            title="Excluir pasta"
                             data-action="delete"
                         >
                             🗑️
@@ -386,11 +418,19 @@ function renderFolders() {
         `;
 
 
+        /*
+         * Abrir pasta.
+         */
+
         card.addEventListener(
             "click",
             () => openFolder(folder.id)
         );
 
+
+        /*
+         * Editar.
+         */
 
         if (adminMode) {
 
@@ -409,6 +449,10 @@ function renderFolders() {
                     }
                 );
 
+
+            /*
+             * Excluir.
+             */
 
             card
                 .querySelector(
@@ -462,7 +506,9 @@ function renderLinks(links) {
         const card =
             document.createElement("div");
 
+
         card.className = "card";
+
 
         card.style.background =
             makeGradient(link.color);
@@ -475,7 +521,7 @@ function renderLinks(links) {
 
                         <button
                             class="card-action"
-                            title="Editar"
+                            title="Editar link"
                             data-action="edit"
                         >
                             ✏️
@@ -483,7 +529,7 @@ function renderLinks(links) {
 
                         <button
                             class="card-action delete"
-                            title="Excluir"
+                            title="Excluir link"
                             data-action="delete"
                         >
                             🗑️
@@ -517,6 +563,10 @@ function renderLinks(links) {
         `;
 
 
+        /*
+         * Abrir link.
+         */
+
         card.addEventListener(
             "click",
             () => {
@@ -533,6 +583,10 @@ function renderLinks(links) {
 
         if (adminMode) {
 
+            /*
+             * Editar link.
+             */
+
             card
                 .querySelector(
                     '[data-action="edit"]'
@@ -548,6 +602,10 @@ function renderLinks(links) {
                     }
                 );
 
+
+            /*
+             * Excluir link.
+             */
 
             card
                 .querySelector(
@@ -586,18 +644,26 @@ async function openFolder(folderId) {
         );
 
 
-    if (!folder) return;
+    if (!folder) {
+        return;
+    }
 
 
     currentFolderId = folderId;
+
 
     folderTitle.textContent =
         `📁 ${folder.name}`;
 
 
-    homePage.classList.add("hidden");
+    homePage.classList.add(
+        "hidden"
+    );
 
-    folderPage.classList.remove("hidden");
+
+    folderPage.classList.remove(
+        "hidden"
+    );
 
 
     await loadLinks(folderId);
@@ -606,16 +672,23 @@ async function openFolder(folderId) {
 
 
 /* =====================================================
-   VOLTAR
+   VOLTAR PARA HOME
 ===================================================== */
 
 function showHome() {
 
     currentFolderId = null;
 
-    folderPage.classList.add("hidden");
 
-    homePage.classList.remove("hidden");
+    folderPage.classList.add(
+        "hidden"
+    );
+
+
+    homePage.classList.remove(
+        "hidden"
+    );
+
 
     renderFolders();
 
@@ -623,57 +696,48 @@ function showHome() {
 
 
 /* =====================================================
-   ADMIN LOGIN
+   LOGIN ADMINISTRADOR
 ===================================================== */
-
-function openAdminModal() {
-
-    document
-        .getElementById("adminModal")
-        .classList.remove("hidden");
-
-    document
-        .getElementById("adminPassword")
-        .value = "";
-
-    document
-        .getElementById("adminError")
-        .textContent = "";
-
-    setTimeout(() => {
-
-        document
-            .getElementById("adminPassword")
-            .focus();
-
-    }, 50);
-
-}
-
 
 async function loginAdmin() {
 
     const password =
         document
             .getElementById("adminPassword")
-            .value;
+            .value
+            .trim();
 
 
-    if (!password) return;
+    if (!password) {
+
+        document
+            .getElementById("adminError")
+            .textContent =
+                "Digite a senha.";
+
+        return;
+
+    }
 
 
-    const { data, error } =
-        await supabaseClient.rpc(
-            "check_admin_password",
-            {
-                p_password: password
-            }
-        );
+    const {
+        data,
+        error
+    } = await supabaseClient.rpc(
+        "check_admin_password",
+        {
+            p_password: password
+        }
+    );
 
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            "Erro ao verificar senha:",
+            error
+        );
+
 
         document
             .getElementById("adminError")
@@ -685,7 +749,7 @@ async function loginAdmin() {
     }
 
 
-    if (!data) {
+    if (data !== true) {
 
         document
             .getElementById("adminError")
@@ -697,31 +761,90 @@ async function loginAdmin() {
     }
 
 
+    /*
+     * A senha fica somente na memória
+     * enquanto esta página estiver aberta.
+     */
+
+    currentAdminPassword = password;
+
     adminMode = true;
 
 
-    closeModal("adminModal");
+    closeModal(
+        "adminModal"
+    );
 
 
-    adminButton.classList.add("hidden");
+    adminButton.classList.add(
+        "hidden"
+    );
 
-    logoutButton.classList.remove("hidden");
 
-
-    showToast(
-        "Modo administrador ativado."
+    logoutButton.classList.remove(
+        "hidden"
     );
 
 
     if (currentFolderId) {
 
-        await loadLinks(currentFolderId);
+        await loadLinks(
+            currentFolderId
+        );
 
     } else {
 
         renderFolders();
 
     }
+
+
+    showToast(
+        "Modo administrador ativado."
+    );
+
+}
+
+
+/* =====================================================
+   ABRIR MODAL DE ADMIN
+===================================================== */
+
+function openAdminModal() {
+
+    const modal =
+        document.getElementById(
+            "adminModal"
+        );
+
+
+    modal.classList.remove(
+        "hidden"
+    );
+
+
+    document
+        .getElementById("adminPassword")
+        .value = "";
+
+
+    document
+        .getElementById("adminError")
+        .textContent = "";
+
+
+    setTimeout(
+        () => {
+
+            document
+                .getElementById(
+                    "adminPassword"
+                )
+                .focus();
+
+        },
+        50
+    );
 
 }
 
@@ -734,14 +857,24 @@ function logoutAdmin() {
 
     adminMode = false;
 
-    adminButton.classList.remove("hidden");
+    currentAdminPassword = "";
 
-    logoutButton.classList.add("hidden");
+
+    adminButton.classList.remove(
+        "hidden"
+    );
+
+
+    logoutButton.classList.add(
+        "hidden"
+    );
 
 
     if (currentFolderId) {
 
-        loadLinks(currentFolderId);
+        loadLinks(
+            currentFolderId
+        );
 
     } else {
 
@@ -761,10 +894,14 @@ function logoutAdmin() {
    MODAL DE PASTA
 ===================================================== */
 
-function openFolderModal(folder = null) {
+function openFolderModal(
+    folder = null
+) {
 
     editingFolderId =
-        folder ? folder.id : null;
+        folder
+            ? folder.id
+            : null;
 
 
     document.getElementById(
@@ -778,24 +915,32 @@ function openFolderModal(folder = null) {
     document.getElementById(
         "folderName"
     ).value =
-        folder ? folder.name : "";
+        folder
+            ? folder.name
+            : "";
 
 
     document.getElementById(
         "folderColor"
     ).value =
-        folder ? folder.color : "#4f7cff";
+        folder
+            ? folder.color
+            : "#4f7cff";
 
 
     document.getElementById(
         "folderColorValue"
     ).textContent =
-        folder ? folder.color : "#4f7cff";
+        folder
+            ? folder.color
+            : "#4f7cff";
 
 
     document
         .getElementById("folderModal")
-        .classList.remove("hidden");
+        .classList.remove(
+            "hidden"
+        );
 
 }
 
@@ -833,27 +978,56 @@ async function saveFolder() {
     let result;
 
 
+    /*
+     * EDIÇÃO
+     */
+
     if (editingFolderId) {
+
+        if (!adminMode) {
+
+            showToast(
+                "Você precisa estar no modo administrador."
+            );
+
+            return;
+
+        }
+
 
         result =
             await supabaseClient.rpc(
                 "admin_update_folder",
                 {
-                    p_password: getAdminPassword(),
-                    p_folder_id: editingFolderId,
-                    p_name: name,
-                    p_color: color
+                    p_password:
+                        currentAdminPassword,
+
+                    p_folder_id:
+                        editingFolderId,
+
+                    p_name:
+                        name,
+
+                    p_color:
+                        color
                 }
             );
 
-    } else {
+    }
+
+
+    /*
+     * CRIAÇÃO
+     */
+
+    else {
 
         result =
             await supabaseClient
                 .from("folders")
                 .insert({
-                    name,
-                    color
+                    name: name,
+                    color: color
                 });
 
     }
@@ -861,7 +1035,11 @@ async function saveFolder() {
 
     if (result.error) {
 
-        console.error(result.error);
+        console.error(
+            "Erro ao salvar pasta:",
+            result.error
+        );
+
 
         showToast(
             "Não foi possível salvar a pasta."
@@ -872,18 +1050,20 @@ async function saveFolder() {
     }
 
 
-    closeModal("folderModal");
-
-    await loadFolders();
-
-    showToast(
-        editingFolderId
-            ? "Pasta atualizada."
-            : "Pasta criada."
+    closeModal(
+        "folderModal"
     );
 
 
     editingFolderId = null;
+
+
+    await loadFolders();
+
+
+    showToast(
+        "Pasta salva com sucesso."
+    );
 
 }
 
@@ -892,9 +1072,15 @@ async function saveFolder() {
    EXCLUIR PASTA
 ===================================================== */
 
-async function deleteFolder(folder) {
+async function deleteFolder(
+    folder
+) {
 
-    if (!adminMode) return;
+    if (!adminMode) {
+
+        return;
+
+    }
 
 
     const confirmed =
@@ -903,22 +1089,34 @@ async function deleteFolder(folder) {
         );
 
 
-    if (!confirmed) return;
+    if (!confirmed) {
+
+        return;
+
+    }
 
 
-    const result =
-        await supabaseClient.rpc(
-            "admin_delete_folder",
-            {
-                p_password: getAdminPassword(),
-                p_folder_id: folder.id
-            }
+    const {
+        error
+    } = await supabaseClient.rpc(
+        "admin_delete_folder",
+        {
+            p_password:
+                currentAdminPassword,
+
+            p_folder_id:
+                folder.id
+        }
+    );
+
+
+    if (error) {
+
+        console.error(
+            "Erro ao excluir pasta:",
+            error
         );
 
-
-    if (result.error) {
-
-        console.error(result.error);
 
         showToast(
             "Não foi possível excluir a pasta."
@@ -943,10 +1141,14 @@ async function deleteFolder(folder) {
    MODAL DE LINK
 ===================================================== */
 
-function openLinkModal(link = null) {
+function openLinkModal(
+    link = null
+) {
 
     editingLinkId =
-        link ? link.id : null;
+        link
+            ? link.id
+            : null;
 
 
     document.getElementById(
@@ -960,30 +1162,40 @@ function openLinkModal(link = null) {
     document.getElementById(
         "linkName"
     ).value =
-        link ? link.name : "";
+        link
+            ? link.name
+            : "";
 
 
     document.getElementById(
         "linkUrl"
     ).value =
-        link ? link.url : "";
+        link
+            ? link.url
+            : "";
 
 
     document.getElementById(
         "linkColor"
     ).value =
-        link ? link.color : "#00a884";
+        link
+            ? link.color
+            : "#00a884";
 
 
     document.getElementById(
         "linkColorValue"
     ).textContent =
-        link ? link.color : "#00a884";
+        link
+            ? link.color
+            : "#00a884";
 
 
     document
         .getElementById("linkModal")
-        .classList.remove("hidden");
+        .classList.remove(
+            "hidden"
+        );
 
 }
 
@@ -1025,6 +1237,11 @@ async function saveLink() {
     }
 
 
+    /*
+     * Adiciona https:// automaticamente
+     * quando o usuário não colocar.
+     */
+
     if (
         !url.startsWith("http://") &&
         !url.startsWith("https://")
@@ -1039,30 +1256,79 @@ async function saveLink() {
     let result;
 
 
+    /*
+     * EDIÇÃO
+     */
+
     if (editingLinkId) {
+
+        if (!adminMode) {
+
+            showToast(
+                "Você precisa estar no modo administrador."
+            );
+
+            return;
+
+        }
+
 
         result =
             await supabaseClient.rpc(
                 "admin_update_link",
                 {
-                    p_password: getAdminPassword(),
-                    p_link_id: editingLinkId,
-                    p_name: name,
-                    p_url: url,
-                    p_color: color
+                    p_password:
+                        currentAdminPassword,
+
+                    p_link_id:
+                        editingLinkId,
+
+                    p_name:
+                        name,
+
+                    p_url:
+                        url,
+
+                    p_color:
+                        color
                 }
             );
 
-    } else {
+    }
+
+
+    /*
+     * CRIAÇÃO
+     */
+
+    else {
+
+        if (!currentFolderId) {
+
+            showToast(
+                "Nenhuma pasta selecionada."
+            );
+
+            return;
+
+        }
+
 
         result =
             await supabaseClient
                 .from("links")
                 .insert({
-                    folder_id: currentFolderId,
-                    name,
-                    url,
-                    color
+                    folder_id:
+                        currentFolderId,
+
+                    name:
+                        name,
+
+                    url:
+                        url,
+
+                    color:
+                        color
                 });
 
     }
@@ -1070,7 +1336,11 @@ async function saveLink() {
 
     if (result.error) {
 
-        console.error(result.error);
+        console.error(
+            "Erro ao salvar link:",
+            result.error
+        );
+
 
         showToast(
             "Não foi possível salvar o link."
@@ -1081,18 +1351,22 @@ async function saveLink() {
     }
 
 
-    closeModal("linkModal");
-
-    await loadLinks(currentFolderId);
-
-    showToast(
-        editingLinkId
-            ? "Link atualizado."
-            : "Link adicionado."
+    closeModal(
+        "linkModal"
     );
 
 
     editingLinkId = null;
+
+
+    await loadLinks(
+        currentFolderId
+    );
+
+
+    showToast(
+        "Link salvo com sucesso."
+    );
 
 }
 
@@ -1101,9 +1375,15 @@ async function saveLink() {
    EXCLUIR LINK
 ===================================================== */
 
-async function deleteLink(link) {
+async function deleteLink(
+    link
+) {
 
-    if (!adminMode) return;
+    if (!adminMode) {
+
+        return;
+
+    }
 
 
     const confirmed =
@@ -1112,22 +1392,34 @@ async function deleteLink(link) {
         );
 
 
-    if (!confirmed) return;
+    if (!confirmed) {
+
+        return;
+
+    }
 
 
-    const result =
-        await supabaseClient.rpc(
-            "admin_delete_link",
-            {
-                p_password: getAdminPassword(),
-                p_link_id: link.id
-            }
+    const {
+        error
+    } = await supabaseClient.rpc(
+        "admin_delete_link",
+        {
+            p_password:
+                currentAdminPassword,
+
+            p_link_id:
+                link.id
+        }
+    );
+
+
+    if (error) {
+
+        console.error(
+            "Erro ao excluir link:",
+            error
         );
 
-
-    if (result.error) {
-
-        console.error(result.error);
 
         showToast(
             "Não foi possível excluir o link."
@@ -1138,7 +1430,9 @@ async function deleteLink(link) {
     }
 
 
-    await loadLinks(currentFolderId);
+    await loadLinks(
+        currentFolderId
+    );
 
 
     showToast(
@@ -1149,168 +1443,29 @@ async function deleteLink(link) {
 
 
 /* =====================================================
-   SENHA DO ADMIN
-===================================================== */
-
-/*
-   A senha não fica escrita aqui.
-
-   Depois que o administrador entra,
-   guardamos temporariamente a senha na
-   memória da página para que as operações
-   administrativas possam ser autorizadas
-   pelo banco.
-
-   Ela desaparece ao fechar/recarregar a página.
-*/
-
-let currentAdminPassword = "";
-
-
-const originalLoginAdmin = loginAdmin;
-
-
-/*
-   Substituímos o login para guardar
-   a senha somente durante a sessão.
-*/
-
-async function performAdminLogin() {
-
-    const password =
-        document
-            .getElementById("adminPassword")
-            .value;
-
-
-    if (!password) return;
-
-
-    const { data, error } =
-        await supabaseClient.rpc(
-            "check_admin_password",
-            {
-                p_password: password
-            }
-        );
-
-
-    if (error || !data) {
-
-        document
-            .getElementById("adminError")
-            .textContent =
-                "Senha incorreta.";
-
-        return;
-
-    }
-
-
-    currentAdminPassword = password;
-
-    adminMode = true;
-
-
-    closeModal("adminModal");
-
-
-    adminButton.classList.add("hidden");
-
-    logoutButton.classList.remove("hidden");
-
-
-    if (currentFolderId) {
-
-        await loadLinks(currentFolderId);
-
-    } else {
-
-        renderFolders();
-
-    }
-
-
-    showToast(
-        "Modo administrador ativado."
-    );
-
-}
-
-
-/*
-   Faz o botão usar a função correta.
-*/
-
-document
-    .getElementById("confirmAdminButton")
-    .onclick = performAdminLogin;
-
-
-/* =====================================================
-   OBTER SENHA TEMPORÁRIA
-===================================================== */
-
-function getAdminPassword() {
-
-    return currentAdminPassword;
-
-}
-
-
-/* =====================================================
-   SAIR COMPLETAMENTE DO ADMIN
-===================================================== */
-
-const oldLogoutAdmin = logoutAdmin;
-
-logoutButton.onclick = function() {
-
-    currentAdminPassword = "";
-
-    adminMode = false;
-
-    adminButton.classList.remove("hidden");
-
-    logoutButton.classList.add("hidden");
-
-
-    if (currentFolderId) {
-
-        loadLinks(currentFolderId);
-
-    } else {
-
-        renderFolders();
-
-    }
-
-
-    showToast(
-        "Modo administrador desativado."
-    );
-
-};
-
-
-/* =====================================================
    FECHAR MODAL
 ===================================================== */
 
-function closeModal(id) {
+function closeModal(
+    id
+) {
 
     document
         .getElementById(id)
-        .classList.add("hidden");
+        .classList.add(
+            "hidden"
+        );
 
 }
 
 
 /* =====================================================
-   UTILITÁRIOS VISUAIS
+   GRADIENTE DOS CARDS
 ===================================================== */
 
-function makeGradient(color) {
+function makeGradient(
+    color
+) {
 
     return `
         linear-gradient(
@@ -1323,44 +1478,100 @@ function makeGradient(color) {
 }
 
 
-function darken(hex, amount) {
+/* =====================================================
+   ESCURECER COR
+===================================================== */
 
-    hex = hex.replace("#", "");
+function darken(
+    hex,
+    amount
+) {
+
+    hex =
+        hex.replace(
+            "#",
+            ""
+        );
+
 
     let r =
-        parseInt(hex.substring(0, 2), 16);
+        parseInt(
+            hex.substring(0, 2),
+            16
+        );
+
 
     let g =
-        parseInt(hex.substring(2, 4), 16);
+        parseInt(
+            hex.substring(2, 4),
+            16
+        );
+
 
     let b =
-        parseInt(hex.substring(4, 6), 16);
+        parseInt(
+            hex.substring(4, 6),
+            16
+        );
 
 
-    r = Math.max(0, r - amount);
-    g = Math.max(0, g - amount);
-    b = Math.max(0, b - amount);
+    r =
+        Math.max(
+            0,
+            r - amount
+        );
 
 
-    return "#" +
+    g =
+        Math.max(
+            0,
+            g - amount
+        );
+
+
+    b =
+        Math.max(
+            0,
+            b - amount
+        );
+
+
+    return (
+        "#" +
         r.toString(16).padStart(2, "0") +
         g.toString(16).padStart(2, "0") +
-        b.toString(16).padStart(2, "0");
+        b.toString(16).padStart(2, "0")
+    );
 
 }
 
 
-function escapeHTML(value) {
+/* =====================================================
+   PROTEÇÃO CONTRA HTML
+===================================================== */
+
+function escapeHTML(
+    value
+) {
 
     const div =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
-    div.textContent = value;
+
+    div.textContent =
+        value;
+
 
     return div.innerHTML;
 
 }
 
+
+/* =====================================================
+   ESTADO VAZIO
+===================================================== */
 
 function emptyHTML(
     icon,
@@ -1385,12 +1596,19 @@ function emptyHTML(
             </p>
 
         </div>
+
     `;
 
 }
 
 
-function showLoading(element) {
+/* =====================================================
+   CARREGANDO
+===================================================== */
+
+function showLoading(
+    element
+) {
 
     element.innerHTML = `
 
@@ -1405,12 +1623,20 @@ function showLoading(element) {
             </h2>
 
         </div>
+
     `;
 
 }
 
 
-function showError(element, message) {
+/* =====================================================
+   ERRO
+===================================================== */
+
+function showError(
+    element,
+    message
+) {
 
     element.innerHTML = `
 
@@ -1425,35 +1651,56 @@ function showError(element, message) {
             </h2>
 
             <p>
-                ${message}
+                ${escapeHTML(message)}
             </p>
 
         </div>
+
     `;
 
 }
 
 
+/* =====================================================
+   TOAST
+===================================================== */
+
 let toastTimeout;
 
 
-function showToast(message) {
+function showToast(
+    message
+) {
 
     const toast =
-        document.getElementById("toast");
+        document.getElementById(
+            "toast"
+        );
 
 
-    toast.textContent = message;
+    toast.textContent =
+        message;
 
-    toast.classList.add("show");
+
+    toast.classList.add(
+        "show"
+    );
 
 
-    clearTimeout(toastTimeout);
+    clearTimeout(
+        toastTimeout
+    );
 
 
     toastTimeout =
         setTimeout(
-            () => toast.classList.remove("show"),
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
             2800
         );
 
