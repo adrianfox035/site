@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>LinkHub</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+
+    <header class="topbar">
+
+        <div class="brand">
+            🔗 <span>LinkHub</span>
+        </div>
+
+        <div class="header-actions">
+
+            <button
+                id="adminButton"
+                class="admin-button"
+            >
+                🔐 Entrar como administrador
+            </button>
+
+            <button
+                id="logoutButton"
+                class="logout-button hidden"
+            >
+                Sair do admin
+            </button>
+
+        </div>
+
+    </header>
+
+
+    <main>
+
+        <!-- PÁGINA PRINCIPAL -->
+
+        <section id="homePage">
+
+            <div class="page-header">
+
+                <div>
+                    <h1>Minhas pastas</h1>
+
+                    <p>
+                        Organize e compartilhe seus links.
+                    </p>
+                </div>
+
+                <button
+                    id="addFolderButton"
+                    class="primary-button"
+                >
+                    + Adicionar pasta
+                </button>
+
+            </div>
+
+            <div
+                id="foldersGrid"
+                class="cards-grid"
+            ></div>
+
+        </section>
+
+
+        <!-- PÁGINA DA PASTA -->
+
+        <section
+            id="folderPage"
+            class="hidden"
+        >
+
+            <button
+                id="backButton"
+                class="back-button"
+            >
+                ← Voltar
+            </button>
+
+            <div class="page-header">
+
+                <div>
+
+                    <h1 id="folderTitle">
+                        Pasta
+                    </h1>
+
+                    <p>
+                        Links desta pasta
+                    </p>
+
+                </div>
+
+                <button
+                    id="addLinkButton"
+                    class="primary-button"
+                >
+                    + Adicionar link
+                </button>
+
+            </div>
+
+            <div
+                id="linksGrid"
+                class="cards-grid"
+            ></div>
+
+        </section>
+
+    </main>
+
+
+    <!-- MODAL DE ADMIN -->
+
+    <div
+        id="adminModal"
+        class="modal-overlay hidden"
+    >
+
+        <div class="modal">
+
+            <button
+                class="close-button"
+                data-close="adminModal"
+            >
+                ×
+            </button>
+
+            <h2>🔐 Administrador</h2>
+
+            <p class="modal-description">
+                Digite a senha para liberar as funções administrativas.
+            </p>
+
+            <label for="adminPassword">
+                Senha
+            </label>
+
+            <input
+                id="adminPassword"
+                type="password"
+                placeholder="Digite a senha"
+                autocomplete="off"
+            >
+
+            <p
+                id="adminError"
+                class="error-message"
+            ></p>
+
+            <button
+                id="confirmAdminButton"
+                class="primary-button full-width"
+            >
+                Entrar
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- MODAL DE PASTA -->
+
+    <div
+        id="folderModal"
+        class="modal-overlay hidden"
+    >
+
+        <div class="modal">
+
+            <button
+                class="close-button"
+                data-close="folderModal"
+            >
+                ×
+            </button>
+
+            <h2 id="folderModalTitle">
+                📁 Nova pasta
+            </h2>
+
+            <label for="folderName">
+                Nome
+            </label>
+
+            <input
+                id="folderName"
+                type="text"
+                maxlength="60"
+                placeholder="Ex.: Estudos"
+            >
+
+            <label for="folderColor">
+                Cor
+            </label>
+
+            <div class="color-input">
+
+                <input
+                    id="folderColor"
+                    type="color"
+                    value="#4f7cff"
+                >
+
+                <span id="folderColorValue">
+                    #4f7cff
+                </span>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    class="secondary-button"
+                    data-close="folderModal"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    id="saveFolderButton"
+                    class="primary-button"
+                >
+                    Salvar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- MODAL DE LINK -->
+
+    <div
+        id="linkModal"
+        class="modal-overlay hidden"
+    >
+
+        <div class="modal">
+
+            <button
+                class="close-button"
+                data-close="linkModal"
+            >
+                ×
+            </button>
+
+            <h2 id="linkModalTitle">
+                🔗 Novo link
+            </h2>
+
+            <label for="linkName">
+                Nome
+            </label>
+
+            <input
+                id="linkName"
+                type="text"
+                maxlength="80"
+                placeholder="Ex.: Google"
+            >
+
+            <label for="linkUrl">
+                Endereço do link
+            </label>
+
+            <input
+                id="linkUrl"
+                type="url"
+                placeholder="https://google.com"
+            >
+
+            <label for="linkColor">
+                Cor
+            </label>
+
+            <div class="color-input">
+
+                <input
+                    id="linkColor"
+                    type="color"
+                    value="#00a884"
+                >
+
+                <span id="linkColorValue">
+                    #00a884
+                </span>
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    class="secondary-button"
+                    data-close="linkModal"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    id="saveLinkButton"
+                    class="primary-button"
+                >
+                    Salvar
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="toast"
+        class="toast"
+    ></div>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>
