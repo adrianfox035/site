@@ -3,65 +3,36 @@
 
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>LinkHub</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- ==================================================
+    <!-- =========================
          TOPO
-    =================================================== -->
+    ========================== -->
 
     <header class="topbar">
 
-        <!-- LOGO -->
         <div class="topbar-left">
-
-            <div
-                id="siteLogo"
-                class="site-logo"
-            >
-                🔗
-            </div>
-
+            <div id="siteLogo" class="site-logo">🔗</div>
         </div>
 
-
-        <!-- TÍTULO -->
         <div class="topbar-center">
-
-            <h1 id="siteTitle">
-                LinkHub
-            </h1>
-
+            <h1 id="siteTitle">LinkHub</h1>
         </div>
 
-
-        <!-- ADMIN -->
         <div class="topbar-right">
 
-            <button
-                id="adminButton"
-                class="admin-button"
-            >
+            <button id="adminButton" class="admin-button">
                 Admin
             </button>
 
-            <button
-                id="logoutButton"
-                class="admin-button hidden"
-            >
+            <button id="logoutButton" class="admin-button hidden">
                 Sair
             </button>
 
@@ -70,42 +41,34 @@
     </header>
 
 
-    <!-- ==================================================
-         CONTEÚDO PRINCIPAL
-    =================================================== -->
+    <!-- =========================
+         CONTEÚDO
+    ========================== -->
 
     <main>
 
-        <!-- ==================================================
-             PÁGINA PRINCIPAL
-        =================================================== -->
+        <!-- =========================
+             HOME
+        ========================== -->
 
-        <section
-            id="homePage"
-            class="page"
-        >
+        <section id="homePage" class="page">
 
             <div class="page-heading">
 
                 <div>
-
-                    <h2>
-                        Pastas
-                    </h2>
+                    <h2>Pastas</h2>
 
                     <p>
                         Escolha uma pasta para acessar seus links.
                     </p>
-
                 </div>
 
-
-                <!-- CONTROLES -->
                 <div class="page-controls">
 
                     <button
                         id="organizeButton"
                         class="control-button"
+                        type="button"
                     >
                         ⚙️ Organizar
                     </button>
@@ -113,6 +76,7 @@
                     <button
                         id="themeButton"
                         class="control-button admin-only hidden"
+                        type="button"
                     >
                         🎨 Cor
                     </button>
@@ -122,7 +86,9 @@
             </div>
 
 
-            <!-- PAINEL DE ORGANIZAÇÃO -->
+            <!-- =========================
+                 ORGANIZAÇÃO DAS PASTAS
+            ========================== -->
 
             <div
                 id="organizePanel"
@@ -131,13 +97,12 @@
 
                 <div class="organize-section">
 
-                    <strong>
-                        Ordenar
-                    </strong>
+                    <strong>Ordenar:</strong>
 
                     <button
-                        class="sort-option"
+                        class="sort-option active"
                         data-sort="newest"
+                        type="button"
                     >
                         Mais recentes
                     </button>
@@ -145,6 +110,7 @@
                     <button
                         class="sort-option"
                         data-sort="oldest"
+                        type="button"
                     >
                         Mais antigas
                     </button>
@@ -152,6 +118,7 @@
                     <button
                         class="sort-option"
                         data-sort="most-links"
+                        type="button"
                     >
                         Mais links
                     </button>
@@ -159,6 +126,7 @@
                     <button
                         class="sort-option"
                         data-sort="least-links"
+                        type="button"
                     >
                         Menos links
                     </button>
@@ -166,6 +134,7 @@
                     <button
                         class="sort-option"
                         data-sort="color"
+                        type="button"
                     >
                         Por cor
                     </button>
@@ -175,62 +144,32 @@
 
                 <div class="organize-section">
 
-                    <strong>
-                        Layout
-                    </strong>
+                    <strong>Layout:</strong>
 
                     <label>
-                        Pastas por linha
+
+                        Pastas por linha:
 
                         <select id="itemsPerRow">
 
-                            <option value="1">
-                                1
-                            </option>
-
-                            <option value="2">
-                                2
-                            </option>
-
-                            <option value="3">
-                                3
-                            </option>
-
-                            <option
-                                value="4"
-                                selected
-                            >
-                                4
-                            </option>
-
-                            <option value="5">
-                                5
-                            </option>
-
-                            <option value="6">
-                                6
-                            </option>
-
-                            <option value="8">
-                                8
-                            </option>
-
-                            <option value="10">
-                                10
-                            </option>
-
-                            <option value="12">
-                                12
-                            </option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4" selected>4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="8">8</option>
+                            <option value="10">10</option>
+                            <option value="12">12</option>
 
                         </select>
 
                     </label>
 
-
                     <button
                         id="layoutToggle"
                         class="layout-button"
+                        type="button"
                     >
                         ⬜ Grade
                     </button>
@@ -240,19 +179,17 @@
             </div>
 
 
-            <!-- PASTAS -->
+            <!-- =========================
+                 PASTAS
+            ========================== -->
 
-            <div
-                id="foldersGrid"
-                class="cards-grid"
-            ></div>
+            <div id="foldersGrid" class="cards-grid"></div>
 
-
-            <!-- ADICIONAR -->
 
             <button
                 id="addFolderButton"
                 class="add-button"
+                type="button"
             >
                 + Adicionar pasta
             </button>
@@ -260,14 +197,11 @@
         </section>
 
 
-        <!-- ==================================================
+        <!-- =========================
              PÁGINA DA PASTA
-        =================================================== -->
+        ========================== -->
 
-        <section
-            id="folderPage"
-            class="page hidden"
-        >
+        <section id="folderPage" class="page hidden">
 
             <div class="page-heading">
 
@@ -276,6 +210,7 @@
                     <button
                         id="backButton"
                         class="back-button"
+                        type="button"
                     >
                         ←
                     </button>
@@ -287,7 +222,7 @@
                         </h2>
 
                         <p>
-                            Links desta pasta
+                            Links desta pasta.
                         </p>
 
                     </div>
@@ -300,6 +235,7 @@
                     <button
                         id="organizeLinksButton"
                         class="control-button"
+                        type="button"
                     >
                         ⚙️ Organizar
                     </button>
@@ -307,6 +243,7 @@
                     <button
                         id="themeButtonLinks"
                         class="control-button admin-only hidden"
+                        type="button"
                     >
                         🎨 Cor
                     </button>
@@ -325,13 +262,12 @@
 
                 <div class="organize-section">
 
-                    <strong>
-                        Ordenar
-                    </strong>
+                    <strong>Ordenar:</strong>
 
                     <button
-                        class="link-sort-option"
+                        class="link-sort-option active"
                         data-sort="newest"
+                        type="button"
                     >
                         Mais recentes
                     </button>
@@ -339,6 +275,7 @@
                     <button
                         class="link-sort-option"
                         data-sort="oldest"
+                        type="button"
                     >
                         Mais antigos
                     </button>
@@ -346,6 +283,7 @@
                     <button
                         class="link-sort-option"
                         data-sort="color"
+                        type="button"
                     >
                         Por cor
                     </button>
@@ -355,63 +293,32 @@
 
                 <div class="organize-section">
 
-                    <strong>
-                        Layout
-                    </strong>
+                    <strong>Layout:</strong>
 
                     <label>
 
-                        Links por linha
+                        Links por linha:
 
                         <select id="linksPerRow">
 
-                            <option value="1">
-                                1
-                            </option>
-
-                            <option value="2">
-                                2
-                            </option>
-
-                            <option value="3">
-                                3
-                            </option>
-
-                            <option
-                                value="4"
-                                selected
-                            >
-                                4
-                            </option>
-
-                            <option value="5">
-                                5
-                            </option>
-
-                            <option value="6">
-                                6
-                            </option>
-
-                            <option value="8">
-                                8
-                            </option>
-
-                            <option value="10">
-                                10
-                            </option>
-
-                            <option value="12">
-                                12
-                            </option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4" selected>4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="8">8</option>
+                            <option value="10">10</option>
+                            <option value="12">12</option>
 
                         </select>
 
                     </label>
 
-
                     <button
                         id="linkLayoutToggle"
                         class="layout-button"
+                        type="button"
                     >
                         ⬜ Grade
                     </button>
@@ -421,17 +328,13 @@
             </div>
 
 
-            <!-- LINKS -->
-
-            <div
-                id="linksGrid"
-                class="cards-grid"
-            ></div>
+            <div id="linksGrid" class="cards-grid"></div>
 
 
             <button
                 id="addLinkButton"
                 class="add-button"
+                type="button"
             >
                 + Adicionar link
             </button>
@@ -441,9 +344,9 @@
     </main>
 
 
-    <!-- ==================================================
+    <!-- =========================
          MODAL ADMIN
-    =================================================== -->
+    ========================== -->
 
     <div
         id="adminModal"
@@ -455,16 +358,15 @@
             <button
                 class="modal-close"
                 data-close="adminModal"
+                type="button"
             >
                 ×
             </button>
 
-            <h2>
-                🔐 Administrador
-            </h2>
+            <h2>🔐 Administrador</h2>
 
             <p>
-                Digite a senha para acessar as funções administrativas.
+                Digite a senha administrativa.
             </p>
 
             <input
@@ -474,14 +376,12 @@
                 autocomplete="off"
             >
 
-            <div
-                id="adminError"
-                class="modal-error"
-            ></div>
+            <div id="adminError" class="modal-error"></div>
 
             <button
                 id="confirmAdminButton"
                 class="primary-button"
+                type="button"
             >
                 Entrar
             </button>
@@ -491,9 +391,9 @@
     </div>
 
 
-    <!-- ==================================================
+    <!-- =========================
          MODAL PASTA
-    =================================================== -->
+    ========================== -->
 
     <div
         id="folderModal"
@@ -505,6 +405,7 @@
             <button
                 class="modal-close"
                 data-close="folderModal"
+                type="button"
             >
                 ×
             </button>
@@ -514,6 +415,7 @@
             </h2>
 
             <label>
+
                 Nome
 
                 <input
@@ -527,6 +429,7 @@
 
 
             <label>
+
                 Cor
 
                 <div class="color-input">
@@ -549,6 +452,7 @@
             <button
                 id="saveFolderButton"
                 class="primary-button"
+                type="button"
             >
                 Salvar
             </button>
@@ -558,9 +462,9 @@
     </div>
 
 
-    <!-- ==================================================
+    <!-- =========================
          MODAL LINK
-    =================================================== -->
+    ========================== -->
 
     <div
         id="linkModal"
@@ -572,6 +476,7 @@
             <button
                 class="modal-close"
                 data-close="linkModal"
+                type="button"
             >
                 ×
             </button>
@@ -581,6 +486,7 @@
             </h2>
 
             <label>
+
                 Nome
 
                 <input
@@ -594,6 +500,7 @@
 
 
             <label>
+
                 Link
 
                 <input
@@ -606,6 +513,7 @@
 
 
             <label>
+
                 Cor
 
                 <div class="color-input">
@@ -628,6 +536,7 @@
             <button
                 id="saveLinkButton"
                 class="primary-button"
+                type="button"
             >
                 Salvar
             </button>
@@ -637,9 +546,9 @@
     </div>
 
 
-    <!-- ==================================================
+    <!-- =========================
          MODAL TEMA
-    =================================================== -->
+    ========================== -->
 
     <div
         id="themeModal"
@@ -651,13 +560,12 @@
             <button
                 class="modal-close"
                 data-close="themeModal"
+                type="button"
             >
                 ×
             </button>
 
-            <h2>
-                🎨 Personalizar página
-            </h2>
+            <h2>🎨 Personalizar página</h2>
 
             <p>
                 Essas cores serão aplicadas para todos os visitantes.
@@ -666,78 +574,43 @@
 
             <label>
                 Fundo
-
-                <input
-                    id="themeBackground"
-                    type="color"
-                >
-
+                <input id="themeBackground" type="color">
             </label>
 
 
             <label>
                 Topo
-
-                <input
-                    id="themeTopbar"
-                    type="color"
-                >
-
+                <input id="themeTopbar" type="color">
             </label>
 
 
             <label>
                 Texto
-
-                <input
-                    id="themeText"
-                    type="color"
-                >
-
+                <input id="themeText" type="color">
             </label>
 
 
             <label>
                 Títulos
-
-                <input
-                    id="themeHeading"
-                    type="color"
-                >
-
+                <input id="themeHeading" type="color">
             </label>
 
 
             <label>
                 Bordas
-
-                <input
-                    id="themeBorder"
-                    type="color"
-                >
-
+                <input id="themeBorder" type="color">
             </label>
 
 
             <label>
                 Botões
-
-                <input
-                    id="themeButtonColor"
-                    type="color"
-                >
-
+                <input id="themeButtonColor" type="color">
             </label>
 
 
             <label>
                 Logo
-
-                <input
-                    id="themeLogo"
-                    type="color"
-                >
-
+                <input id="themeLogo" type="color">
             </label>
 
 
@@ -746,6 +619,7 @@
                 <button
                     id="resetThemeButton"
                     class="secondary-button"
+                    type="button"
                 >
                     Restaurar
                 </button>
@@ -753,6 +627,7 @@
                 <button
                     id="saveThemeButton"
                     class="primary-button"
+                    type="button"
                 >
                     Salvar tema
                 </button>
@@ -766,10 +641,7 @@
 
     <!-- TOAST -->
 
-    <div
-        id="toast"
-        class="toast"
-    ></div>
+    <div id="toast" class="toast"></div>
 
 
     <!-- SUPABASE -->
