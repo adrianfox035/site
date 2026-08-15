@@ -890,6 +890,7 @@ async function loadFolders() {
 
     renderFolders();
 
+}
 
     /*
        Se já estamos dentro de uma pasta,
@@ -902,7 +903,6 @@ async function loadFolders() {
 
     }
 
-}
 
 
 /* =====================================================
