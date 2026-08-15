@@ -1,42 +1,27 @@
-/* =====================================================
-   VARIÁVEIS
-===================================================== */
-
 :root {
 
     --background: #f3f3f3;
-
     --topbar: #ffffff;
-
     --text: #111111;
-
     --heading: #000000;
-
     --border: #000000;
-
     --button: #111111;
-
     --logo: #111111;
 
-    --card-radius: 14px;
-
+    --radius: 14px;
     --transition: 0.2s ease;
 
 }
 
 
-/* =====================================================
+/* =========================
    RESET
-===================================================== */
+========================= */
 
 * {
-
     box-sizing: border-box;
-
     margin: 0;
-
     padding: 0;
-
 }
 
 
@@ -53,31 +38,32 @@ body {
         Helvetica,
         sans-serif;
 
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
+
 }
 
 
-/* =====================================================
+/* =========================
    TOPO
-===================================================== */
+========================= */
 
 .topbar {
 
     height: 76px;
 
-    background: var(--topbar);
-
-    border-bottom:
-        2px solid
-        var(--border);
-
     display: grid;
 
     grid-template-columns:
-        1fr
-        2fr
-        1fr;
+        1fr 2fr 1fr;
 
     align-items: center;
+
+    background: var(--topbar);
+
+    border-bottom:
+        2px solid var(--border);
 
     position: sticky;
 
@@ -92,10 +78,6 @@ body {
 
     padding-left: 28px;
 
-    display: flex;
-
-    align-items: center;
-
 }
 
 
@@ -104,8 +86,6 @@ body {
     display: flex;
 
     justify-content: center;
-
-    align-items: center;
 
 }
 
@@ -118,29 +98,17 @@ body {
 
     justify-content: flex-end;
 
-    align-items: center;
-
 }
 
-
-/* =====================================================
-   LOGO
-===================================================== */
 
 .site-logo {
 
-    font-size: 31px;
+    font-size: 30px;
 
     color: var(--logo);
 
-    user-select: none;
-
 }
 
-
-/* =====================================================
-   TÍTULO
-===================================================== */
 
 .topbar h1 {
 
@@ -150,14 +118,12 @@ body {
 
     font-weight: 800;
 
-    letter-spacing: -0.5px;
-
 }
 
 
-/* =====================================================
+/* =========================
    ADMIN
-===================================================== */
+========================= */
 
 .admin-button {
 
@@ -167,15 +133,11 @@ body {
 
     color: var(--text);
 
-    font-size: 13px;
-
     cursor: pointer;
 
-    opacity: 0.65;
+    font-size: 13px;
 
-    transition:
-        opacity var(--transition),
-        transform var(--transition);
+    opacity: 0.65;
 
 }
 
@@ -184,23 +146,22 @@ body {
 
     opacity: 1;
 
-    transform: translateY(-1px);
-
 }
 
 
-/* =====================================================
+/* =========================
    MAIN
-===================================================== */
+========================= */
 
 main {
 
-    width: min(
-        1400px,
-        calc(100% - 40px)
-    );
+    width:
+        min(
+            1400px,
+            calc(100% - 40px)
+        );
 
-    margin: 0 auto;
+    margin: auto;
 
 }
 
@@ -208,16 +169,10 @@ main {
 .page {
 
     padding:
-        38px
-        0
-        70px;
+        38px 0 70px;
 
 }
 
-
-/* =====================================================
-   CABEÇALHO DA PÁGINA
-===================================================== */
 
 .page-heading {
 
@@ -240,18 +195,16 @@ main {
 
     font-size: 29px;
 
-    margin-bottom: 6px;
+    margin-bottom: 5px;
 
 }
 
 
 .page-heading p {
 
-    color: var(--text);
+    font-size: 14px;
 
     opacity: 0.65;
-
-    font-size: 14px;
 
 }
 
@@ -262,71 +215,57 @@ main {
 
     gap: 8px;
 
-    align-items: center;
-
 }
 
 
-/* =====================================================
-   BOTÕES DE CONTROLE
-===================================================== */
+/* =========================
+   CONTROLES
+========================= */
 
 .control-button {
 
-    border:
-        1px solid
-        var(--border);
-
-    background:
-        transparent;
-
-    color: var(--text);
-
     padding:
-        8px
-        13px;
+        8px 13px;
+
+    border:
+        1px solid var(--border);
 
     border-radius: 8px;
+
+    background: transparent;
+
+    color: var(--text);
 
     cursor: pointer;
 
     font-size: 13px;
-
-    transition:
-        background var(--transition),
-        color var(--transition),
-        transform var(--transition);
 
 }
 
 
 .control-button:hover {
 
-    background:
-        var(--button);
+    background: var(--button);
 
-    color:
-        #ffffff;
-
-    transform:
-        translateY(-1px);
+    color: #ffffff;
 
 }
 
 
-/* =====================================================
+/* =========================
    ORGANIZAÇÃO
-===================================================== */
+========================= */
 
 .organize-panel {
 
+    background: var(--topbar);
+
     border:
-        1px solid
-        var(--border);
+        1px solid var(--border);
 
     border-radius: 12px;
 
-    padding: 16px;
+    padding: 15px;
 
     margin-bottom: 20px;
 
@@ -335,9 +274,6 @@ main {
     flex-wrap: wrap;
 
     gap: 25px;
-
-    background:
-        var(--topbar);
 
 }
 
@@ -357,8 +293,6 @@ main {
 
 .organize-section strong {
 
-    margin-right: 5px;
-
     font-size: 13px;
 
 }
@@ -367,20 +301,17 @@ main {
 .sort-option,
 .layout-button {
 
-    border:
-        1px solid
-        var(--border);
-
-    background:
-        transparent;
-
-    color:
-        var(--text);
-
     padding:
         6px 10px;
 
+    border:
+        1px solid var(--border);
+
     border-radius: 7px;
+
+    background: transparent;
+
+    color: var(--text);
 
     cursor: pointer;
 
@@ -390,13 +321,12 @@ main {
 
 
 .sort-option:hover,
+.sort-option.active,
 .layout-button:hover {
 
-    background:
-        var(--button);
+    background: var(--button);
 
-    color:
-        #ffffff;
+    color: #ffffff;
 
 }
 
@@ -407,7 +337,7 @@ main {
 
     align-items: center;
 
-    gap: 8px;
+    gap: 7px;
 
     font-size: 13px;
 
@@ -416,26 +346,23 @@ main {
 
 .organize-section select {
 
+    padding: 5px;
+
     border:
-        1px solid
-        var(--border);
+        1px solid var(--border);
 
     border-radius: 6px;
 
-    padding: 5px;
+    background: var(--topbar);
 
-    background:
-        var(--topbar);
-
-    color:
-        var(--text);
+    color: var(--text);
 
 }
 
 
-/* =====================================================
+/* =========================
    GRID
-===================================================== */
+========================= */
 
 .cards-grid {
 
@@ -451,15 +378,8 @@ main {
 
     gap: 18px;
 
-    transition:
-        all 0.25s ease;
-
 }
 
-
-/* =====================================================
-   MODO LISTA
-===================================================== */
 
 .cards-grid.vertical {
 
@@ -469,9 +389,9 @@ main {
 }
 
 
-/* =====================================================
-   CARD
-===================================================== */
+/* =========================
+   CARDS
+========================= */
 
 .card {
 
@@ -480,17 +400,9 @@ main {
     padding: 22px;
 
     border:
-        2px solid
-        #000000;
+        2px solid #000000;
 
-    border-radius:
-        var(--card-radius);
-
-    display: flex;
-
-    flex-direction: column;
-
-    justify-content: space-between;
+    border-radius: var(--radius);
 
     color: #ffffff;
 
@@ -501,16 +413,12 @@ main {
     overflow: hidden;
 
     transition:
-        transform 0.2s ease,
-        filter 0.2s ease,
-        box-shadow 0.2s ease;
+        transform var(--transition),
+        filter var(--transition),
+        box-shadow var(--transition);
 
 }
 
-
-/* =====================================================
-   HOVER
-===================================================== */
 
 .card:hover {
 
@@ -521,15 +429,16 @@ main {
         brightness(0.88);
 
     box-shadow:
-        0 8px 15px
-        rgba(0, 0, 0, 0.18);
+        0 8px 16px
+        rgba(
+            0,
+            0,
+            0,
+            0.18
+        );
 
 }
 
-
-/* =====================================================
-   TEXTO DOS CARDS
-===================================================== */
 
 .card-name {
 
@@ -538,10 +447,6 @@ main {
     font-weight: 800;
 
     line-height: 1.2;
-
-    /*
-       Contorno preto nas letras.
-    */
 
     text-shadow:
         -1px -1px 0 #000,
@@ -566,32 +471,26 @@ main {
         -1px  1px 0 #000,
          1px  1px 0 #000;
 
-    overflow:
-        hidden;
-
-    text-overflow:
-        ellipsis;
-
 }
 
 
-/* =====================================================
-   AÇÕES DOS CARDS
-===================================================== */
+/* =========================
+   AÇÕES
+========================= */
 
 .card-actions {
 
     position: absolute;
 
-    right: 9px;
-
     top: 9px;
+
+    right: 9px;
 
     display: flex;
 
     gap: 5px;
 
-    z-index: 5;
+    z-index: 10;
 
 }
 
@@ -603,8 +502,7 @@ main {
     height: 29px;
 
     border:
-        1px solid
-        #000000;
+        1px solid #000;
 
     border-radius: 7px;
 
@@ -613,21 +511,17 @@ main {
             255,
             255,
             255,
-            0.9
+            0.92
         );
 
     cursor: pointer;
-
-    transition:
-        transform var(--transition);
 
 }
 
 
 .card-action:hover {
 
-    transform:
-        scale(1.08);
+    transform: scale(1.08);
 
 }
 
@@ -645,27 +539,23 @@ main {
 }
 
 
-/* =====================================================
-   BOTÃO ADICIONAR
-===================================================== */
+/* =========================
+   ADICIONAR
+========================= */
 
 .add-button {
 
     margin-top: 20px;
 
     padding:
-        8px
-        13px;
+        8px 13px;
 
-    background:
-        transparent;
+    background: transparent;
+
+    color: var(--text);
 
     border:
-        1px dashed
-        var(--border);
-
-    color:
-        var(--text);
+        1px dashed var(--border);
 
     border-radius: 7px;
 
@@ -674,10 +564,6 @@ main {
     cursor: pointer;
 
     opacity: 0.65;
-
-    transition:
-        opacity var(--transition),
-        background var(--transition);
 
 }
 
@@ -697,9 +583,9 @@ main {
 }
 
 
-/* =====================================================
+/* =========================
    VOLTAR
-===================================================== */
+========================= */
 
 .folder-heading {
 
@@ -719,16 +605,13 @@ main {
     height: 37px;
 
     border:
-        1px solid
-        var(--border);
+        1px solid var(--border);
 
     border-radius: 9px;
 
-    background:
-        transparent;
+    background: transparent;
 
-    color:
-        var(--text);
+    color: var(--text);
 
     cursor: pointer;
 
@@ -739,18 +622,16 @@ main {
 
 .back-button:hover {
 
-    background:
-        var(--button);
+    background: var(--button);
 
-    color:
-        #ffffff;
+    color: #ffffff;
 
 }
 
 
-/* =====================================================
+/* =========================
    MODAIS
-===================================================== */
+========================= */
 
 .modal-overlay {
 
@@ -758,13 +639,7 @@ main {
 
     inset: 0;
 
-    background:
-        rgba(
-            0,
-            0,
-            0,
-            0.5
-        );
+    z-index: 1000;
 
     display: flex;
 
@@ -774,57 +649,51 @@ main {
 
     padding: 20px;
 
-    z-index: 1000;
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.5
+        );
 
 }
 
 
 .modal {
 
-    width: min(
-        430px,
-        100%
-    );
+    width:
+        min(
+            430px,
+            100%
+        );
 
     max-height:
         calc(100vh - 40px);
 
     overflow-y: auto;
 
-    background:
-        var(--topbar);
-
-    color:
-        var(--text);
-
-    border:
-        2px solid
-        var(--border);
-
-    border-radius: 15px;
+    position: relative;
 
     padding: 25px;
 
-    position: relative;
+    border:
+        2px solid var(--border);
 
-    box-shadow:
-        0 20px 50px
-        rgba(
-            0,
-            0,
-            0,
-            0.3
-        );
+    border-radius: 15px;
+
+    background: var(--topbar);
+
+    color: var(--text);
 
 }
 
 
 .modal h2 {
 
-    margin-bottom: 8px;
+    color: var(--heading);
 
-    color:
-        var(--heading);
+    margin-bottom: 8px;
 
 }
 
@@ -844,21 +713,19 @@ main {
 
     position: absolute;
 
-    right: 14px;
+    top: 9px;
 
-    top: 10px;
+    right: 13px;
 
     border: none;
 
-    background:
-        transparent;
+    background: transparent;
+
+    color: var(--text);
 
     font-size: 25px;
 
     cursor: pointer;
-
-    color:
-        var(--text);
 
 }
 
@@ -867,9 +734,9 @@ main {
 
     display: block;
 
-    font-size: 13px;
-
     margin-bottom: 16px;
+
+    font-size: 13px;
 
 }
 
@@ -883,31 +750,18 @@ main {
     margin-top: 7px;
 
     padding:
-        11px
-        12px;
+        11px 12px;
 
     border:
-        1px solid
-        var(--border);
+        1px solid var(--border);
 
     border-radius: 8px;
 
-    background:
-        var(--background);
+    background: var(--background);
 
-    color:
-        var(--text);
+    color: var(--text);
 
     outline: none;
-
-}
-
-
-.modal input:focus {
-
-    box-shadow:
-        0 0 0 2px
-        rgba(0, 0, 0, 0.12);
 
 }
 
@@ -940,17 +794,16 @@ main {
 
 .color-input span {
 
-    font-family:
-        monospace;
+    font-family: monospace;
 
     font-size: 12px;
 
 }
 
 
-/* =====================================================
+/* =========================
    TEMA
-===================================================== */
+========================= */
 
 .theme-modal label {
 
@@ -960,6 +813,8 @@ main {
 
     align-items: center;
 
+    padding-bottom: 12px;
+
     border-bottom:
         1px solid
         rgba(
@@ -968,8 +823,6 @@ main {
             0,
             0.1
         );
-
-    padding-bottom: 12px;
 
 }
 
@@ -998,22 +851,16 @@ main {
 }
 
 
-/* =====================================================
-   BOTÕES DOS MODAIS
-===================================================== */
-
 .primary-button,
 .secondary-button {
 
+    padding:
+        10px 14px;
+
     border:
-        1px solid
-        var(--border);
+        1px solid var(--border);
 
     border-radius: 8px;
-
-    padding:
-        10px
-        14px;
 
     cursor: pointer;
 
@@ -1024,69 +871,48 @@ main {
 
 .primary-button {
 
-    background:
-        var(--button);
-
-    color:
-        #ffffff;
-
     width: 100%;
+
+    background: var(--button);
+
+    color: #ffffff;
 
 }
 
 
 .secondary-button {
 
-    background:
-        transparent;
+    background: transparent;
 
-    color:
-        var(--text);
+    color: var(--text);
 
 }
 
 
-.primary-button:hover,
-.secondary-button:hover {
-
-    filter:
-        brightness(0.85);
-
-}
-
-
-/* =====================================================
-   ERRO
-===================================================== */
+/* =========================
+   OUTROS
+========================= */
 
 .modal-error {
 
-    color:
-        #c40000;
-
-    font-size: 12px;
-
-    min-height: 17px;
+    min-height: 18px;
 
     margin-bottom: 8px;
+
+    color: #c40000;
+
+    font-size: 12px;
 
 }
 
 
-/* =====================================================
-   VAZIO / LOADING
-===================================================== */
-
 .empty {
 
-    grid-column:
-        1 / -1;
+    grid-column: 1 / -1;
 
-    padding:
-        55px 20px;
+    padding: 55px 20px;
 
-    text-align:
-        center;
+    text-align: center;
 
     opacity: 0.7;
 
@@ -1102,17 +928,6 @@ main {
 }
 
 
-.empty h2 {
-
-    margin-bottom: 6px;
-
-}
-
-
-/* =====================================================
-   TOAST
-===================================================== */
-
 .toast {
 
     position: fixed;
@@ -1121,22 +936,16 @@ main {
 
     left: 50%;
 
-    transform:
-        translate(
-            -50%,
-            20px
-        );
-
-    background:
-        #111111;
-
-    color:
-        #ffffff;
+    z-index: 2000;
 
     padding:
         10px 17px;
 
     border-radius: 8px;
+
+    background: #111111;
+
+    color: #ffffff;
 
     font-size: 13px;
 
@@ -1144,10 +953,14 @@ main {
 
     pointer-events: none;
 
+    transform:
+        translate(
+            -50%,
+            20px
+        );
+
     transition:
         all 0.25s ease;
-
-    z-index: 2000;
 
 }
 
@@ -1165,10 +978,6 @@ main {
 }
 
 
-/* =====================================================
-   UTILITÁRIOS
-===================================================== */
-
 .hidden {
 
     display: none !important;
@@ -1176,56 +985,16 @@ main {
 }
 
 
-/* =====================================================
-   RESPONSIVIDADE
-===================================================== */
+/* =========================
+   RESPONSIVO
+========================= */
 
 @media (max-width: 800px) {
-
-    .topbar {
-
-        grid-template-columns:
-            1fr
-            2fr
-            1fr;
-
-        height: 65px;
-
-    }
-
-
-    .topbar-left {
-
-        padding-left: 15px;
-
-    }
-
-
-    .topbar-right {
-
-        padding-right: 15px;
-
-    }
-
-
-    .topbar h1 {
-
-        font-size: 20px;
-
-    }
-
 
     main {
 
         width:
             calc(100% - 25px);
-
-    }
-
-
-    .page {
-
-        padding-top: 25px;
 
     }
 
@@ -1239,13 +1008,6 @@ main {
     }
 
 
-    .page-controls {
-
-        width: 100%;
-
-    }
-
-
     .cards-grid {
 
         --columns: 2;
@@ -1255,11 +1017,16 @@ main {
     }
 
 
-    .card {
+    .topbar {
 
-        min-height: 125px;
+        height: 65px;
 
-        padding: 17px;
+    }
+
+
+    .topbar h1 {
+
+        font-size: 20px;
 
     }
 
@@ -1280,13 +1047,6 @@ main {
         flex-direction: column;
 
         align-items: flex-start;
-
-    }
-
-
-    .topbar h1 {
-
-        font-size: 17px;
 
     }
 
