@@ -1,5 +1,5 @@
 /* =====================================================
-   SUPABASE
+   CONFIGURAÇÃO SUPABASE
 ===================================================== */
 
 const SUPABASE_URL =
@@ -7,6 +7,7 @@ const SUPABASE_URL =
 
 const SUPABASE_KEY =
     "sb_publishable_d-ODS7kpWKsuBVTLYpDcjA_UyT9FEZJ";
+
 
 const supabaseClient =
     window.supabase.createClient(
@@ -27,7 +28,7 @@ let currentFolderId = null;
 
 let adminMode = false;
 
-let currentAdminPassword = "";
+let adminPassword = "";
 
 let editingFolderId = null;
 
@@ -46,56 +47,22 @@ let foldersPerRow = 4;
 let linksPerRow = 4;
 
 
-/* =====================================================
-   TEMA PADRÃO
-===================================================== */
-
 const defaultTheme = {
 
     background: "#f3f3f3",
-
     topbar: "#ffffff",
-
     text: "#111111",
-
     heading: "#000000",
-
     border: "#000000",
-
     button: "#111111",
-
     logo: "#111111"
 
 };
 
 
-/* =====================================================
-   ELEMENTOS
-===================================================== */
-
-const homePage =
-    document.getElementById("homePage");
-
-const folderPage =
-    document.getElementById("folderPage");
-
-const foldersGrid =
-    document.getElementById("foldersGrid");
-
-const linksGrid =
-    document.getElementById("linksGrid");
-
-const adminButton =
-    document.getElementById("adminButton");
-
-const logoutButton =
-    document.getElementById("logoutButton");
-
-const themeButton =
-    document.getElementById("themeButton");
-
-const themeButtonLinks =
-    document.getElementById("themeButtonLinks");
+let currentTheme = {
+    ...defaultTheme
+};
 
 
 /* =====================================================
@@ -104,17 +71,56 @@ const themeButtonLinks =
 
 document.addEventListener(
     "DOMContentLoaded",
-    initialize
+    () => {
+
+        setupAllEvents();
+
+        initializeSite();
+
+    }
 );
 
 
-async function initialize() {
+async function initializeSite() {
 
-    setupEvents();
+    try {
 
-    await loadTheme();
+        await loadTheme();
 
-    await loadFolders();
+    } catch (error) {
+
+        console.error(
+            "Erro ao carregar tema:",
+            error
+        );
+
+        applyTheme(
+            defaultTheme
+        );
+
+    }
+
+
+    try {
+
+        await loadFolders();
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao carregar pastas:",
+            error
+        );
+
+        showError(
+            document.getElementById(
+                "foldersGrid"
+            ),
+            "Não foi possível carregar as pastas."
+        );
+
+    }
+
 
     updateAdminInterface();
 
@@ -125,37 +131,46 @@ async function initialize() {
    EVENTOS
 ===================================================== */
 
-function setupEvents() {
+function setupAllEvents() {
 
     /* ADMIN */
 
-    adminButton.addEventListener(
+    on(
+        "adminButton",
         "click",
         openAdminModal
     );
 
 
-    logoutButton.addEventListener(
+    on(
+        "logoutButton",
         "click",
         logoutAdmin
     );
 
 
-    document
-        .getElementById("confirmAdminButton")
-        .addEventListener(
-            "click",
-            loginAdmin
+    on(
+        "confirmAdminButton",
+        "click",
+        loginAdmin
+    );
+
+
+    const adminPasswordInput =
+        document.getElementById(
+            "adminPassword"
         );
 
 
-    document
-        .getElementById("adminPassword")
-        .addEventListener(
+    if (adminPasswordInput) {
+
+        adminPasswordInput.addEventListener(
             "keydown",
             event => {
 
-                if (event.key === "Enter") {
+                if (
+                    event.key === "Enter"
+                ) {
 
                     loginAdmin();
 
@@ -164,128 +179,100 @@ function setupEvents() {
             }
         );
 
+    }
+
 
     /* PASTA */
 
-    document
-        .getElementById("addFolderButton")
-        .addEventListener(
-            "click",
-            () => openFolderModal()
-        );
+    on(
+        "addFolderButton",
+        "click",
+        () => openFolderModal()
+    );
 
 
-    document
-        .getElementById("saveFolderButton")
-        .addEventListener(
-            "click",
-            saveFolder
-        );
+    on(
+        "saveFolderButton",
+        "click",
+        saveFolder
+    );
 
 
-    /* LINK */
+    /* LINKS */
 
-    document
-        .getElementById("addLinkButton")
-        .addEventListener(
-            "click",
-            () => openLinkModal()
-        );
-
-
-    document
-        .getElementById("saveLinkButton")
-        .addEventListener(
-            "click",
-            saveLink
-        );
+    on(
+        "addLinkButton",
+        "click",
+        () => openLinkModal()
+    );
 
 
-    /* NAVEGAÇÃO */
+    on(
+        "saveLinkButton",
+        "click",
+        saveLink
+    );
 
-    document
-        .getElementById("backButton")
-        .addEventListener(
-            "click",
-            showHome
-        );
+
+    /* VOLTAR */
+
+    on(
+        "backButton",
+        "click",
+        showHome
+    );
 
 
     /* ORGANIZAÇÃO */
 
-    document
-        .getElementById("organizeButton")
-        .addEventListener(
-            () => togglePanel(
+    on(
+        "organizeButton",
+        "click",
+        () => {
+
+            toggleElement(
                 "organizePanel"
-            )
-        );
+            );
+
+        }
+    );
 
 
-    document
-        .getElementById("organizeLinksButton")
-        .addEventListener(
-            () => togglePanel(
+    on(
+        "organizeLinksButton",
+        "click",
+        () => {
+
+            toggleElement(
                 "organizeLinksPanel"
-            )
-        );
-
-
-    document
-        .querySelectorAll(".sort-option")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    folderSort =
-                        button.dataset.sort;
-
-                    renderFolders();
-
-                }
             );
 
-        });
+        }
+    );
 
 
     document
-        .querySelectorAll(".link-sort-option")
-        .forEach(button => {
+        .querySelectorAll(
+            ".sort-option"
+        )
+        .forEach(
+            button => {
 
-            button.addEventListener(
-                "click",
-                () => {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-                    linkSort =
-                        button.dataset.sort;
+                        folderSort =
+                            button.dataset.sort;
 
-                    renderLinks(
-                        currentLinks
-                    );
+                        setActiveButton(
+                            ".sort-option",
+                            button
+                        );
 
-                }
-            );
+                        renderFolders();
 
-        });
-
-
-    document
-        .getElementById("itemsPerRow")
-        .addEventListener(
-            "change",
-            event => {
-
-                foldersPerRow =
-                    Number(
-                        event.target.value
-                    );
-
-                applyGrid(
-                    foldersGrid,
-                    foldersPerRow,
-                    folderLayout
+                    }
                 );
 
             }
@@ -293,146 +280,252 @@ function setupEvents() {
 
 
     document
-        .getElementById("linksPerRow")
-        .addEventListener(
-            "change",
-            event => {
+        .querySelectorAll(
+            ".link-sort-option"
+        )
+        .forEach(
+            button => {
 
-                linksPerRow =
-                    Number(
-                        event.target.value
-                    );
+                button.addEventListener(
+                    "click",
+                    () => {
 
-                applyGrid(
-                    linksGrid,
-                    linksPerRow,
-                    linkLayout
+                        linkSort =
+                            button.dataset.sort;
+
+                        setActiveButton(
+                            ".link-sort-option",
+                            button
+                        );
+
+                        renderLinks(
+                            currentLinks
+                        );
+
+                    }
                 );
 
             }
         );
 
 
-    document
-        .getElementById("layoutToggle")
-        .addEventListener(
-            toggleFolderLayout
-        );
+    on(
+        "itemsPerRow",
+        "change",
+        event => {
+
+            foldersPerRow =
+                Number(
+                    event.target.value
+                );
+
+            applyLayout(
+                document.getElementById(
+                    "foldersGrid"
+                ),
+                foldersPerRow,
+                folderLayout
+            );
+
+        }
+    );
 
 
-    document
-        .getElementById("linkLayoutToggle")
-        .addEventListener(
-            toggleLinkLayout
-        );
+    on(
+        "linksPerRow",
+        "change",
+        event => {
+
+            linksPerRow =
+                Number(
+                    event.target.value
+                );
+
+            applyLayout(
+                document.getElementById(
+                    "linksGrid"
+                ),
+                linksPerRow,
+                linkLayout
+            );
+
+        }
+    );
+
+
+    on(
+        "layoutToggle",
+        "click",
+        toggleFolderLayout
+    );
+
+
+    on(
+        "linkLayoutToggle",
+        "click",
+        toggleLinkLayout
+    );
 
 
     /* TEMA */
 
-    themeButton.addEventListener(
+    on(
+        "themeButton",
         "click",
         openThemeModal
     );
 
 
-    themeButtonLinks.addEventListener(
+    on(
+        "themeButtonLinks",
         "click",
         openThemeModal
     );
 
 
-    document
-        .getElementById("saveThemeButton")
-        .addEventListener(
-            saveTheme
-        );
+    on(
+        "saveThemeButton",
+        "click",
+        saveTheme
+    );
 
 
-    document
-        .getElementById("resetThemeButton")
-        .addEventListener(
-            resetTheme
-        );
+    on(
+        "resetThemeButton",
+        "click",
+        resetTheme
+    );
 
 
     /* CORES */
 
-    document
-        .getElementById("folderColor")
-        .addEventListener(
-            "input",
-            event => {
+    on(
+        "folderColor",
+        "input",
+        event => {
 
-                document
-                    .getElementById(
-                        "folderColorValue"
-                    )
-                    .textContent =
-                        event.target.value;
+            const value =
+                event.target.value;
 
-            }
-        );
+            document.getElementById(
+                "folderColorValue"
+            ).textContent =
+                value;
 
-
-    document
-        .getElementById("linkColor")
-        .addEventListener(
-            "input",
-            event => {
-
-                document
-                    .getElementById(
-                        "linkColorValue"
-                    )
-                    .textContent =
-                        event.target.value;
-
-            }
-        );
+        }
+    );
 
 
-    /* FECHAR MODAIS */
+    on(
+        "linkColor",
+        "input",
+        event => {
 
-    document
-        .querySelectorAll("[data-close]")
-        .forEach(button => {
+            const value =
+                event.target.value;
 
-            button.addEventListener(
-                "click",
-                () => {
+            document.getElementById(
+                "linkColorValue"
+            ).textContent =
+                value;
 
-                    closeModal(
-                        button.dataset.close
-                    );
+        }
+    );
 
-                }
-            );
 
-        });
-
+    /* TODOS OS X */
 
     document
-        .querySelectorAll(".modal-overlay")
-        .forEach(overlay => {
+        .querySelectorAll(
+            ".modal-close"
+        )
+        .forEach(
+            button => {
 
-            overlay.addEventListener(
-                "click",
-                event => {
+                button.addEventListener(
+                    "click",
+                    event => {
 
-                    if (
-                        event.target === overlay
-                    ) {
+                        event.preventDefault();
 
-                        overlay.classList.add(
-                            "hidden"
+                        event.stopPropagation();
+
+                        const modalId =
+                            button.dataset.close;
+
+                        closeModal(
+                            modalId
                         );
 
                     }
+                );
 
-                }
-            );
+            }
+        );
 
-        });
+
+    /* CLICAR FORA DO MODAL */
+
+    document
+        .querySelectorAll(
+            ".modal-overlay"
+        )
+        .forEach(
+            overlay => {
+
+                overlay.addEventListener(
+                    "click",
+                    event => {
+
+                        if (
+                            event.target ===
+                            overlay
+                        ) {
+
+                            overlay.classList.add(
+                                "hidden"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   AUXILIAR DE EVENTOS
+===================================================== */
+
+function on(
+    id,
+    event,
+    callback
+) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (!element) {
+
+        console.warn(
+            `Elemento #${id} não encontrado.`
+        );
+
+        return;
+
+    }
+
+
+    element.addEventListener(
+        event,
+        callback
+    );
 
 }
 
@@ -443,15 +536,18 @@ function setupEvents() {
 
 async function loadFolders() {
 
+    const grid =
+        document.getElementById(
+            "foldersGrid"
+        );
+
+
     showLoading(
-        foldersGrid
+        grid
     );
 
 
-    const {
-        data,
-        error
-    } =
+    const result =
         await supabaseClient
             .from("folders")
             .select("*")
@@ -463,15 +559,14 @@ async function loadFolders() {
             );
 
 
-    if (error) {
+    if (result.error) {
 
         console.error(
-            "Erro ao carregar pastas:",
-            error
+            result.error
         );
 
         showError(
-            foldersGrid,
+            grid,
             "Erro ao carregar as pastas."
         );
 
@@ -480,27 +575,25 @@ async function loadFolders() {
     }
 
 
-    folders = data || [];
+    folders =
+        result.data || [];
 
 
-    await addLinkCounts();
-
+    await loadFolderLinkCounts();
 
     renderFolders();
 
 }
 
 
-async function addLinkCounts() {
+async function loadFolderLinkCounts() {
 
     for (
         const folder
         of folders
     ) {
 
-        const {
-            count
-        } =
+        const result =
             await supabaseClient
                 .from("links")
                 .select(
@@ -517,7 +610,7 @@ async function addLinkCounts() {
 
 
         folder.linkCount =
-            count || 0;
+            result.count || 0;
 
     }
 
@@ -525,14 +618,22 @@ async function addLinkCounts() {
 
 
 /* =====================================================
-   RENDERIZAR PASTAS
+   RENDER PASTAS
 ===================================================== */
 
 function renderFolders() {
 
-    if (!folders.length) {
+    const grid =
+        document.getElementById(
+            "foldersGrid"
+        );
 
-        foldersGrid.innerHTML =
+
+    if (
+        !folders.length
+    ) {
+
+        grid.innerHTML =
             emptyHTML(
                 "📁",
                 "Nenhuma pasta",
@@ -544,15 +645,13 @@ function renderFolders() {
     }
 
 
-    let list =
-        [...folders];
+    const list =
+        sortFolders(
+            [...folders]
+        );
 
 
-    list =
-        sortFolders(list);
-
-
-    foldersGrid.innerHTML = "";
+    grid.innerHTML = "";
 
 
     list.forEach(
@@ -569,28 +668,30 @@ function renderFolders() {
 
 
             card.style.background =
-                makeGradient(
+                createGradient(
                     folder.color
                 );
 
 
-            const actions =
-                adminMode
-                    ? `
+            card.innerHTML = `
+
+                ${
+                    adminMode
+                        ? `
 
                         <div class="card-actions">
 
                             <button
-                                class="card-action"
-                                data-action="edit"
+                                class="card-action edit-folder"
+                                type="button"
                                 title="Editar"
                             >
                                 ✏️
                             </button>
 
                             <button
-                                class="card-action delete"
-                                data-action="delete"
+                                class="card-action delete delete-folder"
+                                type="button"
                                 title="Excluir"
                             >
                                 🗑️
@@ -598,13 +699,9 @@ function renderFolders() {
 
                         </div>
 
-                    `
-                    : "";
-
-
-            card.innerHTML = `
-
-                ${actions}
+                        `
+                        : ""
+                }
 
                 <div>
 
@@ -613,8 +710,14 @@ function renderFolders() {
                     </div>
 
                     <div class="card-description">
-                        ${folder.linkCount || 0}
-                        ${(folder.linkCount || 0) === 1 ? "link" : "links"}
+                        ${
+                            folder.linkCount || 0
+                        }
+                        ${
+                            (folder.linkCount || 0) === 1
+                                ? "link"
+                                : "links"
+                        }
                     </div>
 
                 </div>
@@ -640,45 +743,49 @@ function renderFolders() {
 
             if (adminMode) {
 
-                card
-                    .querySelector(
-                        '[data-action="edit"]'
-                    )
-                    .addEventListener(
-                        "click",
-                        event => {
-
-                            event.stopPropagation();
-
-                            openFolderModal(
-                                folder
-                            );
-
-                        }
+                const edit =
+                    card.querySelector(
+                        ".edit-folder"
                     );
 
 
-                card
-                    .querySelector(
-                        '[data-action="delete"]'
-                    )
-                    .addEventListener(
-                        "click",
-                        event => {
-
-                            event.stopPropagation();
-
-                            deleteFolder(
-                                folder
-                            );
-
-                        }
+                const del =
+                    card.querySelector(
+                        ".delete-folder"
                     );
+
+
+                edit.addEventListener(
+                    "click",
+                    event => {
+
+                        event.stopPropagation();
+
+                        openFolderModal(
+                            folder
+                        );
+
+                    }
+                );
+
+
+                del.addEventListener(
+                    "click",
+                    event => {
+
+                        event.stopPropagation();
+
+                        deleteFolder(
+                            folder
+                        );
+
+                    }
+                );
 
             }
 
 
-            foldersGrid.appendChild(
+            grid.appendChild(
                 card
             );
 
@@ -686,8 +793,8 @@ function renderFolders() {
     );
 
 
-    applyGrid(
-        foldersGrid,
+    applyLayout(
+        grid,
         foldersPerRow,
         folderLayout
     );
@@ -696,80 +803,66 @@ function renderFolders() {
 
 
 /* =====================================================
-   ORDENAÇÃO DAS PASTAS
+   ORDENAÇÃO PASTAS
 ===================================================== */
 
 function sortFolders(
     list
 ) {
 
-    if (
-        folderSort === "newest"
+    switch (
+        folderSort
     ) {
 
-        return list.sort(
-            (a, b) =>
-                new Date(b.created_at) -
-                new Date(a.created_at)
-        );
+        case "oldest":
+
+            return list.sort(
+                (a, b) =>
+                    new Date(a.created_at) -
+                    new Date(b.created_at)
+            );
+
+
+        case "most-links":
+
+            return list.sort(
+                (a, b) =>
+                    (b.linkCount || 0) -
+                    (a.linkCount || 0)
+            );
+
+
+        case "least-links":
+
+            return list.sort(
+                (a, b) =>
+                    (a.linkCount || 0) -
+                    (b.linkCount || 0)
+            );
+
+
+        case "color":
+
+            return list.sort(
+                (a, b) =>
+                    String(a.color)
+                        .localeCompare(
+                            String(b.color)
+                        )
+            );
+
+
+        case "newest":
+
+        default:
+
+            return list.sort(
+                (a, b) =>
+                    new Date(b.created_at) -
+                    new Date(a.created_at)
+            );
 
     }
-
-
-    if (
-        folderSort === "oldest"
-    ) {
-
-        return list.sort(
-            (a, b) =>
-                new Date(a.created_at) -
-                new Date(b.created_at)
-        );
-
-    }
-
-
-    if (
-        folderSort === "most-links"
-    ) {
-
-        return list.sort(
-            (a, b) =>
-                (b.linkCount || 0) -
-                (a.linkCount || 0)
-        );
-
-    }
-
-
-    if (
-        folderSort === "least-links"
-    ) {
-
-        return list.sort(
-            (a, b) =>
-                (a.linkCount || 0) -
-                (b.linkCount || 0)
-        );
-
-    }
-
-
-    if (
-        folderSort === "color"
-    ) {
-
-        return list.sort(
-            (a, b) =>
-                a.color.localeCompare(
-                    b.color
-                )
-        );
-
-    }
-
-
-    return list;
 
 }
 
@@ -800,20 +893,22 @@ async function openFolder(
         folderId;
 
 
-    document
-        .getElementById(
-            "folderTitle"
-        )
-        .textContent =
-            `📁 ${folder.name}`;
+    document.getElementById(
+        "folderTitle"
+    ).textContent =
+        `📁 ${folder.name}`;
 
 
-    homePage.classList.add(
+    document.getElementById(
+        "homePage"
+    ).classList.add(
         "hidden"
     );
 
 
-    folderPage.classList.remove(
+    document.getElementById(
+        "folderPage"
+    ).classList.remove(
         "hidden"
     );
 
@@ -833,15 +928,18 @@ async function loadLinks(
     folderId
 ) {
 
+    const grid =
+        document.getElementById(
+            "linksGrid"
+        );
+
+
     showLoading(
-        linksGrid
+        grid
     );
 
 
-    const {
-        data,
-        error
-    } =
+    const result =
         await supabaseClient
             .from("links")
             .select("*")
@@ -857,15 +955,14 @@ async function loadLinks(
             );
 
 
-    if (error) {
+    if (result.error) {
 
         console.error(
-            "Erro ao carregar links:",
-            error
+            result.error
         );
 
         showError(
-            linksGrid,
+            grid,
             "Erro ao carregar os links."
         );
 
@@ -875,7 +972,7 @@ async function loadLinks(
 
 
     currentLinks =
-        data || [];
+        result.data || [];
 
 
     renderLinks(
@@ -885,13 +982,23 @@ async function loadLinks(
 }
 
 
+/* =====================================================
+   RENDER LINKS
+===================================================== */
+
 function renderLinks(
     links
 ) {
 
+    const grid =
+        document.getElementById(
+            "linksGrid"
+        );
+
+
     if (!links.length) {
 
-        linksGrid.innerHTML =
+        grid.innerHTML =
             emptyHTML(
                 "🔗",
                 "Nenhum link",
@@ -903,15 +1010,13 @@ function renderLinks(
     }
 
 
-    let list =
-        [...links];
+    const list =
+        sortLinks(
+            [...links]
+        );
 
 
-    list =
-        sortLinks(list);
-
-
-    linksGrid.innerHTML = "";
+    grid.innerHTML = "";
 
 
     list.forEach(
@@ -928,40 +1033,38 @@ function renderLinks(
 
 
             card.style.background =
-                makeGradient(
+                createGradient(
                     link.color
                 );
 
 
-            const actions =
-                adminMode
-                    ? `
+            card.innerHTML = `
+
+                ${
+                    adminMode
+                        ? `
 
                         <div class="card-actions">
 
                             <button
-                                class="card-action"
-                                data-action="edit"
+                                class="card-action edit-link"
+                                type="button"
                             >
                                 ✏️
                             </button>
 
                             <button
-                                class="card-action delete"
-                                data-action="delete"
+                                class="card-action delete delete-link"
+                                type="button"
                             >
                                 🗑️
                             </button>
 
                         </div>
 
-                    `
-                    : "";
-
-
-            card.innerHTML = `
-
-                ${actions}
+                        `
+                        : ""
+                }
 
                 <div>
 
@@ -1000,7 +1103,7 @@ function renderLinks(
 
                 card
                     .querySelector(
-                        '[data-action="edit"]'
+                        ".edit-link"
                     )
                     .addEventListener(
                         "click",
@@ -1018,7 +1121,7 @@ function renderLinks(
 
                 card
                     .querySelector(
-                        '[data-action="delete"]'
+                        ".delete-link"
                     )
                     .addEventListener(
                         "click",
@@ -1036,7 +1139,7 @@ function renderLinks(
             }
 
 
-            linksGrid.appendChild(
+            grid.appendChild(
                 card
             );
 
@@ -1044,8 +1147,8 @@ function renderLinks(
     );
 
 
-    applyGrid(
-        linksGrid,
+    applyLayout(
+        grid,
         linksPerRow,
         linkLayout
     );
@@ -1061,82 +1164,65 @@ function sortLinks(
     list
 ) {
 
-    if (
-        linkSort === "newest"
+    switch (
+        linkSort
     ) {
 
-        return list.sort(
-            (a, b) =>
-                new Date(b.created_at) -
-                new Date(a.created_at)
-        );
+        case "oldest":
+
+            return list.sort(
+                (a, b) =>
+                    new Date(a.created_at) -
+                    new Date(b.created_at)
+            );
+
+
+        case "color":
+
+            return list.sort(
+                (a, b) =>
+                    String(a.color)
+                        .localeCompare(
+                            String(b.color)
+                        )
+            );
+
+
+        case "newest":
+
+        default:
+
+            return list.sort(
+                (a, b) =>
+                    new Date(b.created_at) -
+                    new Date(a.created_at)
+            );
 
     }
-
-
-    if (
-        linkSort === "oldest"
-    ) {
-
-        return list.sort(
-            (a, b) =>
-                new Date(a.created_at) -
-                new Date(b.created_at)
-        );
-
-    }
-
-
-    if (
-        linkSort === "color"
-    ) {
-
-        return list.sort(
-            (a, b) =>
-                a.color.localeCompare(
-                    b.color
-                )
-        );
-
-    }
-
-
-    return list;
 
 }
 
 
 /* =====================================================
-   GRID / LISTA
+   LAYOUT
 ===================================================== */
 
-function applyGrid(
-    element,
+function applyLayout(
+    grid,
     columns,
     layout
 ) {
 
-    element.style.setProperty(
+    grid.style.setProperty(
         "--columns",
         columns
     );
 
 
-    if (
+    grid.classList.toggle(
+        "vertical",
         layout === "vertical"
-    ) {
-
-        element.classList.add(
-            "vertical"
-        );
-
-    } else {
-
-        element.classList.remove(
-            "vertical"
-        );
-
-    }
+    );
 
 }
 
@@ -1149,18 +1235,18 @@ function toggleFolderLayout() {
             : "grid";
 
 
-    document
-        .getElementById(
-            "layoutToggle"
-        )
-        .textContent =
-            folderLayout === "grid"
-                ? "⬜ Grade"
-                : "☰ Lista";
+    document.getElementById(
+        "layoutToggle"
+    ).textContent =
+        folderLayout === "grid"
+            ? "⬜ Grade"
+            : "☰ Lista";
 
 
-    applyGrid(
-        foldersGrid,
+    applyLayout(
+        document.getElementById(
+            "foldersGrid"
+        ),
         foldersPerRow,
         folderLayout
     );
@@ -1176,18 +1262,18 @@ function toggleLinkLayout() {
             : "grid";
 
 
-    document
-        .getElementById(
-            "linkLayoutToggle"
-        )
-        .textContent =
-            linkLayout === "grid"
-                ? "⬜ Grade"
-                : "☰ Lista";
+    document.getElementById(
+        "linkLayoutToggle"
+    ).textContent =
+        linkLayout === "grid"
+            ? "⬜ Grade"
+            : "☰ Lista";
 
 
-    applyGrid(
-        linksGrid,
+    applyLayout(
+        document.getElementById(
+            "linksGrid"
+        ),
         linksPerRow,
         linkLayout
     );
@@ -1201,37 +1287,33 @@ function toggleLinkLayout() {
 
 function openAdminModal() {
 
-    document
-        .getElementById(
+    const modal =
+        document.getElementById(
             "adminModal"
-        )
-        .classList.remove(
-            "hidden"
         );
 
 
-    document
-        .getElementById(
-            "adminPassword"
-        )
-        .value = "";
+    modal.classList.remove(
+        "hidden"
+    );
 
 
-    document
-        .getElementById(
-            "adminError"
-        )
-        .textContent = "";
+    document.getElementById(
+        "adminPassword"
+    ).value = "";
+
+
+    document.getElementById(
+        "adminError"
+    ).textContent = "";
 
 
     setTimeout(
         () => {
 
-            document
-                .getElementById(
-                    "adminPassword"
-                )
-                .focus();
+            document.getElementById(
+                "adminPassword"
+            ).focus();
 
         },
         50
@@ -1243,69 +1325,55 @@ function openAdminModal() {
 async function loginAdmin() {
 
     const password =
-        document
-            .getElementById(
-                "adminPassword"
-            )
-            .value
-            .trim();
+        document.getElementById(
+            "adminPassword"
+        ).value.trim();
 
 
     if (!password) {
 
-        document
-            .getElementById(
-                "adminError"
-            )
-            .textContent =
-                "Digite a senha.";
+        document.getElementById(
+            "adminError"
+        ).textContent =
+            "Digite a senha.";
 
         return;
 
     }
 
 
-    const {
-        data,
-        error
-    } =
+    const result =
         await supabaseClient.rpc(
             "check_admin_password",
             {
-                p_password:
-                    password
+                p_password: password
             }
         );
 
 
-    if (error) {
+    if (result.error) {
 
         console.error(
-            "Erro no login:",
-            error
+            "Erro administrativo:",
+            result.error
         );
 
-
-        document
-            .getElementById(
-                "adminError"
-            )
-            .textContent =
-                "Erro ao verificar a senha.";
+        document.getElementById(
+            "adminError"
+        ).textContent =
+            "Erro ao verificar a senha.";
 
         return;
 
     }
 
 
-    if (data !== true) {
+    if (result.data !== true) {
 
-        document
-            .getElementById(
-                "adminError"
-            )
-            .textContent =
-                "Senha incorreta.";
+        document.getElementById(
+            "adminError"
+        ).textContent =
+            "Senha incorreta.";
 
         return;
 
@@ -1315,7 +1383,7 @@ async function loginAdmin() {
     adminMode =
         true;
 
-    currentAdminPassword =
+    adminPassword =
         password;
 
 
@@ -1325,6 +1393,16 @@ async function loginAdmin() {
 
 
     updateAdminInterface();
+
+    renderFolders();
+
+    if (currentFolderId) {
+
+        renderLinks(
+            currentLinks
+        );
+
+    }
 
 
     showToast(
@@ -1339,12 +1417,13 @@ function logoutAdmin() {
     adminMode =
         false;
 
-    currentAdminPassword =
+    adminPassword =
         "";
 
 
     updateAdminInterface();
 
+    renderFolders();
 
     if (currentFolderId) {
 
@@ -1352,15 +1431,11 @@ function logoutAdmin() {
             currentLinks
         );
 
-    } else {
-
-        renderFolders();
-
     }
 
 
     showToast(
-        "Você saiu do modo administrador."
+        "Modo administrador encerrado."
     );
 
 }
@@ -1368,49 +1443,42 @@ function logoutAdmin() {
 
 function updateAdminInterface() {
 
-    if (adminMode) {
+    document
+        .querySelectorAll(
+            ".admin-only"
+        )
+        .forEach(
+            element => {
 
-        adminButton.classList.add(
-            "hidden"
+                element.classList.toggle(
+                    "hidden",
+                    !adminMode
+                );
+
+            }
         );
 
-        logoutButton.classList.remove(
-            "hidden"
-        );
 
-        themeButton.classList.remove(
-            "hidden"
-        );
+    document.getElementById(
+        "adminButton"
+    ).classList.toggle(
+        "hidden",
+        adminMode
+    );
 
-        themeButtonLinks.classList.remove(
-            "hidden"
-        );
 
-    } else {
-
-        adminButton.classList.remove(
-            "hidden"
-        );
-
-        logoutButton.classList.add(
-            "hidden"
-        );
-
-        themeButton.classList.add(
-            "hidden"
-        );
-
-        themeButtonLinks.classList.add(
-            "hidden"
-        );
-
-    }
+    document.getElementById(
+        "logoutButton"
+    ).classList.toggle(
+        "hidden",
+        !adminMode
+    );
 
 }
 
 
 /* =====================================================
-   PASTA — MODAL
+   MODAL PASTA
 ===================================================== */
 
 function openFolderModal(
@@ -1423,53 +1491,43 @@ function openFolderModal(
             : null;
 
 
-    document
-        .getElementById(
-            "folderModalTitle"
-        )
-        .textContent =
-            folder
-                ? "✏️ Editar pasta"
-                : "📁 Nova pasta";
+    document.getElementById(
+        "folderModalTitle"
+    ).textContent =
+        folder
+            ? "✏️ Editar pasta"
+            : "📁 Nova pasta";
 
 
-    document
-        .getElementById(
-            "folderName"
-        )
-        .value =
-            folder
-                ? folder.name
-                : "";
+    document.getElementById(
+        "folderName"
+    ).value =
+        folder
+            ? folder.name
+            : "";
 
 
-    document
-        .getElementById(
-            "folderColor"
-        )
-        .value =
-            folder
-                ? folder.color
-                : "#4f7cff";
+    document.getElementById(
+        "folderColor"
+    ).value =
+        folder
+            ? folder.color
+            : "#4f7cff";
 
 
-    document
-        .getElementById(
-            "folderColorValue"
-        )
-        .textContent =
-            folder
-                ? folder.color
-                : "#4f7cff";
+    document.getElementById(
+        "folderColorValue"
+    ).textContent =
+        folder
+            ? folder.color
+            : "#4f7cff";
 
 
-    document
-        .getElementById(
-            "folderModal"
-        )
-        .classList.remove(
-            "hidden"
-        );
+    document.getElementById(
+        "folderModal"
+    ).classList.remove(
+        "hidden"
+    );
 
 }
 
@@ -1477,26 +1535,21 @@ function openFolderModal(
 async function saveFolder() {
 
     const name =
-        document
-            .getElementById(
-                "folderName"
-            )
-            .value
-            .trim();
+        document.getElementById(
+            "folderName"
+        ).value.trim();
 
 
     const color =
-        document
-            .getElementById(
-                "folderColor"
-            )
-            .value;
+        document.getElementById(
+            "folderColor"
+        ).value;
 
 
     if (!name) {
 
         showToast(
-            "Digite um nome."
+            "Digite um nome para a pasta."
         );
 
         return;
@@ -1521,7 +1574,7 @@ async function saveFolder() {
                 "admin_update_folder",
                 {
                     p_password:
-                        currentAdminPassword,
+                        adminPassword,
 
                     p_folder_id:
                         editingFolderId,
@@ -1554,7 +1607,7 @@ async function saveFolder() {
         );
 
         showToast(
-            "Erro ao salvar pasta."
+            "Erro ao salvar a pasta."
         );
 
         return;
@@ -1581,6 +1634,10 @@ async function saveFolder() {
 }
 
 
+/* =====================================================
+   EXCLUIR PASTA
+===================================================== */
+
 async function deleteFolder(
     folder
 ) {
@@ -1592,25 +1649,25 @@ async function deleteFolder(
     }
 
 
-    if (
-        !confirm(
+    const confirmed =
+        confirm(
             `Excluir "${folder.name}" e todos os links dentro dela?`
-        )
-    ) {
+        );
+
+
+    if (!confirmed) {
 
         return;
 
     }
 
 
-    const {
-        error
-    } =
+    const result =
         await supabaseClient.rpc(
             "admin_delete_folder",
             {
                 p_password:
-                    currentAdminPassword,
+                    adminPassword,
 
                 p_folder_id:
                     folder.id
@@ -1618,14 +1675,14 @@ async function deleteFolder(
         );
 
 
-    if (error) {
+    if (result.error) {
 
         console.error(
-            error
+            result.error
         );
 
         showToast(
-            "Erro ao excluir pasta."
+            "Erro ao excluir a pasta."
         );
 
         return;
@@ -1635,7 +1692,6 @@ async function deleteFolder(
 
     await loadFolders();
 
-
     showToast(
         "Pasta excluída."
     );
@@ -1644,7 +1700,7 @@ async function deleteFolder(
 
 
 /* =====================================================
-   LINK — MODAL
+   MODAL LINK
 ===================================================== */
 
 function openLinkModal(
@@ -1657,93 +1713,77 @@ function openLinkModal(
             : null;
 
 
-    document
-        .getElementById(
-            "linkModalTitle"
-        )
-        .textContent =
-            link
-                ? "✏️ Editar link"
-                : "🔗 Novo link";
+    document.getElementById(
+        "linkModalTitle"
+    ).textContent =
+        link
+            ? "✏️ Editar link"
+            : "🔗 Novo link";
 
 
-    document
-        .getElementById(
-            "linkName"
-        )
-        .value =
-            link
-                ? link.name
-                : "";
+    document.getElementById(
+        "linkName"
+    ).value =
+        link
+            ? link.name
+            : "";
 
 
-    document
-        .getElementById(
-            "linkUrl"
-        )
-        .value =
-            link
-                ? link.url
-                : "";
+    document.getElementById(
+        "linkUrl"
+    ).value =
+        link
+            ? link.url
+            : "";
 
 
-    document
-        .getElementById(
-            "linkColor"
-        )
-        .value =
-            link
-                ? link.color
-                : "#00a884";
+    document.getElementById(
+        "linkColor"
+    ).value =
+        link
+            ? link.color
+            : "#00a884";
 
 
-    document
-        .getElementById(
-            "linkColorValue"
-        )
-        .textContent =
-            link
-                ? link.color
-                : "#00a884";
+    document.getElementById(
+        "linkColorValue"
+    ).textContent =
+        link
+            ? link.color
+            : "#00a884";
 
 
-    document
-        .getElementById(
-            "linkModal"
-        )
-        .classList.remove(
-            "hidden"
-        );
+    document.getElementById(
+        "linkModal"
+    ).classList.remove(
+        "hidden"
+    );
 
 }
 
 
+/* =====================================================
+   SALVAR LINK
+===================================================== */
+
 async function saveLink() {
 
     const name =
-        document
-            .getElementById(
-                "linkName"
-            )
-            .value
-            .trim();
+        document.getElementById(
+            "linkName"
+        ).value.trim();
 
 
     let url =
-        document
-            .getElementById(
-                "linkUrl"
-            )
-            .value
-            .trim();
+        document.getElementById(
+            "linkUrl"
+        ).value.trim();
 
 
     const color =
-        document
-            .getElementById(
-                "linkColor"
-            )
-            .value;
+        document.getElementById(
+            "linkColor"
+        ).value;
 
 
     if (
@@ -1752,7 +1792,7 @@ async function saveLink() {
     ) {
 
         showToast(
-            "Preencha nome e link."
+            "Preencha o nome e o link."
         );
 
         return;
@@ -1770,8 +1810,7 @@ async function saveLink() {
     ) {
 
         url =
-            "https://" +
-            url;
+            "https://" + url;
 
     }
 
@@ -1793,7 +1832,7 @@ async function saveLink() {
                 "admin_update_link",
                 {
                     p_password:
-                        currentAdminPassword,
+                        adminPassword,
 
                     p_link_id:
                         editingLinkId,
@@ -1833,7 +1872,7 @@ async function saveLink() {
         );
 
         showToast(
-            "Erro ao salvar link."
+            "Erro ao salvar o link."
         );
 
         return;
@@ -1865,6 +1904,10 @@ async function saveLink() {
 }
 
 
+/* =====================================================
+   EXCLUIR LINK
+===================================================== */
+
 async function deleteLink(
     link
 ) {
@@ -1876,25 +1919,25 @@ async function deleteLink(
     }
 
 
-    if (
-        !confirm(
+    const confirmed =
+        confirm(
             `Excluir "${link.name}"?`
-        )
-    ) {
+        );
+
+
+    if (!confirmed) {
 
         return;
 
     }
 
 
-    const {
-        error
-    } =
+    const result =
         await supabaseClient.rpc(
             "admin_delete_link",
             {
                 p_password:
-                    currentAdminPassword,
+                    adminPassword,
 
                 p_link_id:
                     link.id
@@ -1902,14 +1945,14 @@ async function deleteLink(
         );
 
 
-    if (error) {
+    if (result.error) {
 
         console.error(
-            error
+            result.error
         );
 
         showToast(
-            "Erro ao excluir link."
+            "Erro ao excluir o link."
         );
 
         return;
@@ -1936,17 +1979,9 @@ async function deleteLink(
    TEMA
 ===================================================== */
 
-let currentTheme = {
-    ...defaultTheme
-};
-
-
 async function loadTheme() {
 
-    const {
-        data,
-        error
-    } =
+    const result =
         await supabaseClient
             .from("site_settings")
             .select("value")
@@ -1958,8 +1993,8 @@ async function loadTheme() {
 
 
     if (
-        error ||
-        !data
+        result.error ||
+        !result.data
     ) {
 
         applyTheme(
@@ -1973,34 +2008,51 @@ async function loadTheme() {
 
     try {
 
-        currentTheme =
-            {
-                ...defaultTheme,
-                ...JSON.parse(
-                    data.value
-                )
-            };
+        const savedTheme =
+            JSON.parse(
+                result.data.value
+            );
 
-    } catch {
 
-        currentTheme =
-            {
-                ...defaultTheme
-            };
+        currentTheme = {
+            ...defaultTheme,
+            ...savedTheme
+        };
+
+
+        applyTheme(
+            currentTheme
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Tema inválido:",
+            error
+        );
+
+        applyTheme(
+            defaultTheme
+        );
 
     }
-
-
-    applyTheme(
-        currentTheme
-    );
 
 }
 
 
+/* =====================================================
+   APLICAR TEMA
+===================================================== */
+
 function applyTheme(
     theme
 ) {
+
+    currentTheme = {
+        ...defaultTheme,
+        ...theme
+    };
+
 
     const root =
         document.documentElement;
@@ -2008,54 +2060,51 @@ function applyTheme(
 
     root.style.setProperty(
         "--background",
-        theme.background
+        currentTheme.background
     );
 
 
     root.style.setProperty(
         "--topbar",
-        theme.topbar
+        currentTheme.topbar
     );
 
 
     root.style.setProperty(
         "--text",
-        theme.text
+        currentTheme.text
     );
 
 
     root.style.setProperty(
         "--heading",
-        theme.heading
+        currentTheme.heading
     );
 
 
     root.style.setProperty(
         "--border",
-        theme.border
+        currentTheme.border
     );
 
 
     root.style.setProperty(
         "--button",
-        theme.button
+        currentTheme.button
     );
 
 
     root.style.setProperty(
         "--logo",
-        theme.logo
+        currentTheme.logo
     );
-
-
-    currentTheme =
-        {
-            ...defaultTheme,
-            ...theme
-        };
 
 }
 
+
+/* =====================================================
+   ABRIR TEMA
+===================================================== */
 
 function openThemeModal() {
 
@@ -2066,72 +2115,60 @@ function openThemeModal() {
     }
 
 
-    document
-        .getElementById(
-            "themeBackground"
-        )
-        .value =
-            currentTheme.background;
+    document.getElementById(
+        "themeBackground"
+    ).value =
+        currentTheme.background;
 
 
-    document
-        .getElementById(
-            "themeTopbar"
-        )
-        .value =
-            currentTheme.topbar;
+    document.getElementById(
+        "themeTopbar"
+    ).value =
+        currentTheme.topbar;
 
 
-    document
-        .getElementById(
-            "themeText"
-        )
-        .value =
-            currentTheme.text;
+    document.getElementById(
+        "themeText"
+    ).value =
+        currentTheme.text;
 
 
-    document
-        .getElementById(
-            "themeHeading"
-        )
-        .value =
-            currentTheme.heading;
+    document.getElementById(
+        "themeHeading"
+    ).value =
+        currentTheme.heading;
 
 
-    document
-        .getElementById(
-            "themeBorder"
-        )
-        .value =
-            currentTheme.border;
+    document.getElementById(
+        "themeBorder"
+    ).value =
+        currentTheme.border;
 
 
-    document
-        .getElementById(
-            "themeButtonColor"
-        )
-        .value =
-            currentTheme.button;
+    document.getElementById(
+        "themeButtonColor"
+    ).value =
+        currentTheme.button;
 
 
-    document
-        .getElementById(
-            "themeLogo"
-        )
-        .value =
-            currentTheme.logo;
+    document.getElementById(
+        "themeLogo"
+    ).value =
+        currentTheme.logo;
 
 
-    document
-        .getElementById(
-            "themeModal"
-        )
-        .classList.remove(
-            "hidden"
-        );
+    document.getElementById(
+        "themeModal"
+    ).classList.remove(
+        "hidden"
+    );
 
 }
 
+
+/* =====================================================
+   SALVAR TEMA NA NUVEM
+===================================================== */
 
 async function saveTheme() {
 
@@ -2145,65 +2182,49 @@ async function saveTheme() {
     const theme = {
 
         background:
-            document
-                .getElementById(
-                    "themeBackground"
-                )
-                .value,
+            document.getElementById(
+                "themeBackground"
+            ).value,
 
         topbar:
-            document
-                .getElementById(
-                    "themeTopbar"
-                )
-                .value,
+            document.getElementById(
+                "themeTopbar"
+            ).value,
 
         text:
-            document
-                .getElementById(
-                    "themeText"
-                )
-                .value,
+            document.getElementById(
+                "themeText"
+            ).value,
 
         heading:
-            document
-                .getElementById(
-                    "themeHeading"
-                )
-                .value,
+            document.getElementById(
+                "themeHeading"
+            ).value,
 
         border:
-            document
-                .getElementById(
-                    "themeBorder"
-                )
-                .value,
+            document.getElementById(
+                "themeBorder"
+            ).value,
 
         button:
-            document
-                .getElementById(
-                    "themeButtonColor"
-                )
-                .value,
+            document.getElementById(
+                "themeButtonColor"
+            ).value,
 
         logo:
-            document
-                .getElementById(
-                    "themeLogo"
-                )
-                .value
+            document.getElementById(
+                "themeLogo"
+            ).value
 
     };
 
 
-    const {
-        error
-    } =
+    const result =
         await supabaseClient.rpc(
             "admin_save_theme",
             {
                 p_password:
-                    currentAdminPassword,
+                    adminPassword,
 
                 p_theme:
                     JSON.stringify(theme)
@@ -2211,14 +2232,14 @@ async function saveTheme() {
         );
 
 
-    if (error) {
+    if (result.error) {
 
         console.error(
-            error
+            result.error
         );
 
         showToast(
-            "Erro ao salvar tema."
+            "Erro ao salvar o tema."
         );
 
         return;
@@ -2237,121 +2258,175 @@ async function saveTheme() {
 
 
     showToast(
-        "Tema atualizado para todos."
+        "Tema salvo na nuvem!"
     );
 
 }
 
 
+/* =====================================================
+   RESTAURAR TEMA
+===================================================== */
+
 function resetTheme() {
 
-    document
-        .getElementById(
-            "themeBackground"
-        )
-        .value =
-            defaultTheme.background;
+    document.getElementById(
+        "themeBackground"
+    ).value =
+        defaultTheme.background;
 
 
-    document
-        .getElementById(
-            "themeTopbar"
-        )
-        .value =
-            defaultTheme.topbar;
+    document.getElementById(
+        "themeTopbar"
+    ).value =
+        defaultTheme.topbar;
 
 
-    document
-        .getElementById(
-            "themeText"
-        )
-        .value =
-            defaultTheme.text;
+    document.getElementById(
+        "themeText"
+    ).value =
+        defaultTheme.text;
 
 
-    document
-        .getElementById(
-            "themeHeading"
-        )
-        .value =
-            defaultTheme.heading;
+    document.getElementById(
+        "themeHeading"
+    ).value =
+        defaultTheme.heading;
 
 
-    document
-        .getElementById(
-            "themeBorder"
-        )
-        .value =
-            defaultTheme.border;
+    document.getElementById(
+        "themeBorder"
+    ).value =
+        defaultTheme.border;
 
 
-    document
-        .getElementById(
-            "themeButtonColor"
-        )
-        .value =
-            defaultTheme.button;
+    document.getElementById(
+        "themeButtonColor"
+    ).value =
+        defaultTheme.button;
 
 
-    document
-        .getElementById(
-            "themeLogo"
-        )
-        .value =
-            defaultTheme.logo;
+    document.getElementById(
+        "themeLogo"
+    ).value =
+        defaultTheme.logo;
 
 }
 
 
 /* =====================================================
-   UTILITÁRIOS
+   NAVEGAÇÃO
 ===================================================== */
-
-function togglePanel(
-    id
-) {
-
-    document
-        .getElementById(id)
-        .classList.toggle(
-            "hidden"
-        );
-
-}
-
 
 function showHome() {
 
     currentFolderId =
         null;
 
-    folderPage.classList.add(
+
+    document.getElementById(
+        "folderPage"
+    ).classList.add(
         "hidden"
     );
 
-    homePage.classList.remove(
+
+    document.getElementById(
+        "homePage"
+    ).classList.remove(
         "hidden"
     );
 
-    renderFolders();
+
+    loadFolders();
 
 }
 
+
+/* =====================================================
+   MODAIS
+===================================================== */
 
 function closeModal(
     id
 ) {
 
-    document
-        .getElementById(id)
-        .classList.add(
-            "hidden"
-        );
+    const modal =
+        document.getElementById(id);
+
+
+    if (!modal) {
+
+        return;
+
+    }
+
+
+    modal.classList.add(
+        "hidden"
+    );
 
 }
 
 
-function makeGradient(
+function toggleElement(
+    id
+) {
+
+    const element =
+        document.getElementById(id);
+
+
+    if (!element) {
+
+        return;
+
+    }
+
+
+    element.classList.toggle(
+        "hidden"
+    );
+
+}
+
+
+/* =====================================================
+   BOTÃO ATIVO
+===================================================== */
+
+function setActiveButton(
+    selector,
+    selected
+) {
+
+    document
+        .querySelectorAll(
+            selector
+        )
+        .forEach(
+            button => {
+
+                button.classList.remove(
+                    "active"
+                );
+
+            }
+        );
+
+
+    selected.classList.add(
+        "active"
+    );
+
+}
+
+
+/* =====================================================
+   CORES DOS CARDS
+===================================================== */
+
+function createGradient(
     color
 ) {
 
@@ -2359,42 +2434,52 @@ function makeGradient(
         linear-gradient(
             135deg,
             ${color},
-            ${darken(color, 55)}
+            ${darkenColor(color, 55)}
         )
     `;
 
 }
 
 
-function darken(
+function darkenColor(
     hex,
     amount
 ) {
 
-    hex =
-        hex.replace(
-            "#",
-            ""
-        );
+    let clean =
+        String(hex)
+            .replace(
+                "#",
+                ""
+            );
+
+
+    if (
+        clean.length !== 6
+    ) {
+
+        return "#333333";
+
+    }
 
 
     let r =
         parseInt(
-            hex.substring(0, 2),
+            clean.substring(0, 2),
             16
         );
 
 
     let g =
         parseInt(
-            hex.substring(2, 4),
+            clean.substring(2, 4),
             16
         );
 
 
     let b =
         parseInt(
-            hex.substring(4, 6),
+            clean.substring(4, 6),
             16
         );
 
@@ -2430,6 +2515,10 @@ function darken(
 }
 
 
+/* =====================================================
+   HTML SEGURO
+===================================================== */
+
 function escapeHTML(
     value
 ) {
@@ -2439,42 +2528,19 @@ function escapeHTML(
             "div"
         );
 
+
     div.textContent =
-        value;
+        value ?? "";
+
 
     return div.innerHTML;
 
 }
 
 
-function emptyHTML(
-    icon,
-    title,
-    description
-) {
-
-    return `
-
-        <div class="empty">
-
-            <div class="empty-icon">
-                ${icon}
-            </div>
-
-            <h2>
-                ${title}
-            </h2>
-
-            <p>
-                ${description}
-            </p>
-
-        </div>
-
-    `;
-
-}
-
+/* =====================================================
+   ESTADOS
+===================================================== */
 
 function showLoading(
     element
@@ -2527,7 +2593,40 @@ function showError(
 }
 
 
-let toastTimeout;
+function emptyHTML(
+    icon,
+    title,
+    description
+) {
+
+    return `
+
+        <div class="empty">
+
+            <div class="empty-icon">
+                ${icon}
+            </div>
+
+            <h2>
+                ${escapeHTML(title)}
+            </h2>
+
+            <p>
+                ${escapeHTML(description)}
+            </p>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+let toastTimer = null;
 
 
 function showToast(
@@ -2550,11 +2649,11 @@ function showToast(
 
 
     clearTimeout(
-        toastTimeout
+        toastTimer
     );
 
 
-    toastTimeout =
+    toastTimer =
         setTimeout(
             () => {
 
