@@ -19,7 +19,7 @@
     <header class="topbar">
 
         <div class="topbar-left">
-            <div id="siteLogo" class="site-logo">🔗</div>
+            <div id="siteLogo" class="site-logo"><span id="siteLogoText">🔗</span><img id="siteLogoImage" class="site-logo-image hidden" alt="Logo"></div>
         </div>
 
         <div class="topbar-center">
@@ -568,76 +568,79 @@
             <h2>🎨 Personalizar página</h2>
 
             <p>
-                Essas cores serão aplicadas para todos os visitantes.
+                Escolha um tema pronto ou personalize. As alterações salvas ficam na nuvem e valem para todos os visitantes.
             </p>
 
+            <h3 class="theme-subtitle">Temas prontos</h3>
+            <div id="themePresets" class="theme-presets"></div>
 
-            <label>
-                Fundo
-                <input id="themeBackground" type="color">
+            <h3 class="theme-subtitle">Gradiente</h3>
+            <label class="theme-check-row">
+                <span>Usar gradiente no fundo</span>
+                <input id="themeGradientEnabled" type="checkbox">
             </label>
 
+            <div id="gradientControls" class="gradient-controls hidden">
+                <label>
+                    Cor inicial
+                    <input id="themeGradientStart" type="color">
+                </label>
+                <label>
+                    Cor final
+                    <input id="themeGradientEnd" type="color">
+                </label>
+                <label>
+                    Direção
+                    <select id="themeGradientDirection">
+                        <option value="90deg">→ Horizontal</option>
+                        <option value="180deg">↓ Vertical</option>
+                        <option value="135deg">↘ Diagonal</option>
+                        <option value="45deg">↗ Diagonal</option>
+                        <option value="radial">◉ Radial</option>
+                    </select>
+                </label>
+            </div>
 
-            <label>
-                Topo
-                <input id="themeTopbar" type="color">
+            <h3 class="theme-subtitle">Cores</h3>
+
+            <div class="theme-color-grid">
+                <label>Fundo <input id="themeBackground" type="color"></label>
+                <label>Topo <input id="themeTopbar" type="color"></label>
+                <label>Texto <input id="themeText" type="color"></label>
+                <label>Títulos <input id="themeHeading" type="color"></label>
+                <label>Bordas <input id="themeBorder" type="color"></label>
+                <label>Botões <input id="themeButtonColor" type="color"></label>
+                <label>Logo <input id="themeLogo" type="color"></label>
+            </div>
+
+            <h3 class="theme-subtitle">Espessura e texto</h3>
+
+            <label class="range-label">
+                <span>Espessura das linhas: <strong id="themeBorderWidthValue">2 px</strong></span>
+                <input id="themeBorderWidth" type="range" min="1" max="6" step="1" value="2">
             </label>
 
-
-            <label>
-                Texto
-                <input id="themeText" type="color">
+            <label class="range-label">
+                <span>Tamanho das letras: <strong id="themeFontScaleValue">100%</strong></span>
+                <input id="themeFontScale" type="range" min="0.8" max="1.4" step="0.05" value="1">
             </label>
 
-
-            <label>
-                Títulos
-                <input id="themeHeading" type="color">
+            <h3 class="theme-subtitle">Logo</h3>
+            <label class="file-label">
+                Imagem da logo
+                <input id="themeLogoImage" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+                <span id="themeLogoImageName">Nenhuma imagem selecionada</span>
             </label>
-
-
-            <label>
-                Bordas
-                <input id="themeBorder" type="color">
-            </label>
-
-
-            <label>
-                Botões
-                <input id="themeButtonColor" type="color">
-            </label>
-
-
-            <label>
-                Logo
-                <input id="themeLogo" type="color">
-            </label>
-
+            <button id="removeLogoImageButton" class="secondary-button" type="button">Remover imagem da logo</button>
 
             <div class="theme-actions">
-
-                <button
-                    id="resetThemeButton"
-                    class="secondary-button"
-                    type="button"
-                >
-                    Restaurar
-                </button>
-
-                <button
-                    id="saveThemeButton"
-                    class="primary-button"
-                    type="button"
-                >
-                    Salvar tema
-                </button>
-
+                <button id="resetThemeButton" class="secondary-button" type="button">Restaurar</button>
+                <button id="saveThemeButton" class="primary-button" type="button">Salvar tema</button>
             </div>
 
         </div>
 
     </div>
-
 
     <!-- TOAST -->
 
