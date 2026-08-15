@@ -1,11 +1,4 @@
 /* =====================================================
-   LINKHUB
-   SCRIPT PRINCIPAL
-   SUPORTE A PASTAS DENTRO DE PASTAS
-===================================================== */
-
-
-/* =====================================================
    CONFIGURAÇÃO SUPABASE
 ===================================================== */
 
@@ -27,32 +20,23 @@ const supabaseClient =
 ===================================================== */
 
 let folders = [];
-
 let currentLinks = [];
-
 let currentFolderId = null;
 
 let adminMode = false;
-
 let adminPassword = "";
 
 let editingFolderId = null;
-
 let editingLinkId = null;
 
 let folderSort = "newest";
-
 let linkSort = "newest";
 
 let folderLayout = "grid";
-
 let linkLayout = "grid";
 
 let foldersPerRow = 4;
-
 let linksPerRow = 4;
-
-let toastTimer = null;
 
 
 /* =====================================================
@@ -62,32 +46,26 @@ let toastTimer = null;
 const defaultTheme = {
 
     background: "#f3f3f3",
-
     topbar: "#ffffff",
 
     text: "#111111",
-
     heading: "#000000",
 
     border: "#000000",
-
     button: "#111111",
-
     logo: "#111111",
 
-    gradientEnabled: false,
+    borderWidth: "2px",
+    fontSize: "16px",
 
-    gradientStart: "#f3f3f3",
+    titleSize: "28px",
+    cardTitleSize: "20px",
+    cardTextSize: "14px",
 
-    gradientEnd: "#ffffff",
+    cardRadius: "12px",
 
-    gradientDirection: "135deg",
-
-    borderWidth: 2,
-
-    fontScale: 1,
-
-    logoImage: ""
+    gradientEnabled: true,
+    gradientDirection: "135deg"
 
 };
 
@@ -105,227 +83,167 @@ const presetThemes = [
 
     {
         name: "Azul Oceano",
-        background: "#eaf4ff",
+        background: "#eef7ff",
         topbar: "#ffffff",
-        text: "#12304a",
-        heading: "#062b49",
-        border: "#0b4f71",
-        button: "#087ea4",
-        logo: "#064663",
-        gradientEnabled: true,
-        gradientStart: "#eaf4ff",
-        gradientEnd: "#d9f3ff",
-        gradientDirection: "135deg"
+        text: "#102a43",
+        heading: "#063970",
+        border: "#063970",
+        button: "#1261a0",
+        logo: "#063970"
     },
 
     {
         name: "Verde Natureza",
-        background: "#edf8f0",
+        background: "#effaf3",
         topbar: "#ffffff",
-        text: "#183b2a",
-        heading: "#0c4025",
-        border: "#176b3a",
-        button: "#159957",
-        logo: "#0d6335",
-        gradientEnabled: true,
-        gradientStart: "#edf8f0",
-        gradientEnd: "#d8f5df",
-        gradientDirection: "135deg"
+        text: "#173b28",
+        heading: "#14532d",
+        border: "#14532d",
+        button: "#15803d",
+        logo: "#14532d"
     },
 
     {
         name: "Roxo",
-        background: "#f4efff",
+        background: "#f6f0ff",
         topbar: "#ffffff",
-        text: "#35254d",
-        heading: "#28103f",
-        border: "#6b3fa0",
-        button: "#7b4bb7",
-        logo: "#542681",
-        gradientEnabled: true,
-        gradientStart: "#f4efff",
-        gradientEnd: "#e5d8ff",
-        gradientDirection: "135deg"
+        text: "#32145f",
+        heading: "#581c87",
+        border: "#581c87",
+        button: "#7e22ce",
+        logo: "#581c87"
     },
 
     {
         name: "Amarelo",
         background: "#fffbea",
         topbar: "#ffffff",
-        text: "#4d420d",
-        heading: "#3e3300",
-        border: "#b58b00",
-        button: "#e2b400",
-        logo: "#876b00",
-        gradientEnabled: true,
-        gradientStart: "#fffbea",
-        gradientEnd: "#fff1a8",
-        gradientDirection: "135deg"
+        text: "#493600",
+        heading: "#854d0e",
+        border: "#854d0e",
+        button: "#ca8a04",
+        logo: "#854d0e"
     },
 
     {
         name: "Azul + Verde",
-        background: "#eefaf8",
+        background: "#effcfb",
         topbar: "#ffffff",
-        text: "#173f45",
-        heading: "#0c3035",
-        border: "#197d78",
-        button: "#168f83",
-        logo: "#146b75",
-        gradientEnabled: true,
-        gradientStart: "#eaf6ff",
-        gradientEnd: "#dff8eb",
-        gradientDirection: "135deg"
-    },
-
-    {
-        name: "Turquesa",
-        background: "#e9fbfb",
-        topbar: "#ffffff",
-        text: "#164449",
-        heading: "#08363b",
-        border: "#178b91",
-        button: "#16a6a8",
-        logo: "#087278",
-        gradientEnabled: true,
-        gradientStart: "#e9fbfb",
-        gradientEnd: "#c9f4f0",
-        gradientDirection: "135deg"
-    },
-
-    {
-        name: "Azul Royal",
-        background: "#eef2ff",
-        topbar: "#ffffff",
-        text: "#172653",
-        heading: "#091743",
-        border: "#3154b8",
-        button: "#4267d5",
-        logo: "#2946a0",
-        gradientEnabled: true,
-        gradientStart: "#eef2ff",
-        gradientEnd: "#dbe3ff",
-        gradientDirection: "135deg"
-    },
-
-    {
-        name: "Verde Esmeralda",
-        background: "#edf9f3",
-        topbar: "#ffffff",
-        text: "#164132",
-        heading: "#092d20",
-        border: "#18875b",
-        button: "#18a66d",
-        logo: "#08754a",
-        gradientEnabled: true,
-        gradientStart: "#edf9f3",
-        gradientEnd: "#d2f3e0",
-        gradientDirection: "135deg"
-    },
-
-    {
-        name: "Roxo + Azul",
-        background: "#f1f1ff",
-        topbar: "#ffffff",
-        text: "#28284d",
-        heading: "#171742",
-        border: "#5853ad",
-        button: "#625dd2",
-        logo: "#44419a",
-        gradientEnabled: true,
-        gradientStart: "#f1f1ff",
-        gradientEnd: "#e1ddff",
-        gradientDirection: "135deg"
-    },
-
-    {
-        name: "Laranja",
-        background: "#fff4eb",
-        topbar: "#ffffff",
-        text: "#4d2c16",
-        heading: "#3b1d0a",
-        border: "#c46b24",
-        button: "#df7b29",
-        logo: "#a74f0c",
-        gradientEnabled: true,
-        gradientStart: "#fff4eb",
-        gradientEnd: "#ffe0c2",
-        gradientDirection: "135deg"
+        text: "#123c45",
+        heading: "#075985",
+        border: "#075985",
+        button: "#059669",
+        logo: "#075985"
     },
 
     {
         name: "Rosa",
-        background: "#fff0f6",
+        background: "#fff1f5",
         topbar: "#ffffff",
-        text: "#4c2335",
-        heading: "#3b1025",
-        border: "#b84f78",
-        button: "#d76591",
-        logo: "#9e3c67",
-        gradientEnabled: true,
-        gradientStart: "#fff0f6",
-        gradientEnd: "#ffdce9",
-        gradientDirection: "135deg"
+        text: "#4a1728",
+        heading: "#9d174d",
+        border: "#9d174d",
+        button: "#db2777",
+        logo: "#9d174d"
     },
 
     {
         name: "Vermelho",
-        background: "#fff0f0",
+        background: "#fff4f4",
         topbar: "#ffffff",
-        text: "#4b2020",
-        heading: "#390d0d",
-        border: "#b23b3b",
-        button: "#d34d4d",
-        logo: "#9c2929",
-        gradientEnabled: true,
-        gradientStart: "#fff0f0",
-        gradientEnd: "#ffdada",
-        gradientDirection: "135deg"
+        text: "#4c1515",
+        heading: "#991b1b",
+        border: "#991b1b",
+        button: "#dc2626",
+        logo: "#991b1b"
+    },
+
+    {
+        name: "Laranja",
+        background: "#fff7ed",
+        topbar: "#ffffff",
+        text: "#4a2508",
+        heading: "#9a3412",
+        border: "#9a3412",
+        button: "#ea580c",
+        logo: "#9a3412"
     },
 
     {
         name: "Ciano",
-        background: "#eafaff",
+        background: "#ecfeff",
         topbar: "#ffffff",
-        text: "#153c47",
-        heading: "#092d38",
-        border: "#1985a0",
-        button: "#20a8c5",
-        logo: "#087891",
-        gradientEnabled: true,
-        gradientStart: "#eafaff",
-        gradientEnd: "#d2f4ff",
-        gradientDirection: "135deg"
+        text: "#164e63",
+        heading: "#155e75",
+        border: "#155e75",
+        button: "#0891b2",
+        logo: "#155e75"
+    },
+
+    {
+        name: "Índigo",
+        background: "#eef2ff",
+        topbar: "#ffffff",
+        text: "#1e1b4b",
+        heading: "#3730a3",
+        border: "#3730a3",
+        button: "#4f46e5",
+        logo: "#3730a3"
+    },
+
+    {
+        name: "Turquesa",
+        background: "#ecfdf5",
+        topbar: "#ffffff",
+        text: "#134e4a",
+        heading: "#115e59",
+        border: "#115e59",
+        button: "#0d9488",
+        logo: "#115e59"
     },
 
     {
         name: "Lavanda",
-        background: "#f6f1ff",
+        background: "#faf5ff",
         topbar: "#ffffff",
-        text: "#3d3150",
-        heading: "#281a3c",
-        border: "#8665b5",
-        button: "#9876cc",
-        logo: "#69479c",
-        gradientEnabled: true,
-        gradientStart: "#f6f1ff",
-        gradientEnd: "#e7dcff",
-        gradientDirection: "135deg"
+        text: "#3b0764",
+        heading: "#6b21a8",
+        border: "#6b21a8",
+        button: "#9333ea",
+        logo: "#6b21a8"
+    },
+
+    {
+        name: "Verde Limão",
+        background: "#f7fee7",
+        topbar: "#ffffff",
+        text: "#365314",
+        heading: "#3f6212",
+        border: "#3f6212",
+        button: "#65a30d",
+        logo: "#3f6212"
+    },
+
+    {
+        name: "Dourado",
+        background: "#fffbeb",
+        topbar: "#ffffff",
+        text: "#451a03",
+        heading: "#92400e",
+        border: "#92400e",
+        button: "#d97706",
+        logo: "#92400e"
     },
 
     {
         name: "Escuro",
-        background: "#17191c",
-        topbar: "#22252a",
-        text: "#eeeeee",
+        background: "#171717",
+        topbar: "#262626",
+        text: "#f5f5f5",
         heading: "#ffffff",
         border: "#ffffff",
-        button: "#3d7cff",
-        logo: "#6aa0ff",
-        gradientEnabled: true,
-        gradientStart: "#17191c",
-        gradientEnd: "#252b38",
-        gradientDirection: "135deg"
+        button: "#404040",
+        logo: "#ffffff"
     }
 
 ];
@@ -337,23 +255,58 @@ const presetThemes = [
 
 document.addEventListener(
     "DOMContentLoaded",
-    initializeSite
+    () => {
+
+        setupAllEvents();
+
+        initializeSite();
+
+    }
 );
 
 
 async function initializeSite() {
 
-    setupEvents();
+    try {
 
-    renderThemePresets();
+        await loadTheme();
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao carregar tema:",
+            error
+        );
+
+        applyTheme(
+            defaultTheme
+        );
+
+    }
+
+
+    try {
+
+        await loadFolders();
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao carregar pastas:",
+            error
+        );
+
+        showError(
+            document.getElementById(
+                "foldersGrid"
+            ),
+            "Não foi possível carregar as pastas."
+        );
+
+    }
+
 
     updateAdminInterface();
-
-    applyTheme(defaultTheme);
-
-    await loadTheme();
-
-    await loadFolders();
 
 }
 
@@ -362,7 +315,7 @@ async function initializeSite() {
    EVENTOS
 ===================================================== */
 
-function setupEvents() {
+function setupAllEvents() {
 
     /* ADMIN */
 
@@ -397,9 +350,9 @@ function setupEvents() {
             "keydown",
             event => {
 
-                if (event.key === "Enter") {
-
-                    event.preventDefault();
+                if (
+                    event.key === "Enter"
+                ) {
 
                     loginAdmin();
 
@@ -411,9 +364,7 @@ function setupEvents() {
     }
 
 
-    /* =================================================
-       PASTAS
-    ================================================= */
+    /* PASTA */
 
     on(
         "addFolderButton",
@@ -428,9 +379,7 @@ function setupEvents() {
     );
 
 
-    /* =================================================
-       LINKS
-    ================================================= */
+    /* LINKS */
 
     on(
         "addLinkButton",
@@ -445,81 +394,106 @@ function setupEvents() {
     );
 
 
-    /* =================================================
-       VOLTAR
-    ================================================= */
+    /* VOLTAR */
 
     on(
         "backButton",
         "click",
-        handleBackNavigation
+        showHome
     );
 
 
-    /* =================================================
-       ORGANIZAÇÃO
-    ================================================= */
+    /* ORGANIZAÇÃO */
 
     on(
         "organizeButton",
         "click",
-        () => toggleElement("organizePanel")
+        () => {
+
+            toggleElement(
+                "organizePanel"
+            );
+
+        }
     );
+
 
     on(
         "organizeLinksButton",
         "click",
-        () => toggleElement("organizeLinksPanel")
+        () => {
+
+            toggleElement(
+                "organizeLinksPanel"
+            );
+
+        }
     );
 
 
-    document
-        .querySelectorAll(".sort-option")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                () => {
-
-                    folderSort =
-                        button.dataset.sort || "newest";
-
-                    setActiveButton(
-                        ".sort-option",
-                        button
-                    );
-
-                    renderFolders();
-
-                }
-            );
-
-        });
-
+    /* ORDENAÇÃO DAS PASTAS */
 
     document
-        .querySelectorAll(".link-sort-option")
-        .forEach(button => {
+        .querySelectorAll(
+            ".sort-option"
+        )
+        .forEach(
+            button => {
 
-            button.addEventListener(
-                "click",
-                () => {
+                button.addEventListener(
+                    "click",
+                    () => {
 
-                    linkSort =
-                        button.dataset.sort || "newest";
+                        folderSort =
+                            button.dataset.sort;
 
-                    setActiveButton(
-                        ".link-sort-option",
-                        button
-                    );
+                        setActiveButton(
+                            ".sort-option",
+                            button
+                        );
 
-                    renderCurrentFolderContents();
+                        renderFolders();
 
-                }
-            );
+                    }
+                );
 
-        });
+            }
+        );
 
+
+    /* ORDENAÇÃO DOS LINKS */
+
+    document
+        .querySelectorAll(
+            ".link-sort-option"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        linkSort =
+                            button.dataset.sort;
+
+                        setActiveButton(
+                            ".link-sort-option",
+                            button
+                        );
+
+                        renderLinks(
+                            currentLinks
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+
+    /* QUANTIDADE POR LINHA */
 
     on(
         "itemsPerRow",
@@ -527,7 +501,9 @@ function setupEvents() {
         event => {
 
             foldersPerRow =
-                Number(event.target.value) || 4;
+                Number(
+                    event.target.value
+                );
 
             applyLayout(
                 document.getElementById(
@@ -547,7 +523,9 @@ function setupEvents() {
         event => {
 
             linksPerRow =
-                Number(event.target.value) || 4;
+                Number(
+                    event.target.value
+                );
 
             applyLayout(
                 document.getElementById(
@@ -560,6 +538,8 @@ function setupEvents() {
         }
     );
 
+
+    /* LAYOUT */
 
     on(
         "layoutToggle",
@@ -574,9 +554,7 @@ function setupEvents() {
     );
 
 
-    /* =================================================
-       TEMA
-    ================================================= */
+    /* TEMA */
 
     on(
         "themeButton",
@@ -603,14 +581,24 @@ function setupEvents() {
     );
 
 
-    /* =================================================
-       CORES DOS CARDS
-    ================================================= */
+    /* LOGO */
+
+    on(
+        "logoImageInput",
+        "change",
+        handleLogoImage
+    );
+
+
+    /* CORES DOS CARDS */
 
     on(
         "folderColor",
         "input",
         event => {
+
+            const value =
+                event.target.value;
 
             const output =
                 document.getElementById(
@@ -620,7 +608,7 @@ function setupEvents() {
             if (output) {
 
                 output.textContent =
-                    event.target.value;
+                    value;
 
             }
 
@@ -633,6 +621,9 @@ function setupEvents() {
         "input",
         event => {
 
+            const value =
+                event.target.value;
+
             const output =
                 document.getElementById(
                     "linkColorValue"
@@ -641,7 +632,7 @@ function setupEvents() {
             if (output) {
 
                 output.textContent =
-                    event.target.value;
+                    value;
 
             }
 
@@ -650,169 +641,67 @@ function setupEvents() {
 
 
     /* =================================================
-       LOGO
-    ================================================= */
-
-    on(
-        "themeLogoImage",
-        "change",
-        handleLogoUpload
-    );
-
-    on(
-        "removeLogoImageButton",
-        "click",
-        removeLogoImage
-    );
-
-
-    /* =================================================
-       GRADIENTE
-    ================================================= */
-
-    on(
-        "themeGradientEnabled",
-        "change",
-        updateThemePreview
-    );
-
-    on(
-        "themeGradientStart",
-        "input",
-        updateThemePreview
-    );
-
-    on(
-        "themeGradientEnd",
-        "input",
-        updateThemePreview
-    );
-
-    on(
-        "themeGradientDirection",
-        "change",
-        updateThemePreview
-    );
-
-
-    /* =================================================
-       CORES DO TEMA
-    ================================================= */
-
-    [
-        "themeBackground",
-        "themeTopbar",
-        "themeText",
-        "themeHeading",
-        "themeBorder",
-        "themeButtonColor",
-        "themeLogo"
-    ].forEach(id => {
-
-        on(
-            id,
-            "input",
-            updateThemePreview
-        );
-
-    });
-
-
-    /* =================================================
-       TAMANHOS
-    ================================================= */
-
-    on(
-        "themeBorderWidth",
-        "input",
-        updateThemePreview
-    );
-
-    on(
-        "themeFontScale",
-        "input",
-        updateThemePreview
-    );
-
-
-    /* =================================================
-       MODAIS
+       X DOS MODAIS
     ================================================= */
 
     document
-        .querySelectorAll(".modal-close")
-        .forEach(button => {
+        .querySelectorAll(
+            ".modal-close"
+        )
+        .forEach(
+            button => {
 
-            button.addEventListener(
-                "click",
-                event => {
+                button.addEventListener(
+                    "click",
+                    event => {
 
-                    event.preventDefault();
+                        event.preventDefault();
 
-                    event.stopPropagation();
+                        event.stopPropagation();
 
-                    closeModal(
-                        button.dataset.close
-                    );
+                        const modalId =
+                            button.dataset.close;
 
-                }
-            );
-
-        });
-
-
-    document
-        .querySelectorAll(".modal-overlay")
-        .forEach(overlay => {
-
-            overlay.addEventListener(
-                "click",
-                event => {
-
-                    if (
-                        event.target === overlay
-                    ) {
-
-                        overlay.classList.add(
-                            "hidden"
+                        closeModal(
+                            modalId
                         );
 
                     }
-
-                }
-            );
-
-        });
-
-
-    /* =================================================
-       ESC
-    ================================================= */
-
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if (event.key !== "Escape") {
-
-                return;
+                );
 
             }
+        );
 
-            document
-                .querySelectorAll(
-                    ".modal-overlay:not(.hidden)"
-                )
-                .forEach(modal => {
 
-                    modal.classList.add(
-                        "hidden"
-                    );
+    /* CLICAR FORA DO MODAL */
 
-                });
+    document
+        .querySelectorAll(
+            ".modal-overlay"
+        )
+        .forEach(
+            overlay => {
 
-        }
-    );
+                overlay.addEventListener(
+                    "click",
+                    event => {
+
+                        if (
+                            event.target ===
+                            overlay
+                        ) {
+
+                            overlay.classList.add(
+                                "hidden"
+                            );
+
+                        }
+
+                    }
+                );
+
+            }
+        );
 
 }
 
@@ -830,11 +719,17 @@ function on(
     const element =
         document.getElementById(id);
 
+
     if (!element) {
+
+        console.warn(
+            `Elemento #${id} não encontrado.`
+        );
 
         return;
 
     }
+
 
     element.addEventListener(
         event,
@@ -845,7 +740,72 @@ function on(
 
 
 /* =====================================================
-   CARREGAR PASTAS
+   LOGO
+===================================================== */
+
+function handleLogoImage(
+    event
+) {
+
+    if (!adminMode) {
+
+        return;
+
+    }
+
+
+    const file =
+        event.target.files?.[0];
+
+
+    if (!file) {
+
+        return;
+
+    }
+
+
+    if (
+        !file.type.startsWith(
+            "image/"
+        )
+    ) {
+
+        showToast(
+            "Selecione uma imagem válida."
+        );
+
+        return;
+
+    }
+
+
+    const reader =
+        new FileReader();
+
+
+    reader.onload =
+        () => {
+
+            currentTheme.logoImage =
+                reader.result;
+
+            applyTheme(
+                currentTheme
+            );
+
+        };
+
+
+    reader.readAsDataURL(
+        file
+    );
+
+}
+
+
+/* =====================================================
+   PASTAS
 ===================================================== */
 
 async function loadFolders() {
@@ -855,13 +815,17 @@ async function loadFolders() {
             "foldersGrid"
         );
 
+
     if (!grid) {
 
         return;
 
     }
 
-    showLoading(grid);
+
+    showLoading(
+        grid
+    );
 
 
     const result =
@@ -871,7 +835,7 @@ async function loadFolders() {
             .order(
                 "created_at",
                 {
-                    ascending: false
+                    ascending: true
                 }
             );
 
@@ -879,13 +843,12 @@ async function loadFolders() {
     if (result.error) {
 
         console.error(
-            "Erro ao carregar pastas:",
             result.error
         );
 
         showError(
             grid,
-            "Não foi possível carregar as pastas."
+            "Erro ao carregar as pastas."
         );
 
         return;
@@ -894,203 +857,47 @@ async function loadFolders() {
 
 
     folders =
-        Array.isArray(result.data)
-            ? result.data
-            : [];
+        result.data || [];
 
 
     await loadFolderLinkCounts();
 
-
-    /*
-       Se a pasta atual deixou de existir,
-       retorna para um estado seguro.
-    */
-
-    if (
-        currentFolderId !== null &&
-        !folders.some(
-            folder =>
-                String(folder.id) ===
-                String(currentFolderId)
-        )
-    ) {
-
-        currentFolderId = null;
-
-        showHomeInterfaceOnly();
-
-    }
-
-
     renderFolders();
-
-
-    /*
-       Se já estamos dentro de uma pasta,
-       atualiza também seus conteúdos.
-    */
-
-    if (currentFolderId !== null) {
-
-        renderCurrentFolderContents();
-
-    }
 
 }
 
 
 /* =====================================================
-   CONTAGEM DE LINKS E SUBPASTAS
+   CONTAGEM DE LINKS
 ===================================================== */
 
 async function loadFolderLinkCounts() {
 
-    folders.forEach(
-        folder => {
+    for (
+        const folder
+        of folders
+    ) {
 
-            folder.linkCount = 0;
-
-            folder.childCount = 0;
-
-        }
-    );
-
-
-    if (!folders.length) {
-
-        return;
-
-    }
-
-
-    const result =
-        await supabaseClient
-            .from("links")
-            .select(
-                "id, folder_id"
-            );
-
-
-    if (result.error) {
-
-        console.error(
-            "Erro ao contar links:",
-            result.error
-        );
-
-    } else {
-
-        const counts = {};
-
-
-        (result.data || []).forEach(
-            link => {
-
-                if (
-                    link.folder_id === null ||
-                    link.folder_id === undefined
-                ) {
-
-                    return;
-
-                }
-
-
-                const key =
-                    String(link.folder_id);
-
-
-                counts[key] =
-                    (
-                        counts[key] || 0
-                    ) + 1;
-
-            }
-        );
-
-
-        folders.forEach(
-            folder => {
-
-                folder.linkCount =
-                    counts[String(folder.id)] || 0;
-
-            }
-        );
-
-    }
-
-
-    /*
-       Conta quantas pastas estão
-       diretamente dentro de cada pasta.
-    */
-
-    const childCounts = {};
-
-
-    folders.forEach(
-        folder => {
-
-            if (
-                folder.parent_id !== null &&
-                folder.parent_id !== undefined
-            ) {
-
-                const key =
-                    String(folder.parent_id);
-
-
-                childCounts[key] =
-                    (
-                        childCounts[key] || 0
-                    ) + 1;
-
-            }
-
-        }
-    );
-
-
-    folders.forEach(
-        folder => {
-
-            folder.childCount =
-                childCounts[String(folder.id)] || 0;
-
-        }
-    );
-
-}
-
-
-/* =====================================================
-   PASTAS VISÍVEIS
-===================================================== */
-
-function getVisibleFolders() {
-
-    return folders.filter(
-        folder => {
-
-            if (currentFolderId === null) {
-
-                return (
-                    folder.parent_id === null ||
-                    folder.parent_id === undefined
+        const result =
+            await supabaseClient
+                .from("links")
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                )
+                .eq(
+                    "folder_id",
+                    folder.id
                 );
 
-            }
 
+        folder.linkCount =
+            result.count || 0;
 
-            return (
-                String(folder.parent_id) ===
-                String(currentFolderId)
-            );
-
-        }
-    );
+    }
 
 }
 
@@ -1114,31 +921,15 @@ function renderFolders() {
     }
 
 
-    const visibleFolders =
-        getVisibleFolders();
-
-
-    if (!visibleFolders.length) {
+    if (
+        !folders.length
+    ) {
 
         grid.innerHTML =
             emptyHTML(
-                currentFolderId === null
-                    ? "📁"
-                    : "📂",
-                currentFolderId === null
-                    ? "Nenhuma pasta"
-                    : "Nenhuma subpasta",
-                currentFolderId === null
-                    ? (
-                        adminMode
-                            ? "Crie sua primeira pasta."
-                            : "Nenhuma pasta foi criada ainda."
-                    )
-                    : (
-                        adminMode
-                            ? "Crie uma pasta dentro desta pasta."
-                            : "Esta pasta não possui subpastas."
-                    )
+                "📁",
+                "Nenhuma pasta",
+                "Crie a primeira pasta para começar."
             );
 
         return;
@@ -1148,7 +939,7 @@ function renderFolders() {
 
     const list =
         sortFolders(
-            [...visibleFolders]
+            [...folders]
         );
 
 
@@ -1158,10 +949,139 @@ function renderFolders() {
     list.forEach(
         folder => {
 
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "card";
+
+
+            card.style.background =
+                createGradient(
+                    folder.color
+                );
+
+
+            card.innerHTML = `
+
+                ${
+                    adminMode
+                        ? `
+
+                        <div class="card-actions">
+
+                            <button
+                                class="card-action edit-folder"
+                                type="button"
+                                title="Editar"
+                            >
+                                ✏️
+                            </button>
+
+                            <button
+                                class="card-action delete delete-folder"
+                                type="button"
+                                title="Excluir"
+                            >
+                                🗑️
+                            </button>
+
+                        </div>
+
+                        `
+                        : ""
+                }
+
+                <div>
+
+                    <div class="card-name">
+                        📁 ${escapeHTML(folder.name)}
+                    </div>
+
+                    <div class="card-description">
+
+                        ${
+                            folder.linkCount || 0
+                        }
+
+                        ${
+                            (folder.linkCount || 0) === 1
+                                ? "link"
+                                : "links"
+                        }
+
+                    </div>
+
+                </div>
+
+                <div class="card-description">
+                    Clique para entrar
+                </div>
+
+            `;
+
+
+            card.addEventListener(
+                "click",
+                () => {
+
+                    openFolder(
+                        folder.id
+                    );
+
+                }
+            );
+
+
+            if (adminMode) {
+
+                const edit =
+                    card.querySelector(
+                        ".edit-folder"
+                    );
+
+
+                const del =
+                    card.querySelector(
+                        ".delete-folder"
+                    );
+
+
+                edit.addEventListener(
+                    "click",
+                    event => {
+
+                        event.stopPropagation();
+
+                        openFolderModal(
+                            folder
+                        );
+
+                    }
+                );
+
+
+                del.addEventListener(
+                    "click",
+                    event => {
+
+                        event.stopPropagation();
+
+                        deleteFolder(
+                            folder
+                        );
+
+                    }
+                );
+
+            }
+
+
             grid.appendChild(
-                createFolderCard(
-                    folder
-                )
+                card
             );
 
         }
@@ -1176,182 +1096,17 @@ function renderFolders() {
 
 }
 
-
 /* =====================================================
-   CRIAR CARD DE PASTA
+   ORDENAÇÃO DAS PASTAS
 ===================================================== */
 
-function createFolderCard(
-    folder
+function sortFolders(
+    list
 ) {
 
-    const card =
-        document.createElement(
-            "div"
-        );
-
-
-    card.className =
-        "card";
-
-
-    card.style.background =
-        createCardGradient(
-            folder.color
-        );
-
-
-    const childText =
-        Number(folder.childCount) === 1
-            ? "pasta"
-            : "pastas";
-
-
-    const linkText =
-        Number(folder.linkCount) === 1
-            ? "link"
-            : "links";
-
-
-    card.innerHTML = `
-
-        ${
-            adminMode
-                ? `
-                <div class="card-actions">
-
-                    <button
-                        class="card-action edit-folder"
-                        type="button"
-                        title="Editar"
-                        aria-label="Editar pasta"
-                    >
-                        ✏️
-                    </button>
-
-                    <button
-                        class="card-action delete delete-folder"
-                        type="button"
-                        title="Excluir"
-                        aria-label="Excluir pasta"
-                    >
-                        🗑️
-                    </button>
-
-                </div>
-                `
-                : ""
-        }
-
-        <div>
-
-            <div class="card-name">
-                📁 ${escapeHTML(folder.name)}
-            </div>
-
-            <div class="card-description">
-
-                ${Number(folder.childCount) || 0}
-
-                ${childText}
-
-                •
-
-                ${Number(folder.linkCount) || 0}
-
-                ${linkText}
-
-            </div>
-
-        </div>
-
-        <div class="card-description">
-            Clique para entrar
-        </div>
-
-    `;
-
-
-    card.addEventListener(
-        "click",
-        () => {
-
-            openFolder(
-                folder.id
-            );
-
-        }
-    );
-
-
-    if (adminMode) {
-
-        const edit =
-            card.querySelector(
-                ".edit-folder"
-            );
-
-
-        const del =
-            card.querySelector(
-                ".delete-folder"
-            );
-
-
-        if (edit) {
-
-            edit.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    event.stopPropagation();
-
-                    openFolderModal(
-                        folder
-                    );
-
-                }
-            );
-
-        }
-
-
-        if (del) {
-
-            del.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    event.stopPropagation();
-
-                    deleteFolder(
-                        folder
-                    );
-
-                }
-            );
-
-        }
-
-    }
-
-
-    return card;
-
-}
-
-
-/* =====================================================
-   ORDENAÇÃO DE PASTAS
-===================================================== */
-
-function sortFolders(list) {
-
-    switch (folderSort) {
+    switch (
+        folderSort
+    ) {
 
         case "oldest":
 
@@ -1366,12 +1121,8 @@ function sortFolders(list) {
 
             return list.sort(
                 (a, b) =>
-                    (
-                        Number(b.linkCount) || 0
-                    ) -
-                    (
-                        Number(a.linkCount) || 0
-                    )
+                    (b.linkCount || 0) -
+                    (a.linkCount || 0)
             );
 
 
@@ -1379,12 +1130,8 @@ function sortFolders(list) {
 
             return list.sort(
                 (a, b) =>
-                    (
-                        Number(a.linkCount) || 0
-                    ) -
-                    (
-                        Number(b.linkCount) || 0
-                    )
+                    (a.linkCount || 0) -
+                    (b.linkCount || 0)
             );
 
 
@@ -1392,9 +1139,9 @@ function sortFolders(list) {
 
             return list.sort(
                 (a, b) =>
-                    String(a.color || "")
+                    String(a.color)
                         .localeCompare(
-                            String(b.color || "")
+                            String(b.color)
                         )
             );
 
@@ -1425,8 +1172,7 @@ async function openFolder(
     const folder =
         folders.find(
             item =>
-                String(item.id) ===
-                String(folderId)
+                item.id === folderId
         );
 
 
@@ -1438,193 +1184,46 @@ async function openFolder(
 
 
     currentFolderId =
-        folder.id;
+        folderId;
 
 
-    const title =
+    const folderTitle =
         document.getElementById(
             "folderTitle"
         );
 
 
-    if (title) {
+    if (folderTitle) {
 
-        title.textContent =
+        folderTitle.textContent =
             `📁 ${folder.name}`;
 
     }
 
 
-    const homePage =
-        document.getElementById(
-            "homePage"
-        );
+    document.getElementById(
+        "homePage"
+    ).classList.add(
+        "hidden"
+    );
 
 
-    const folderPage =
-        document.getElementById(
-            "folderPage"
-        );
+    document.getElementById(
+        "folderPage"
+    ).classList.remove(
+        "hidden"
+    );
 
-
-    if (homePage) {
-
-        homePage.classList.add(
-            "hidden"
-        );
-
-    }
-
-
-    if (folderPage) {
-
-        folderPage.classList.remove(
-            "hidden"
-        );
-
-    }
-
-
-    updateBackButton();
-
-
-    /*
-       Mostra as subpastas.
-    */
-
-    renderFolders();
-
-
-    /*
-       Carrega os links da pasta.
-    */
 
     await loadLinks(
-        folder.id
+        folderId
     );
 
 }
 
 
 /* =====================================================
-   VOLTAR
-===================================================== */
-
-async function handleBackNavigation() {
-
-    if (currentFolderId === null) {
-
-        await showHome();
-
-        return;
-
-    }
-
-
-    const currentFolder =
-        folders.find(
-            folder =>
-                String(folder.id) ===
-                String(currentFolderId)
-        );
-
-
-    if (!currentFolder) {
-
-        await showHome();
-
-        return;
-
-    }
-
-
-    if (
-        currentFolder.parent_id !== null &&
-        currentFolder.parent_id !== undefined
-    ) {
-
-        await openFolder(
-            currentFolder.parent_id
-        );
-
-        return;
-
-    }
-
-
-    await showHome();
-
-}
-
-
-/* =====================================================
-   ATUALIZAR BOTÃO VOLTAR
-===================================================== */
-
-function updateBackButton() {
-
-    const button =
-        document.getElementById(
-            "backButton"
-        );
-
-
-    if (!button) {
-
-        return;
-
-    }
-
-
-    if (currentFolderId === null) {
-
-        button.textContent =
-            "← Voltar";
-
-        return;
-
-    }
-
-
-    const currentFolder =
-        folders.find(
-            folder =>
-                String(folder.id) ===
-                String(currentFolderId)
-        );
-
-
-    if (
-        currentFolder &&
-        currentFolder.parent_id !== null &&
-        currentFolder.parent_id !== undefined
-    ) {
-
-        const parent =
-            folders.find(
-                folder =>
-                    String(folder.id) ===
-                    String(currentFolder.parent_id)
-            );
-
-
-        button.textContent =
-            parent
-                ? `← ${parent.name}`
-                : "← Voltar";
-
-    } else {
-
-        button.textContent =
-            "← Início";
-
-    }
-
-}
-
-
-/* =====================================================
-   CARREGAR LINKS
+   LINKS
 ===================================================== */
 
 async function loadLinks(
@@ -1644,7 +1243,9 @@ async function loadLinks(
     }
 
 
-    showLoading(grid);
+    showLoading(
+        grid
+    );
 
 
     const result =
@@ -1658,7 +1259,7 @@ async function loadLinks(
             .order(
                 "created_at",
                 {
-                    ascending: false
+                    ascending: true
                 }
             );
 
@@ -1666,13 +1267,12 @@ async function loadLinks(
     if (result.error) {
 
         console.error(
-            "Erro ao carregar links:",
             result.error
         );
 
         showError(
             grid,
-            "Não foi possível carregar os links."
+            "Erro ao carregar os links."
         );
 
         return;
@@ -1681,89 +1281,11 @@ async function loadLinks(
 
 
     currentLinks =
-        Array.isArray(result.data)
-            ? result.data
-            : [];
+        result.data || [];
 
 
-    renderCurrentFolderContents();
-
-}
-
-
-/* =====================================================
-   RENDER CONTEÚDO DA PASTA
-===================================================== */
-
-function renderCurrentFolderContents() {
-
-    if (currentFolderId === null) {
-
-        return;
-
-    }
-
-
-    const grid =
-        document.getElementById(
-            "linksGrid"
-        );
-
-
-    if (!grid) {
-
-        return;
-
-    }
-
-
-    const sortedLinks =
-        sortLinks(
-            [...currentLinks]
-        );
-
-
-    grid.innerHTML = "";
-
-
-    /*
-       As subpastas já são exibidas em foldersGrid.
-       Portanto, aqui mostramos somente os links.
-    */
-
-    sortedLinks.forEach(
-        link => {
-
-            grid.appendChild(
-                createLinkCard(
-                    link
-                )
-            );
-
-        }
-    );
-
-
-    if (!sortedLinks.length) {
-
-        grid.innerHTML =
-            emptyHTML(
-                "🔗",
-                "Nenhum link",
-                adminMode
-                    ? "Adicione um link nesta pasta."
-                    : "Esta pasta não possui links."
-            );
-
-        return;
-
-    }
-
-
-    applyLayout(
-        grid,
-        linksPerRow,
-        linkLayout
+    renderLinks(
+        currentLinks
     );
 
 }
@@ -1790,9 +1312,23 @@ function renderLinks(
     }
 
 
+    if (!links.length) {
+
+        grid.innerHTML =
+            emptyHTML(
+                "🔗",
+                "Nenhum link",
+                "Adicione o primeiro link desta pasta."
+            );
+
+        return;
+
+    }
+
+
     const list =
         sortLinks(
-            [...(links || [])]
+            [...links]
         );
 
 
@@ -1802,28 +1338,143 @@ function renderLinks(
     list.forEach(
         link => {
 
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "card";
+
+
+            card.style.background =
+                createGradient(
+                    link.color
+                );
+
+
+            card.innerHTML = `
+
+                ${
+                    adminMode
+                        ? `
+
+                        <div class="card-actions">
+
+                            <button
+                                class="card-action edit-link"
+                                type="button"
+                                title="Editar"
+                            >
+                                ✏️
+                            </button>
+
+                            <button
+                                class="card-action delete delete-link"
+                                type="button"
+                                title="Excluir"
+                            >
+                                🗑️
+                            </button>
+
+                        </div>
+
+                        `
+                        : ""
+                }
+
+                <div>
+
+                    <div class="card-name">
+                        🔗 ${escapeHTML(link.name)}
+                    </div>
+
+                    <div class="card-description">
+                        ${escapeHTML(link.url)}
+                    </div>
+
+                </div>
+
+                <div class="card-description">
+                    Abrir link ↗
+                </div>
+
+            `;
+
+
+            card.addEventListener(
+                "click",
+                () => {
+
+                    window.open(
+                        link.url,
+                        "_blank",
+                        "noopener,noreferrer"
+                    );
+
+                }
+            );
+
+
+            if (adminMode) {
+
+                const edit =
+                    card.querySelector(
+                        ".edit-link"
+                    );
+
+
+                const del =
+                    card.querySelector(
+                        ".delete-link"
+                    );
+
+
+                if (edit) {
+
+                    edit.addEventListener(
+                        "click",
+                        event => {
+
+                            event.stopPropagation();
+
+                            openLinkModal(
+                                link
+                            );
+
+                        }
+                    );
+
+                }
+
+
+                if (del) {
+
+                    del.addEventListener(
+                        "click",
+                        event => {
+
+                            event.stopPropagation();
+
+                            deleteLink(
+                                link
+                            );
+
+                        }
+                    );
+
+                }
+
+            }
+
+
             grid.appendChild(
-                createLinkCard(
-                    link
-                )
+                card
             );
 
         }
     );
-
-
-    if (!list.length) {
-
-        grid.innerHTML =
-            emptyHTML(
-                "🔗",
-                "Nenhum link",
-                "Não existem links para mostrar."
-            );
-
-        return;
-
-    }
 
 
     applyLayout(
@@ -1836,174 +1487,16 @@ function renderLinks(
 
 
 /* =====================================================
-   CRIAR CARD DE LINK
-===================================================== */
-
-function createLinkCard(
-    link
-) {
-
-    const card =
-        document.createElement(
-            "div"
-        );
-
-
-    card.className =
-        "card";
-
-
-    card.style.background =
-        createCardGradient(
-            link.color
-        );
-
-
-    card.innerHTML = `
-
-        ${
-            adminMode
-                ? `
-                <div class="card-actions">
-
-                    <button
-                        class="card-action edit-link"
-                        type="button"
-                        title="Editar"
-                        aria-label="Editar link"
-                    >
-                        ✏️
-                    </button>
-
-                    <button
-                        class="card-action delete delete-link"
-                        type="button"
-                        title="Excluir"
-                        aria-label="Excluir link"
-                    >
-                        🗑️
-                    </button>
-
-                </div>
-                `
-                : ""
-        }
-
-        <div>
-
-            <div class="card-name">
-                🔗 ${escapeHTML(link.name)}
-            </div>
-
-            <div class="card-description">
-                ${escapeHTML(link.url)}
-            </div>
-
-        </div>
-
-        <div class="card-description">
-            Abrir link ↗
-        </div>
-
-    `;
-
-
-    card.addEventListener(
-        "click",
-        () => {
-
-            const normalized =
-                normalizeURL(
-                    link.url
-                );
-
-
-            if (
-                isValidURL(normalized)
-            ) {
-
-                window.open(
-                    normalized,
-                    "_blank",
-                    "noopener,noreferrer"
-                );
-
-            }
-
-        }
-    );
-
-
-    if (adminMode) {
-
-        const edit =
-            card.querySelector(
-                ".edit-link"
-            );
-
-
-        const del =
-            card.querySelector(
-                ".delete-link"
-            );
-
-
-        if (edit) {
-
-            edit.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    event.stopPropagation();
-
-                    openLinkModal(
-                        link
-                    );
-
-                }
-            );
-
-        }
-
-
-        if (del) {
-
-            del.addEventListener(
-                "click",
-                event => {
-
-                    event.preventDefault();
-
-                    event.stopPropagation();
-
-                    deleteLink(
-                        link
-                    );
-
-                }
-            );
-
-        }
-
-    }
-
-
-    return card;
-
-}
-
-
-/* =====================================================
-   ORDENAÇÃO DOS LINKS
+   ORDENAÇÃO LINKS
 ===================================================== */
 
 function sortLinks(
     list
 ) {
 
-    switch (linkSort) {
+    switch (
+        linkSort
+    ) {
 
         case "oldest":
 
@@ -2018,9 +1511,9 @@ function sortLinks(
 
             return list.sort(
                 (a, b) =>
-                    String(a.color || "")
+                    String(a.color)
                         .localeCompare(
-                            String(b.color || "")
+                            String(b.color)
                         )
             );
 
@@ -2044,6 +1537,19 @@ function sortLinks(
    LAYOUT
 ===================================================== */
 
+/*
+   IMPORTANTE:
+
+   O CSS deve impedir que os cards sejam esticados.
+
+   O JavaScript apenas informa a quantidade
+   desejada de itens por linha através de
+   --columns.
+
+   O CSS será responsável por manter o tamanho
+   natural dos cards e alinhá-los à esquerda.
+*/
+
 function applyLayout(
     grid,
     columns,
@@ -2057,16 +1563,9 @@ function applyLayout(
     }
 
 
-    const safeColumns =
-        Math.max(
-            1,
-            Number(columns) || 1
-        );
-
-
     grid.style.setProperty(
         "--columns",
-        safeColumns
+        columns
     );
 
 
@@ -2075,8 +1574,18 @@ function applyLayout(
         layout === "vertical"
     );
 
+
+    grid.classList.toggle(
+        "fixed-grid",
+        layout === "grid"
+    );
+
 }
 
+
+/* =====================================================
+   ALTERAR LAYOUT DAS PASTAS
+===================================================== */
 
 function toggleFolderLayout() {
 
@@ -2112,6 +1621,10 @@ function toggleFolderLayout() {
 
 }
 
+
+/* =====================================================
+   ALTERAR LAYOUT DOS LINKS
+===================================================== */
 
 function toggleLinkLayout() {
 
@@ -2149,17 +1662,10 @@ function toggleLinkLayout() {
 
 
 /* =====================================================
-   ADMIN — MODAL
+   ADMIN
 ===================================================== */
 
 function openAdminModal() {
-
-    if (adminMode) {
-
-        return;
-
-    }
-
 
     const modal =
         document.getElementById(
@@ -2179,23 +1685,23 @@ function openAdminModal() {
     );
 
 
-    const input =
+    const passwordInput =
         document.getElementById(
             "adminPassword"
         );
+
+
+    if (passwordInput) {
+
+        passwordInput.value = "";
+
+    }
 
 
     const error =
         document.getElementById(
             "adminError"
         );
-
-
-    if (input) {
-
-        input.value = "";
-
-    }
 
 
     if (error) {
@@ -2208,9 +1714,9 @@ function openAdminModal() {
     setTimeout(
         () => {
 
-            if (input) {
+            if (passwordInput) {
 
-                input.focus();
+                passwordInput.focus();
 
             }
 
@@ -2222,7 +1728,7 @@ function openAdminModal() {
 
 
 /* =====================================================
-   ADMIN — LOGIN
+   LOGIN ADMIN
 ===================================================== */
 
 async function loginAdmin() {
@@ -2277,7 +1783,7 @@ async function loginAdmin() {
     if (result.error) {
 
         console.error(
-            "Erro ao verificar senha:",
+            "Erro administrativo:",
             result.error
         );
 
@@ -2323,12 +1829,15 @@ async function loginAdmin() {
 
     updateAdminInterface();
 
+
     renderFolders();
 
 
-    if (currentFolderId !== null) {
+    if (currentFolderId) {
 
-        renderCurrentFolderContents();
+        renderLinks(
+            currentLinks
+        );
 
     }
 
@@ -2341,7 +1850,7 @@ async function loginAdmin() {
 
 
 /* =====================================================
-   ADMIN — SAIR
+   LOGOUT
 ===================================================== */
 
 function logoutAdmin() {
@@ -2354,22 +1863,17 @@ function logoutAdmin() {
         "";
 
 
-    editingFolderId =
-        null;
-
-
-    editingLinkId =
-        null;
-
-
     updateAdminInterface();
+
 
     renderFolders();
 
 
-    if (currentFolderId !== null) {
+    if (currentFolderId) {
 
-        renderCurrentFolderContents();
+        renderLinks(
+            currentLinks
+        );
 
     }
 
@@ -2382,7 +1886,7 @@ function logoutAdmin() {
 
 
 /* =====================================================
-   ADMIN — INTERFACE
+   INTERFACE ADMIN
 ===================================================== */
 
 function updateAdminInterface() {
@@ -2438,23 +1942,12 @@ function updateAdminInterface() {
 
 
 /* =====================================================
-   MODAL DE PASTA
+   MODAL PASTA
 ===================================================== */
 
 function openFolderModal(
     folder = null
 ) {
-
-    if (!adminMode) {
-
-        showToast(
-            "Apenas o administrador pode criar ou editar pastas."
-        );
-
-        return;
-
-    }
-
 
     editingFolderId =
         folder
@@ -2468,10 +1961,30 @@ function openFolderModal(
         );
 
 
+    if (title) {
+
+        title.textContent =
+            folder
+                ? "✏️ Editar pasta"
+                : "📁 Nova pasta";
+
+    }
+
+
     const name =
         document.getElementById(
             "folderName"
         );
+
+
+    if (name) {
+
+        name.value =
+            folder
+                ? folder.name
+                : "";
+
+    }
 
 
     const color =
@@ -2486,41 +1999,16 @@ function openFolderModal(
         );
 
 
-    if (title) {
-
-        title.textContent =
-            folder
-                ? "✏️ Editar pasta"
-                : (
-                    currentFolderId !== null
-                        ? "📁 Nova subpasta"
-                        : "📁 Nova pasta"
-                );
-
-    }
-
-
-    if (name) {
-
-        name.value =
-            folder
-                ? folder.name
-                : "";
-
-    }
-
-
     const selectedColor =
-        folder?.color ||
-        "#4f7cff";
+        folder
+            ? folder.color
+            : "#4f7cff";
 
 
     if (color) {
 
         color.value =
-            normalizeColor(
-                selectedColor
-            );
+            selectedColor;
 
     }
 
@@ -2528,9 +2016,7 @@ function openFolderModal(
     if (colorValue) {
 
         colorValue.textContent =
-            normalizeColor(
-                selectedColor
-            );
+            selectedColor;
 
     }
 
@@ -2558,47 +2044,16 @@ function openFolderModal(
 
 async function saveFolder() {
 
-    if (!adminMode) {
-
-        showToast(
-            "Apenas o administrador pode salvar pastas."
-        );
-
-        return;
-
-    }
-
-
-    const nameElement =
+    const name =
         document.getElementById(
             "folderName"
-        );
-
-
-    const colorElement =
-        document.getElementById(
-            "folderColor"
-        );
-
-
-    if (
-        !nameElement ||
-        !colorElement
-    ) {
-
-        return;
-
-    }
-
-
-    const name =
-        nameElement.value.trim();
+        )?.value.trim();
 
 
     const color =
-        normalizeColor(
-            colorElement.value
-        );
+        document.getElementById(
+            "folderColor"
+        )?.value;
 
 
     if (!name) {
@@ -2615,11 +2070,14 @@ async function saveFolder() {
     let result;
 
 
-    /*
-       Editando uma pasta.
-    */
+    if (editingFolderId) {
 
-    if (editingFolderId !== null) {
+        if (!adminMode) {
+
+            return;
+
+        }
+
 
         result =
             await supabaseClient.rpc(
@@ -2639,28 +2097,14 @@ async function saveFolder() {
                 }
             );
 
-    }
-
-    /*
-       Nova pasta.
-    */
-
-    else {
+    } else {
 
         result =
             await supabaseClient
                 .from("folders")
                 .insert({
-
                     name,
-
-                    color,
-
-                    parent_id:
-                        currentFolderId !== null
-                            ? currentFolderId
-                            : null
-
+                    color
                 });
 
     }
@@ -2669,7 +2113,6 @@ async function saveFolder() {
     if (result.error) {
 
         console.error(
-            "Erro ao salvar pasta:",
             result.error
         );
 
@@ -2694,13 +2137,6 @@ async function saveFolder() {
     await loadFolders();
 
 
-    if (currentFolderId !== null) {
-
-        renderFolders();
-
-    }
-
-
     showToast(
         "Pasta salva."
     );
@@ -2723,41 +2159,9 @@ async function deleteFolder(
     }
 
 
-    if (!folder || folder.id === null) {
-
-        return;
-
-    }
-
-
-    const hasChildren =
-        folders.some(
-            item =>
-                String(item.parent_id) ===
-                String(folder.id)
-        );
-
-
-    let message =
-        `Excluir "${folder.name}"`;
-
-
-    if (hasChildren) {
-
-        message +=
-            " e todas as subpastas dentro dela?";
-
-    } else {
-
-        message +=
-            " e os links dentro dela?";
-
-    }
-
-
     const confirmed =
-        window.confirm(
-            message
+        confirm(
+            `Excluir "${folder.name}" e todos os links dentro dela?`
         );
 
 
@@ -2784,7 +2188,6 @@ async function deleteFolder(
     if (result.error) {
 
         console.error(
-            "Erro ao excluir pasta:",
             result.error
         );
 
@@ -2797,40 +2200,15 @@ async function deleteFolder(
     }
 
 
-    /*
-       Verifica se a pasta atual está
-       dentro da árvore excluída.
-    */
-
-    const deletingCurrentTree =
-        currentFolderId !== null &&
-        isFolderInsideTree(
-            currentFolderId,
-            folder.id
-        );
-
-
-    if (deletingCurrentTree) {
-
-        currentFolderId =
-            null;
-
-        currentLinks =
-            [];
-
-        showHomeInterfaceOnly();
-
-    }
-
-
     await loadFolders();
 
 
-    if (currentFolderId !== null) {
+    if (
+        currentFolderId ===
+        folder.id
+    ) {
 
-        await loadLinks(
-            currentFolderId
-        );
+        showHome();
 
     }
 
@@ -2843,106 +2221,12 @@ async function deleteFolder(
 
 
 /* =====================================================
-   VERIFICAR ÁRVORE DE PASTA
-===================================================== */
-
-function isFolderInsideTree(
-    folderId,
-    rootFolderId
-) {
-
-    let currentId =
-        folderId;
-
-
-    const visited =
-        new Set();
-
-
-    while (
-        currentId !== null &&
-        currentId !== undefined
-    ) {
-
-        const key =
-            String(currentId);
-
-
-        if (visited.has(key)) {
-
-            return false;
-
-        }
-
-
-        visited.add(key);
-
-
-        if (
-            key ===
-            String(rootFolderId)
-        ) {
-
-            return true;
-
-        }
-
-
-        const folder =
-            folders.find(
-                item =>
-                    String(item.id) ===
-                    key
-            );
-
-
-        if (!folder) {
-
-            return false;
-
-        }
-
-
-        currentId =
-            folder.parent_id;
-
-    }
-
-
-    return false;
-
-}
-
-
-/* =====================================================
-   MODAL DE LINK
+   MODAL LINK
 ===================================================== */
 
 function openLinkModal(
     link = null
 ) {
-
-    if (!adminMode) {
-
-        showToast(
-            "Apenas o administrador pode criar ou editar links."
-        );
-
-        return;
-
-    }
-
-
-    if (currentFolderId === null) {
-
-        showToast(
-            "Abra uma pasta primeiro."
-        );
-
-        return;
-
-    }
-
 
     editingLinkId =
         link
@@ -2956,16 +2240,46 @@ function openLinkModal(
         );
 
 
+    if (title) {
+
+        title.textContent =
+            link
+                ? "✏️ Editar link"
+                : "🔗 Novo link";
+
+    }
+
+
     const name =
         document.getElementById(
             "linkName"
         );
 
 
+    if (name) {
+
+        name.value =
+            link
+                ? link.name
+                : "";
+
+    }
+
+
     const url =
         document.getElementById(
             "linkUrl"
         );
+
+
+    if (url) {
+
+        url.value =
+            link
+                ? link.url
+                : "";
+
+    }
 
 
     const color =
@@ -2980,47 +2294,16 @@ function openLinkModal(
         );
 
 
-    if (title) {
-
-        title.textContent =
-            link
-                ? "✏️ Editar link"
-                : "🔗 Novo link";
-
-    }
-
-
-    if (name) {
-
-        name.value =
-            link
-                ? link.name
-                : "";
-
-    }
-
-
-    if (url) {
-
-        url.value =
-            link
-                ? link.url
-                : "";
-
-    }
-
-
     const selectedColor =
-        link?.color ||
-        "#00a884";
+        link
+            ? link.color
+            : "#00a884";
 
 
     if (color) {
 
         color.value =
-            normalizeColor(
-                selectedColor
-            );
+            selectedColor;
 
     }
 
@@ -3028,9 +2311,7 @@ function openLinkModal(
     if (colorValue) {
 
         colorValue.textContent =
-            normalizeColor(
-                selectedColor
-            );
+            selectedColor;
 
     }
 
@@ -3058,72 +2339,28 @@ function openLinkModal(
 
 async function saveLink() {
 
-    if (!adminMode) {
-
-        showToast(
-            "Apenas o administrador pode salvar links."
-        );
-
-        return;
-
-    }
-
-
-    const nameElement =
+    const name =
         document.getElementById(
             "linkName"
-        );
-
-
-    const urlElement =
-        document.getElementById(
-            "linkUrl"
-        );
-
-
-    const colorElement =
-        document.getElementById(
-            "linkColor"
-        );
-
-
-    if (
-        !nameElement ||
-        !urlElement ||
-        !colorElement
-    ) {
-
-        return;
-
-    }
-
-
-    if (currentFolderId === null) {
-
-        showToast(
-            "Abra uma pasta primeiro."
-        );
-
-        return;
-
-    }
-
-
-    const name =
-        nameElement.value.trim();
+        )?.value.trim();
 
 
     let url =
-        urlElement.value.trim();
+        document.getElementById(
+            "linkUrl"
+        )?.value.trim();
 
 
     const color =
-        normalizeColor(
-            colorElement.value
-        );
+        document.getElementById(
+            "linkColor"
+        )?.value;
 
 
-    if (!name || !url) {
+    if (
+        !name ||
+        !url
+    ) {
 
         showToast(
             "Preencha o nome e o link."
@@ -3134,19 +2371,18 @@ async function saveLink() {
     }
 
 
-    url =
-        normalizeURL(
-            url
-        );
+    if (
+        !url.startsWith(
+            "http://"
+        ) &&
+        !url.startsWith(
+            "https://"
+        )
+    ) {
 
-
-    if (!isValidURL(url)) {
-
-        showToast(
-            "Digite um link válido."
-        );
-
-        return;
+        url =
+            "https://" +
+            url;
 
     }
 
@@ -3154,7 +2390,14 @@ async function saveLink() {
     let result;
 
 
-    if (editingLinkId !== null) {
+    if (editingLinkId) {
+
+        if (!adminMode) {
+
+            return;
+
+        }
+
 
         result =
             await supabaseClient.rpc(
@@ -3183,16 +2426,12 @@ async function saveLink() {
             await supabaseClient
                 .from("links")
                 .insert({
-
                     folder_id:
                         currentFolderId,
 
                     name,
-
                     url,
-
                     color
-
                 });
 
     }
@@ -3201,7 +2440,6 @@ async function saveLink() {
     if (result.error) {
 
         console.error(
-            "Erro ao salvar link:",
             result.error
         );
 
@@ -3237,7 +2475,6 @@ async function saveLink() {
 
 }
 
-
 /* =====================================================
    EXCLUIR LINK
 ===================================================== */
@@ -3253,15 +2490,8 @@ async function deleteLink(
     }
 
 
-    if (!link) {
-
-        return;
-
-    }
-
-
     const confirmed =
-        window.confirm(
+        confirm(
             `Excluir "${link.name}"?`
         );
 
@@ -3289,7 +2519,6 @@ async function deleteLink(
     if (result.error) {
 
         console.error(
-            "Erro ao excluir link:",
             result.error
         );
 
@@ -3318,7 +2547,7 @@ async function deleteLink(
 
 
 /* =====================================================
-   TEMA — CARREGAR
+   TEMA
 ===================================================== */
 
 async function loadTheme() {
@@ -3334,23 +2563,10 @@ async function loadTheme() {
             .maybeSingle();
 
 
-    if (result.error) {
-
-        console.error(
-            "Erro ao carregar tema:",
-            result.error
-        );
-
-        applyTheme(
-            defaultTheme
-        );
-
-        return;
-
-    }
-
-
-    if (!result.data) {
+    if (
+        result.error ||
+        !result.data
+    ) {
 
         applyTheme(
             defaultTheme
@@ -3364,18 +2580,16 @@ async function loadTheme() {
     try {
 
         const savedTheme =
-            typeof result.data.value === "string"
-                ? JSON.parse(
-                    result.data.value
-                )
-                : result.data.value;
+            JSON.parse(
+                result.data.value
+            );
 
 
         currentTheme = {
 
             ...defaultTheme,
 
-            ...(savedTheme || {})
+            ...savedTheme
 
         };
 
@@ -3391,10 +2605,6 @@ async function loadTheme() {
             error
         );
 
-        currentTheme = {
-            ...defaultTheme
-        };
-
 
         applyTheme(
             defaultTheme
@@ -3406,7 +2616,7 @@ async function loadTheme() {
 
 
 /* =====================================================
-   TEMA — APLICAR
+   APLICAR TEMA
 ===================================================== */
 
 function applyTheme(
@@ -3417,7 +2627,7 @@ function applyTheme(
 
         ...defaultTheme,
 
-        ...(theme || {})
+        ...theme
 
     };
 
@@ -3431,101 +2641,140 @@ function applyTheme(
         currentTheme.background
     );
 
+
     root.style.setProperty(
         "--topbar",
         currentTheme.topbar
     );
+
 
     root.style.setProperty(
         "--text",
         currentTheme.text
     );
 
+
     root.style.setProperty(
         "--heading",
         currentTheme.heading
     );
+
 
     root.style.setProperty(
         "--border",
         currentTheme.border
     );
 
+
     root.style.setProperty(
         "--button",
         currentTheme.button
     );
+
 
     root.style.setProperty(
         "--logo",
         currentTheme.logo
     );
 
+
     root.style.setProperty(
         "--border-width",
-        `${Number(currentTheme.borderWidth) || 2}px`
+        currentTheme.borderWidth ||
+        "2px"
     );
+
 
     root.style.setProperty(
-        "--font-scale",
-        Number(currentTheme.fontScale) || 1
+        "--font-size",
+        currentTheme.fontSize ||
+        "16px"
     );
 
 
-    let backgroundValue;
+    root.style.setProperty(
+        "--title-size",
+        currentTheme.titleSize ||
+        "28px"
+    );
+
+
+    root.style.setProperty(
+        "--card-title-size",
+        currentTheme.cardTitleSize ||
+        "20px"
+    );
+
+
+    root.style.setProperty(
+        "--card-text-size",
+        currentTheme.cardTextSize ||
+        "14px"
+    );
+
+
+    root.style.setProperty(
+        "--card-radius",
+        currentTheme.cardRadius ||
+        "12px"
+    );
+
+
+    /*
+       Imagem da logo
+    */
+
+    const logoImage =
+        document.getElementById(
+            "logoImage"
+        );
+
+
+    const logoText =
+        document.getElementById(
+            "logoText"
+        );
 
 
     if (
-        currentTheme.gradientEnabled
+        logoImage &&
+        currentTheme.logoImage
     ) {
 
-        if (
-            currentTheme.gradientDirection ===
-            "radial"
-        ) {
+        logoImage.src =
+            currentTheme.logoImage;
 
-            backgroundValue =
-                `radial-gradient(
-                    circle,
-                    ${currentTheme.gradientStart},
-                    ${currentTheme.gradientEnd}
-                )`;
+        logoImage.classList.remove(
+            "hidden"
+        );
 
-        } else {
 
-            backgroundValue =
-                `linear-gradient(
-                    ${currentTheme.gradientDirection},
-                    ${currentTheme.gradientStart},
-                    ${currentTheme.gradientEnd}
-                )`;
+        if (logoText) {
+
+            logoText.classList.add(
+                "hidden"
+            );
 
         }
 
     } else {
 
-        backgroundValue =
-            currentTheme.background;
+        if (logoImage) {
 
-    }
+            logoImage.classList.add(
+                "hidden"
+            );
 
-
-    root.style.setProperty(
-        "--page-background",
-        backgroundValue
-    );
+        }
 
 
-    applyLogo();
+        if (logoText) {
 
+            logoText.classList.remove(
+                "hidden"
+            );
 
-    if (
-        document.getElementById(
-            "themeModal"
-        )
-    ) {
-
-        updateThemeControls();
+        }
 
     }
 
@@ -3533,19 +2782,20 @@ function applyTheme(
 
 
 /* =====================================================
-   TEMA — MODAL
+   ABRIR TEMA
 ===================================================== */
 
 function openThemeModal() {
 
     if (!adminMode) {
 
+        showToast(
+            "Apenas o administrador pode alterar o tema."
+        );
+
         return;
 
     }
-
-
-    updateThemeControls();
 
 
     const modal =
@@ -3554,85 +2804,185 @@ function openThemeModal() {
         );
 
 
-    if (modal) {
+    if (!modal) {
 
-        modal.classList.remove(
-            "hidden"
-        );
+        return;
 
     }
 
-}
 
+    /*
+       Cores
+    */
 
-/* =====================================================
-   TEMA — CONTROLES
-===================================================== */
-
-function updateThemeControls() {
-
-    setInput(
+    setColorInput(
         "themeBackground",
         currentTheme.background
     );
 
-    setInput(
+
+    setColorInput(
         "themeTopbar",
         currentTheme.topbar
     );
 
-    setInput(
+
+    setColorInput(
         "themeText",
         currentTheme.text
     );
 
-    setInput(
+
+    setColorInput(
         "themeHeading",
         currentTheme.heading
     );
 
-    setInput(
+
+    setColorInput(
         "themeBorder",
         currentTheme.border
     );
 
-    setInput(
+
+    setColorInput(
         "themeButtonColor",
         currentTheme.button
     );
 
-    setInput(
+
+    setColorInput(
         "themeLogo",
         currentTheme.logo
     );
 
 
-    const gradientEnabled =
+    /*
+       Espessura das bordas
+    */
+
+    const borderWidth =
         document.getElementById(
-            "themeGradientEnabled"
+            "themeBorderWidth"
         );
 
 
-    if (gradientEnabled) {
+    if (borderWidth) {
 
-        gradientEnabled.checked =
-            Boolean(
-                currentTheme.gradientEnabled
+        borderWidth.value =
+            parseInt(
+                currentTheme.borderWidth ||
+                "2"
             );
 
     }
 
 
-    setInput(
-        "themeGradientStart",
-        currentTheme.gradientStart
-    );
+    /*
+       Tamanho da fonte
+    */
 
-    setInput(
-        "themeGradientEnd",
-        currentTheme.gradientEnd
-    );
+    const fontSize =
+        document.getElementById(
+            "themeFontSize"
+        );
 
+
+    if (fontSize) {
+
+        fontSize.value =
+            parseInt(
+                currentTheme.fontSize ||
+                "16"
+            );
+
+    }
+
+
+    /*
+       Tamanho do título
+    */
+
+    const titleSize =
+        document.getElementById(
+            "themeTitleSize"
+        );
+
+
+    if (titleSize) {
+
+        titleSize.value =
+            parseInt(
+                currentTheme.titleSize ||
+                "28"
+            );
+
+    }
+
+
+    /*
+       Tamanho do texto dos cards
+    */
+
+    const cardTextSize =
+        document.getElementById(
+            "themeCardTextSize"
+        );
+
+
+    if (cardTextSize) {
+
+        cardTextSize.value =
+            parseInt(
+                currentTheme.cardTextSize ||
+                "14"
+            );
+
+    }
+
+
+    /*
+       Arredondamento
+    */
+
+    const radius =
+        document.getElementById(
+            "themeCardRadius"
+        );
+
+
+    if (radius) {
+
+        radius.value =
+            parseInt(
+                currentTheme.cardRadius ||
+                "12"
+            );
+
+    }
+
+
+    /*
+       Gradiente
+    */
+
+    const gradient =
+        document.getElementById(
+            "themeGradient"
+        );
+
+
+    if (gradient) {
+
+        gradient.checked =
+            currentTheme.gradientEnabled !== false;
+
+    }
+
+
+    /*
+       Direção do gradiente
+    */
 
     const direction =
         document.getElementById(
@@ -3643,52 +2993,43 @@ function updateThemeControls() {
     if (direction) {
 
         direction.value =
-            currentTheme.gradientDirection;
+            currentTheme.gradientDirection ||
+            "135deg";
 
     }
 
 
-    setInput(
-        "themeBorderWidth",
-        currentTheme.borderWidth
+    /*
+       Abre modal
+    */
+
+    modal.classList.remove(
+        "hidden"
     );
 
-    setInput(
-        "themeFontScale",
-        currentTheme.fontScale
-    );
+}
 
 
-    updateRangeLabels();
+/* =====================================================
+   AUXILIAR — INPUT DE COR
+===================================================== */
 
-    updateGradientControls();
+function setColorInput(
+    id,
+    value
+) {
 
-
-    const imageInput =
+    const element =
         document.getElementById(
-            "themeLogoImage"
+            id
         );
 
 
-    if (imageInput) {
+    if (element) {
 
-        imageInput.value = "";
-
-    }
-
-
-    const imageName =
-        document.getElementById(
-            "themeLogoImageName"
-        );
-
-
-    if (imageName) {
-
-        imageName.textContent =
-            currentTheme.logoImage
-                ? "Imagem da logo salva"
-                : "Nenhuma imagem selecionada";
+        element.value =
+            value ||
+            "#000000";
 
     }
 
@@ -3696,125 +3037,7 @@ function updateThemeControls() {
 
 
 /* =====================================================
-   TEMA — PREVIEW
-===================================================== */
-
-function updateThemePreview() {
-
-    if (!adminMode) {
-
-        return;
-
-    }
-
-
-    applyTheme(
-        getThemeFromInputs()
-    );
-
-}
-
-
-/* =====================================================
-   TEMA — INPUTS
-===================================================== */
-
-function getThemeFromInputs() {
-
-    return {
-
-        ...currentTheme,
-
-        background:
-            getInputValue(
-                "themeBackground",
-                currentTheme.background
-            ),
-
-        topbar:
-            getInputValue(
-                "themeTopbar",
-                currentTheme.topbar
-            ),
-
-        text:
-            getInputValue(
-                "themeText",
-                currentTheme.text
-            ),
-
-        heading:
-            getInputValue(
-                "themeHeading",
-                currentTheme.heading
-            ),
-
-        border:
-            getInputValue(
-                "themeBorder",
-                currentTheme.border
-            ),
-
-        button:
-            getInputValue(
-                "themeButtonColor",
-                currentTheme.button
-            ),
-
-        logo:
-            getInputValue(
-                "themeLogo",
-                currentTheme.logo
-            ),
-
-        gradientEnabled:
-            Boolean(
-                document.getElementById(
-                    "themeGradientEnabled"
-                )?.checked
-            ),
-
-        gradientStart:
-            getInputValue(
-                "themeGradientStart",
-                currentTheme.gradientStart
-            ),
-
-        gradientEnd:
-            getInputValue(
-                "themeGradientEnd",
-                currentTheme.gradientEnd
-            ),
-
-        gradientDirection:
-            getInputValue(
-                "themeGradientDirection",
-                currentTheme.gradientDirection
-            ),
-
-        borderWidth:
-            Number(
-                getInputValue(
-                    "themeBorderWidth",
-                    currentTheme.borderWidth
-                )
-            ) || 2,
-
-        fontScale:
-            Number(
-                getInputValue(
-                    "themeFontScale",
-                    currentTheme.fontScale
-                )
-            ) || 1
-
-    };
-
-}
-
-
-/* =====================================================
-   TEMA — SALVAR
+   SALVAR TEMA NA NUVEM
 ===================================================== */
 
 async function saveTheme() {
@@ -3826,12 +3049,112 @@ async function saveTheme() {
     }
 
 
-    const theme =
-        getThemeFromInputs();
+    const theme = {
+
+        background:
+            getInputValue(
+                "themeBackground",
+                defaultTheme.background
+            ),
+
+        topbar:
+            getInputValue(
+                "themeTopbar",
+                defaultTheme.topbar
+            ),
+
+        text:
+            getInputValue(
+                "themeText",
+                defaultTheme.text
+            ),
+
+        heading:
+            getInputValue(
+                "themeHeading",
+                defaultTheme.heading
+            ),
+
+        border:
+            getInputValue(
+                "themeBorder",
+                defaultTheme.border
+            ),
+
+        button:
+            getInputValue(
+                "themeButtonColor",
+                defaultTheme.button
+            ),
+
+        logo:
+            getInputValue(
+                "themeLogo",
+                defaultTheme.logo
+            ),
 
 
-    theme.logoImage =
-        currentTheme.logoImage || "";
+        /*
+           Novas configurações
+        */
+
+        borderWidth:
+            getNumberInput(
+                "themeBorderWidth",
+                2
+            ) + "px",
+
+
+        fontSize:
+            getNumberInput(
+                "themeFontSize",
+                16
+            ) + "px",
+
+
+        titleSize:
+            getNumberInput(
+                "themeTitleSize",
+                28
+            ) + "px",
+
+
+        cardTextSize:
+            getNumberInput(
+                "themeCardTextSize",
+                14
+            ) + "px",
+
+
+        cardRadius:
+            getNumberInput(
+                "themeCardRadius",
+                12
+            ) + "px",
+
+
+        gradientEnabled:
+            document.getElementById(
+                "themeGradient"
+            )?.checked !== false,
+
+
+        gradientDirection:
+            getInputValue(
+                "themeGradientDirection",
+                "135deg"
+            ),
+
+
+        /*
+           Mantém a imagem da logo
+        */
+
+        logoImage:
+            currentTheme.logoImage ||
+            null
+
+    };
 
 
     const result =
@@ -3854,6 +3177,7 @@ async function saveTheme() {
             result.error
         );
 
+
         showToast(
             "Erro ao salvar o tema."
         );
@@ -3863,17 +3187,8 @@ async function saveTheme() {
     }
 
 
-    currentTheme = {
-
-        ...defaultTheme,
-
-        ...theme
-
-    };
-
-
     applyTheme(
-        currentTheme
+        theme
     );
 
 
@@ -3883,14 +3198,84 @@ async function saveTheme() {
 
 
     showToast(
-        "Tema salvo na nuvem!"
+        "Tema salvo na nuvem! ☁️"
     );
 
 }
 
 
 /* =====================================================
-   TEMA — RESTAURAR
+   AUXILIARES DE INPUT
+===================================================== */
+
+function getInputValue(
+    id,
+    fallback
+) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    if (
+        !element ||
+        !element.value
+    ) {
+
+        return fallback;
+
+    }
+
+
+    return element.value;
+
+}
+
+
+function getNumberInput(
+    id,
+    fallback
+) {
+
+    const element =
+        document.getElementById(
+            id
+        );
+
+
+    if (!element) {
+
+        return fallback;
+
+    }
+
+
+    const value =
+        Number(
+            element.value
+        );
+
+
+    if (
+        !Number.isFinite(
+            value
+        )
+    ) {
+
+        return fallback;
+
+    }
+
+
+    return value;
+
+}
+
+
+/* =====================================================
+   RESTAURAR TEMA
 ===================================================== */
 
 function resetTheme() {
@@ -3902,35 +3287,242 @@ function resetTheme() {
     }
 
 
-    currentTheme = {
-        ...defaultTheme
-    };
+    /*
+       Cores
+    */
 
-
-    applyTheme(
-        currentTheme
+    setColorInput(
+        "themeBackground",
+        defaultTheme.background
     );
 
 
-    updateThemeControls();
+    setColorInput(
+        "themeTopbar",
+        defaultTheme.topbar
+    );
+
+
+    setColorInput(
+        "themeText",
+        defaultTheme.text
+    );
+
+
+    setColorInput(
+        "themeHeading",
+        defaultTheme.heading
+    );
+
+
+    setColorInput(
+        "themeBorder",
+        defaultTheme.border
+    );
+
+
+    setColorInput(
+        "themeButtonColor",
+        defaultTheme.button
+    );
+
+
+    setColorInput(
+        "themeLogo",
+        defaultTheme.logo
+    );
+
+
+    /*
+       Tamanhos
+    */
+
+    setInputValue(
+        "themeBorderWidth",
+        parseInt(
+            defaultTheme.borderWidth
+        )
+    );
+
+
+    setInputValue(
+        "themeFontSize",
+        parseInt(
+            defaultTheme.fontSize
+        )
+    );
+
+
+    setInputValue(
+        "themeTitleSize",
+        parseInt(
+            defaultTheme.titleSize
+        )
+    );
+
+
+    setInputValue(
+        "themeCardTextSize",
+        parseInt(
+            defaultTheme.cardTextSize
+        )
+    );
+
+
+    setInputValue(
+        "themeCardRadius",
+        parseInt(
+            defaultTheme.cardRadius
+        )
+    );
+
+
+    /*
+       Gradiente
+    */
+
+    const gradient =
+        document.getElementById(
+            "themeGradient"
+        );
+
+
+    if (gradient) {
+
+        gradient.checked =
+            defaultTheme.gradientEnabled;
+
+    }
+
+
+    setInputValue(
+        "themeGradientDirection",
+        defaultTheme.gradientDirection
+    );
+
+
+    /*
+       Remove logo personalizada
+    */
+
+    currentTheme.logoImage =
+        null;
 
 
     showToast(
-        "Tema restaurado. Clique em Salvar tema para confirmar."
+        "Tema restaurado. Clique em salvar para aplicar."
     );
 
 }
 
 
 /* =====================================================
-   TEMAS PRONTOS
+   APLICAR TEMA PRONTO
 ===================================================== */
 
-function renderThemePresets() {
+function applyPresetTheme(
+    index
+) {
+
+    if (!adminMode) {
+
+        return;
+
+    }
+
+
+    const preset =
+        presetThemes[index];
+
+
+    if (!preset) {
+
+        return;
+
+    }
+
+
+    currentTheme = {
+
+        ...currentTheme,
+
+        ...preset
+
+    };
+
+
+    /*
+       Atualiza os inputs
+    */
+
+    setColorInput(
+        "themeBackground",
+        preset.background
+    );
+
+
+    setColorInput(
+        "themeTopbar",
+        preset.topbar
+    );
+
+
+    setColorInput(
+        "themeText",
+        preset.text
+    );
+
+
+    setColorInput(
+        "themeHeading",
+        preset.heading
+    );
+
+
+    setColorInput(
+        "themeBorder",
+        preset.border
+    );
+
+
+    setColorInput(
+        "themeButtonColor",
+        preset.button
+    );
+
+
+    setColorInput(
+        "themeLogo",
+        preset.logo
+    );
+
+
+    /*
+       Aplica imediatamente apenas visualmente.
+       Ainda será necessário clicar em salvar.
+    */
+
+    applyTheme(
+        currentTheme
+    );
+
+
+    showToast(
+        `Tema "${preset.name}" selecionado.`
+    );
+
+}
+
+
+/* =====================================================
+   CRIAR LISTA DE TEMAS
+===================================================== */
+
+function renderPresetThemes() {
 
     const container =
         document.getElementById(
-            "themePresets"
+            "presetThemes"
         );
 
 
@@ -3945,7 +3537,7 @@ function renderThemePresets() {
 
 
     presetThemes.forEach(
-        (preset, index) => {
+        (theme, index) => {
 
             const button =
                 document.createElement(
@@ -3958,52 +3550,37 @@ function renderThemePresets() {
 
 
             button.className =
-                "theme-preset";
+                "preset-theme";
 
 
             button.title =
-                preset.name;
-
-
-            button.dataset.index =
-                index;
-
-
-            const background =
-                preset.gradientEnabled
-                    ? `linear-gradient(
-                        ${preset.gradientDirection},
-                        ${preset.gradientStart},
-                        ${preset.gradientEnd}
-                    )`
-                    : preset.background;
+                theme.name;
 
 
             button.style.background =
-                background;
-
-
-            button.style.borderColor =
-                preset.border;
+                `linear-gradient(
+                    135deg,
+                    ${theme.background},
+                    ${theme.button}
+                )`;
 
 
             button.innerHTML = `
 
                 <span
-                    class="theme-preset-preview"
+                    class="preset-theme-preview"
                     style="
-                        background:${background};
-                        border-color:${preset.border};
+                        background:
+                        linear-gradient(
+                            135deg,
+                            ${theme.button},
+                            ${theme.logo}
+                        );
                     "
                 ></span>
 
-                <span
-                    class="theme-preset-name"
-                    style="
-                        color:${preset.text};
-                    "
-                >
-                    ${escapeHTML(preset.name)}
+                <span>
+                    ${escapeHTML(theme.name)}
                 </span>
 
             `;
@@ -4014,7 +3591,7 @@ function renderThemePresets() {
                 () => {
 
                     applyPresetTheme(
-                        preset
+                        index
                     );
 
                 }
@@ -4032,776 +3609,41 @@ function renderThemePresets() {
 
 
 /* =====================================================
-   APLICAR PRESET
-===================================================== */
-
-function applyPresetTheme(
-    preset
-) {
-
-    if (!adminMode) {
-
-        return;
-
-    }
-
-
-    const preservedLogo =
-        currentTheme.logoImage || "";
-
-
-    currentTheme = {
-
-        ...defaultTheme,
-
-        ...preset,
-
-        logoImage:
-            preservedLogo
-
-    };
-
-
-    applyTheme(
-        currentTheme
-    );
-
-
-    updateThemeControls();
-
-
-    showToast(
-        `"${preset.name}" aplicado. Clique em Salvar tema.`
-    );
-
-}
-
-
-/* =====================================================
-   GRADIENTE
-===================================================== */
-
-function updateGradientControls() {
-
-    const enabled =
-        document.getElementById(
-            "themeGradientEnabled"
-        )?.checked;
-
-
-    const controls =
-        document.getElementById(
-            "gradientControls"
-        );
-
-
-    if (controls) {
-
-        controls.classList.toggle(
-            "hidden",
-            !enabled
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   RANGE LABELS
-===================================================== */
-
-function updateRangeLabels() {
-
-    const borderWidth =
-        document.getElementById(
-            "themeBorderWidth"
-        );
-
-
-    const borderWidthValue =
-        document.getElementById(
-            "themeBorderWidthValue"
-        );
-
-
-    if (
-        borderWidth &&
-        borderWidthValue
-    ) {
-
-        borderWidthValue.textContent =
-            `${borderWidth.value} px`;
-
-    }
-
-
-    const fontScale =
-        document.getElementById(
-            "themeFontScale"
-        );
-
-
-    const fontScaleValue =
-        document.getElementById(
-            "themeFontScaleValue"
-        );
-
-
-    if (
-        fontScale &&
-        fontScaleValue
-    ) {
-
-        fontScaleValue.textContent =
-            `${Math.round(
-                Number(fontScale.value) * 100
-            )}%`;
-
-    }
-
-
-    updateGradientControls();
-
-}
-
-
-/* =====================================================
-   LOGO
-===================================================== */
-
-async function handleLogoUpload(
-    event
-) {
-
-    if (!adminMode) {
-
-        return;
-
-    }
-
-
-    const file =
-        event.target.files?.[0];
-
-
-    if (!file) {
-
-        return;
-
-    }
-
-
-    if (
-        !file.type.startsWith(
-            "image/"
-        )
-    ) {
-
-        showToast(
-            "Selecione uma imagem válida."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        showToast(
-            "Processando logo..."
-        );
-
-
-        const dataURL =
-            await resizeImage(
-                file,
-                700,
-                0.85
-            );
-
-
-        currentTheme.logoImage =
-            dataURL;
-
-
-        const imageName =
-            document.getElementById(
-                "themeLogoImageName"
-            );
-
-
-        if (imageName) {
-
-            imageName.textContent =
-                file.name;
-
-        }
-
-
-        applyLogo();
-
-
-        showToast(
-            "Logo carregada. Clique em Salvar tema."
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Erro ao processar logo:",
-            error
-        );
-
-        showToast(
-            "Não foi possível carregar a logo."
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   REDIMENSIONAR IMAGEM
-===================================================== */
-
-function resizeImage(
-    file,
-    maxSize,
-    quality
-) {
-
-    return new Promise(
-        (resolve, reject) => {
-
-            const reader =
-                new FileReader();
-
-
-            reader.onerror =
-                () =>
-                    reject(
-                        new Error(
-                            "Erro ao ler imagem."
-                        )
-                    );
-
-
-            reader.onload =
-                () => {
-
-                    const image =
-                        new Image();
-
-
-                    image.onerror =
-                        () =>
-                            reject(
-                                new Error(
-                                    "Imagem inválida."
-                                )
-                            );
-
-
-                    image.onload =
-                        () => {
-
-                            let width =
-                                image.width;
-
-
-                            let height =
-                                image.height;
-
-
-                            const scale =
-                                Math.min(
-                                    1,
-                                    maxSize /
-                                        Math.max(
-                                            width,
-                                            height
-                                        )
-                                );
-
-
-                            width =
-                                Math.max(
-                                    1,
-                                    Math.round(
-                                        width * scale
-                                    )
-                                );
-
-
-                            height =
-                                Math.max(
-                                    1,
-                                    Math.round(
-                                        height * scale
-                                    )
-                                );
-
-
-                            const canvas =
-                                document.createElement(
-                                    "canvas"
-                                );
-
-
-                            canvas.width =
-                                width;
-
-
-                            canvas.height =
-                                height;
-
-
-                            const context =
-                                canvas.getContext(
-                                    "2d"
-                                );
-
-
-                            if (!context) {
-
-                                reject(
-                                    new Error(
-                                        "Canvas não suportado."
-                                    )
-                                );
-
-                                return;
-
-                            }
-
-
-                            context.clearRect(
-                                0,
-                                0,
-                                width,
-                                height
-                            );
-
-
-                            context.drawImage(
-                                image,
-                                0,
-                                0,
-                                width,
-                                height
-                            );
-
-
-                            canvas.toBlob(
-                                blob => {
-
-                                    if (!blob) {
-
-                                        reject(
-                                            new Error(
-                                                "Não foi possível gerar imagem."
-                                            )
-                                        );
-
-                                        return;
-
-                                    }
-
-
-                                    const blobReader =
-                                        new FileReader();
-
-
-                                    blobReader.onload =
-                                        () => {
-
-                                            resolve(
-                                                blobReader.result
-                                            );
-
-                                        };
-
-
-                                    blobReader.onerror =
-                                        () =>
-                                            reject(
-                                                new Error(
-                                                    "Erro ao converter imagem."
-                                                )
-                                            );
-
-
-                                    blobReader.readAsDataURL(
-                                        blob
-                                    );
-
-                                },
-                                "image/webp",
-                                quality
-                            );
-
-                        };
-
-
-                    image.src =
-                        reader.result;
-
-                };
-
-
-            reader.readAsDataURL(
-                file
-            );
-
-        }
-    );
-
-}
-
-
-/* =====================================================
-   APLICAR LOGO
-===================================================== */
-
-function applyLogo() {
-
-    const image =
-        document.getElementById(
-            "siteLogoImage"
-        );
-
-
-    const text =
-        document.getElementById(
-            "siteLogoText"
-        );
-
-
-    if (!image || !text) {
-
-        return;
-
-    }
-
-
-    if (
-        currentTheme.logoImage
-    ) {
-
-        image.src =
-            currentTheme.logoImage;
-
-
-        image.classList.remove(
-            "hidden"
-        );
-
-
-        text.classList.add(
-            "hidden"
-        );
-
-    } else {
-
-        image.removeAttribute(
-            "src"
-        );
-
-
-        image.classList.add(
-            "hidden"
-        );
-
-
-        text.classList.remove(
-            "hidden"
-        );
-
-    }
-
-}
-
-
-/* =====================================================
-   REMOVER LOGO
-===================================================== */
-
-function removeLogoImage() {
-
-    if (!adminMode) {
-
-        return;
-
-    }
-
-
-    currentTheme.logoImage =
-        "";
-
-
-    const input =
-        document.getElementById(
-            "themeLogoImage"
-        );
-
-
-    if (input) {
-
-        input.value = "";
-
-    }
-
-
-    const name =
-        document.getElementById(
-            "themeLogoImageName"
-        );
-
-
-    if (name) {
-
-        name.textContent =
-            "Nenhuma imagem selecionada";
-
-    }
-
-
-    applyLogo();
-
-
-    showToast(
-        "Logo removida. Clique em Salvar tema."
-    );
-
-}
-
-
-/* =====================================================
-   NAVEGAÇÃO — HOME
-===================================================== */
-
-async function showHome() {
-
-    /*
-       Se estamos dentro de uma subpasta,
-       primeiro voltamos para o pai.
-    */
-
-    if (currentFolderId !== null) {
-
-        const currentFolder =
-            folders.find(
-                folder =>
-                    String(folder.id) ===
-                    String(currentFolderId)
-            );
-
-
-        if (
-            currentFolder &&
-            currentFolder.parent_id !== null &&
-            currentFolder.parent_id !== undefined
-        ) {
-
-            await openFolder(
-                currentFolder.parent_id
-            );
-
-            return;
-
-        }
-
-    }
-
-
-    currentFolderId =
-        null;
-
-
-    currentLinks =
-        [];
-
-
-    showHomeInterfaceOnly();
-
-
-    await loadFolders();
-
-}
-
-
-/* =====================================================
-   MOSTRAR HOME SEM RECARREGAR
-===================================================== */
-
-function showHomeInterfaceOnly() {
-
-    currentFolderId =
-        null;
-
-
-    const folderPage =
-        document.getElementById(
-            "folderPage"
-        );
-
-
-    const homePage =
-        document.getElementById(
-            "homePage"
-        );
-
-
-    if (folderPage) {
-
-        folderPage.classList.add(
-            "hidden"
-        );
-
-    }
-
-
-    if (homePage) {
-
-        homePage.classList.remove(
-            "hidden"
-        );
-
-    }
-
-
-    updateBackButton();
-
-}
-
-
-/* =====================================================
-   MODAIS
-===================================================== */
-
-function closeModal(
-    id
-) {
-
-    if (!id) {
-
-        return;
-
-    }
-
-
-    const modal =
-        document.getElementById(
-            id
-        );
-
-
-    if (!modal) {
-
-        return;
-
-    }
-
-
-    modal.classList.add(
-        "hidden"
-    );
-
-}
-
-
-/* =====================================================
-   TOGGLE ELEMENT
-===================================================== */
-
-function toggleElement(
-    id
-) {
-
-    const element =
-        document.getElementById(
-            id
-        );
-
-
-    if (!element) {
-
-        return;
-
-    }
-
-
-    element.classList.toggle(
-        "hidden"
-    );
-
-}
-
-
-/* =====================================================
-   BOTÃO ATIVO
-===================================================== */
-
-function setActiveButton(
-    selector,
-    selected
-) {
-
-    document
-        .querySelectorAll(
-            selector
-        )
-        .forEach(
-            button => {
-
-                button.classList.remove(
-                    "active"
-                );
-
-            }
-        );
-
-
-    if (selected) {
-
-        selected.classList.add(
-            "active"
-        );
-
-    }
-
-}
-
-
-/* =====================================================
    GRADIENTE DOS CARDS
 ===================================================== */
 
-function createCardGradient(
+function createGradient(
     color
 ) {
 
-    const first =
-        normalizeColor(
-            color
-        );
+    /*
+       Se o gradiente estiver desativado,
+       retorna somente a cor.
+    */
+
+    if (
+        currentTheme.gradientEnabled ===
+        false
+    ) {
+
+        return color;
+
+    }
 
 
-    const second =
-        darkenColor(
-            first,
-            45
-        );
+    const direction =
+        currentTheme.gradientDirection ||
+        "135deg";
 
 
     return `
         linear-gradient(
-            135deg,
-            ${first},
-            ${second}
+            ${direction},
+            ${color},
+            ${darkenColor(
+                color,
+                55
+            )}
         )
     `;
 
@@ -4817,18 +3659,21 @@ function darkenColor(
     amount
 ) {
 
-    const clean =
-        String(hex || "")
+    let clean =
+        String(hex)
             .replace(
                 "#",
                 ""
             );
 
 
+    /*
+       Suporte para cores no formato
+       RGB simples ou HEX inválido.
+    */
+
     if (
-        !/^[0-9a-fA-F]{6}$/.test(
-            clean
-        )
+        clean.length !== 6
     ) {
 
         return "#333333";
@@ -4866,31 +3711,139 @@ function darkenColor(
         );
 
 
-    const safeAmount =
-        Math.max(
-            0,
-            Number(amount) || 0
-        );
+    if (
+        Number.isNaN(r) ||
+        Number.isNaN(g) ||
+        Number.isNaN(b)
+    ) {
+
+        return "#333333";
+
+    }
 
 
     r =
         Math.max(
             0,
-            r - safeAmount
+            r - amount
         );
 
 
     g =
         Math.max(
             0,
-            g - safeAmount
+            g - amount
         );
 
 
     b =
         Math.max(
             0,
-            b - safeAmount
+            b - amount
+        );
+
+
+    return (
+        "#" +
+        r.toString(
+            16
+        ).padStart(
+            2,
+            "0"
+        ) +
+
+        g.toString(
+            16
+        ).padStart(
+            2,
+            "0"
+        ) +
+
+        b.toString(
+            16
+        ).padStart(
+            2,
+            "0"
+        )
+    );
+
+}
+
+
+/* =====================================================
+   PEQUENO AJUSTE DE COR
+===================================================== */
+
+function lightenColor(
+    hex,
+    amount
+) {
+
+    let clean =
+        String(hex)
+            .replace(
+                "#",
+                ""
+            );
+
+
+    if (
+        clean.length !== 6
+    ) {
+
+        return "#ffffff";
+
+    }
+
+
+    let r =
+        parseInt(
+            clean.substring(
+                0,
+                2
+            ),
+            16
+        );
+
+
+    let g =
+        parseInt(
+            clean.substring(
+                2,
+                4
+            ),
+            16
+        );
+
+
+    let b =
+        parseInt(
+            clean.substring(
+                4,
+                6
+            ),
+            16
+        );
+
+
+    r =
+        Math.min(
+            255,
+            r + amount
+        );
+
+
+    g =
+        Math.min(
+            255,
+            g + amount
+        );
+
+
+    b =
+        Math.min(
+            255,
+            b + amount
         );
 
 
@@ -4903,135 +3856,754 @@ function darkenColor(
 
 }
 
-
 /* =====================================================
-   NORMALIZAR COR
+   LOGO — IMAGEM
 ===================================================== */
 
-function normalizeColor(
-    color
-) {
+function setupLogoUpload() {
 
-    const value =
-        String(
-            color || ""
-        ).trim();
+    const input =
+        document.getElementById(
+            "logoImageInput"
+        );
 
 
-    if (
-        /^#[0-9a-fA-F]{6}$/.test(
-            value
-        )
-    ) {
+    if (!input) {
 
-        return value;
+        return;
 
     }
 
 
-    return "#4f7cff";
+    input.addEventListener(
+        "change",
+        event => {
 
-}
-
-
-/* =====================================================
-   NORMALIZAR URL
-===================================================== */
-
-function normalizeURL(
-    url
-) {
-
-    let value =
-        String(
-            url || ""
-        ).trim();
+            const file =
+                event.target.files?.[0];
 
 
-    if (!value) {
+            if (!file) {
 
-        return "";
+                return;
 
-    }
-
-
-    if (
-        /^https?:\/\//i.test(
-            value
-        )
-    ) {
-
-        return value;
-
-    }
+            }
 
 
-    return (
-        "https://" +
-        value
+            if (
+                !file.type.startsWith(
+                    "image/"
+                )
+            ) {
+
+                showToast(
+                    "Selecione uma imagem válida."
+                );
+
+                return;
+
+            }
+
+
+            /*
+               Limite de aproximadamente 2 MB.
+            */
+
+            if (
+                file.size >
+                2 * 1024 * 1024
+            ) {
+
+                showToast(
+                    "A imagem deve ter no máximo 2 MB."
+                );
+
+                input.value = "";
+
+                return;
+
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                event => {
+
+                    const image =
+                        event.target.result;
+
+
+                    /*
+                       A imagem é salva como
+                       Base64 dentro do tema.
+                    */
+
+                    currentTheme.logoImage =
+                        image;
+
+
+                    const preview =
+                        document.getElementById(
+                            "logoPreview"
+                        );
+
+
+                    if (preview) {
+
+                        preview.src =
+                            image;
+
+                        preview.classList.remove(
+                            "hidden"
+                        );
+
+                    }
+
+
+                    const logo =
+                        document.getElementById(
+                            "logoImage"
+                        );
+
+
+                    if (logo) {
+
+                        logo.src =
+                            image;
+
+                        logo.classList.remove(
+                            "hidden"
+                        );
+
+                    }
+
+
+                    const logoText =
+                        document.getElementById(
+                            "logoText"
+                        );
+
+
+                    if (logoText) {
+
+                        logoText.classList.add(
+                            "hidden"
+                        );
+
+                    }
+
+
+                    showToast(
+                        "Logo carregada. Clique em salvar tema."
+                    );
+
+                };
+
+
+            reader.readAsDataURL(
+                file
+            );
+
+        }
     );
 
 }
 
 
 /* =====================================================
-   VALIDAR URL
+   REMOVER LOGO
 ===================================================== */
 
-function isValidURL(
-    url
-) {
+function removeLogo() {
 
-    try {
+    if (!adminMode) {
 
-        const parsed =
-            new URL(
-                url
-            );
-
-
-        return (
-            parsed.protocol === "http:" ||
-            parsed.protocol === "https:"
-        );
-
-    } catch {
-
-        return false;
+        return;
 
     }
 
-}
+
+    currentTheme.logoImage =
+        null;
 
 
-/* =====================================================
-   HTML SEGURO
-===================================================== */
-
-function escapeHTML(
-    value
-) {
-
-    const div =
-        document.createElement(
-            "div"
+    const input =
+        document.getElementById(
+            "logoImageInput"
         );
 
 
-    div.textContent =
-        value ?? "";
+    if (input) {
+
+        input.value = "";
+
+    }
 
 
-    return div.innerHTML;
+    const preview =
+        document.getElementById(
+            "logoPreview"
+        );
+
+
+    if (preview) {
+
+        preview.src = "";
+
+        preview.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    const logo =
+        document.getElementById(
+            "logoImage"
+        );
+
+
+    if (logo) {
+
+        logo.src = "";
+
+        logo.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    const logoText =
+        document.getElementById(
+            "logoText"
+        );
+
+
+    if (logoText) {
+
+        logoText.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    showToast(
+        "Logo removida. Clique em salvar tema."
+    );
 
 }
 
 
 /* =====================================================
-   INPUTS
+   SALVAR LOGO NO TEMA
 ===================================================== */
 
-function setInput(
+function saveLogoToTheme() {
+
+    if (!adminMode) {
+
+        return;
+
+    }
+
+
+    /*
+       Não salva diretamente.
+       A logo será enviada junto com
+       admin_save_theme().
+    */
+
+    showToast(
+        "Logo pronta para ser salva."
+    );
+
+}
+
+
+/* =====================================================
+   PRESETS DE CORES
+===================================================== */
+
+const presetThemes = [
+
+    {
+        name: "Azul Oceano",
+
+        background: "#eaf4ff",
+
+        topbar: "#ffffff",
+
+        text: "#12304a",
+
+        heading: "#062b49",
+
+        border: "#0b4f71",
+
+        button: "#087ea4",
+
+        logo: "#064663",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Verde Natureza",
+
+        background: "#edf8f0",
+
+        topbar: "#ffffff",
+
+        text: "#183b2a",
+
+        heading: "#0c4025",
+
+        border: "#176b3a",
+
+        button: "#159957",
+
+        logo: "#0d6335",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Roxo",
+
+        background: "#f4efff",
+
+        topbar: "#ffffff",
+
+        text: "#35254d",
+
+        heading: "#28103f",
+
+        border: "#6b3fa0",
+
+        button: "#7b4bb7",
+
+        logo: "#542681",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Amarelo",
+
+        background: "#fffbea",
+
+        topbar: "#ffffff",
+
+        text: "#4d420d",
+
+        heading: "#3e3300",
+
+        border: "#b58b00",
+
+        button: "#e2b400",
+
+        logo: "#876b00",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Azul + Verde",
+
+        background: "#eefaf8",
+
+        topbar: "#ffffff",
+
+        text: "#173f45",
+
+        heading: "#0c3035",
+
+        border: "#197d78",
+
+        button: "#168f83",
+
+        logo: "#146b75",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Turquesa",
+
+        background: "#e9fbfb",
+
+        topbar: "#ffffff",
+
+        text: "#164449",
+
+        heading: "#08363b",
+
+        border: "#178b91",
+
+        button: "#16a6a8",
+
+        logo: "#087278",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Azul Royal",
+
+        background: "#eef2ff",
+
+        topbar: "#ffffff",
+
+        text: "#172653",
+
+        heading: "#091743",
+
+        border: "#3154b8",
+
+        button: "#4267d5",
+
+        logo: "#2946a0",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Verde Esmeralda",
+
+        background: "#edf9f3",
+
+        topbar: "#ffffff",
+
+        text: "#164132",
+
+        heading: "#092d20",
+
+        border: "#18875b",
+
+        button: "#18a66d",
+
+        logo: "#08754a",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Roxo + Azul",
+
+        background: "#f1f1ff",
+
+        topbar: "#ffffff",
+
+        text: "#28284d",
+
+        heading: "#171742",
+
+        border: "#5853ad",
+
+        button: "#625dd2",
+
+        logo: "#44419a",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Laranja",
+
+        background: "#fff4eb",
+
+        topbar: "#ffffff",
+
+        text: "#4d2c16",
+
+        heading: "#3b1d0a",
+
+        border: "#c46b24",
+
+        button: "#df7b29",
+
+        logo: "#a74f0c",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Rosa",
+
+        background: "#fff0f6",
+
+        topbar: "#ffffff",
+
+        text: "#4c2335",
+
+        heading: "#3b1025",
+
+        border: "#b84f78",
+
+        button: "#d76591",
+
+        logo: "#9e3c67",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Vermelho",
+
+        background: "#fff0f0",
+
+        topbar: "#ffffff",
+
+        text: "#4b2020",
+
+        heading: "#390d0d",
+
+        border: "#b23b3b",
+
+        button: "#d34d4d",
+
+        logo: "#9c2929",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Ciano",
+
+        background: "#eafaff",
+
+        topbar: "#ffffff",
+
+        text: "#153c47",
+
+        heading: "#092d38",
+
+        border: "#1985a0",
+
+        button: "#20a8c5",
+
+        logo: "#087891",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Lavanda",
+
+        background: "#f6f1ff",
+
+        topbar: "#ffffff",
+
+        text: "#3d3150",
+
+        heading: "#281a3c",
+
+        border: "#8665b5",
+
+        button: "#9876cc",
+
+        logo: "#69479c",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    },
+
+
+    {
+        name: "Escuro",
+
+        background: "#17191c",
+
+        topbar: "#22252a",
+
+        text: "#eeeeee",
+
+        heading: "#ffffff",
+
+        border: "#ffffff",
+
+        button: "#3d7cff",
+
+        logo: "#6aa0ff",
+
+        gradientEnabled: true,
+
+        gradientDirection: "135deg"
+
+    }
+
+];
+
+
+/* =====================================================
+   SELETORES DE PRESET
+===================================================== */
+
+function setupPresetThemes() {
+
+    renderPresetThemes();
+
+}
+
+
+/* =====================================================
+   BOTÕES DE TAMANHO
+===================================================== */
+
+function setupThemeControls() {
+
+    const controls = [
+
+        "themeBorderWidth",
+
+        "themeFontSize",
+
+        "themeTitleSize",
+
+        "themeCardTextSize",
+
+        "themeCardRadius"
+
+    ];
+
+
+    controls.forEach(
+        id => {
+
+            const element =
+                document.getElementById(
+                    id
+                );
+
+
+            if (!element) {
+
+                return;
+
+            }
+
+
+            element.addEventListener(
+                "input",
+                () => {
+
+                    /*
+                       Pré-visualização em tempo real.
+                    */
+
+                    const previewTheme = {
+
+                        ...currentTheme,
+
+                        borderWidth:
+                            getNumberInput(
+                                "themeBorderWidth",
+                                2
+                            ) + "px",
+
+                        fontSize:
+                            getNumberInput(
+                                "themeFontSize",
+                                16
+                            ) + "px",
+
+                        titleSize:
+                            getNumberInput(
+                                "themeTitleSize",
+                                28
+                            ) + "px",
+
+                        cardTextSize:
+                            getNumberInput(
+                                "themeCardTextSize",
+                                14
+                            ) + "px",
+
+                        cardRadius:
+                            getNumberInput(
+                                "themeCardRadius",
+                                12
+                            ) + "px"
+
+                    };
+
+
+                    applyTheme(
+                        previewTheme
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   VALORES DE ENTRADA
+===================================================== */
+
+function setInputValue(
     id,
     value
 ) {
@@ -5052,232 +4624,319 @@ function setInput(
 }
 
 
-function getInputValue(
-    id,
-    fallback
-) {
+/* =====================================================
+   ATUALIZAÇÃO DO TÍTULO
+===================================================== */
 
-    const element =
+function updatePageTitle() {
+
+    const title =
         document.getElementById(
-            id
+            "pageTitle"
         );
 
 
-    if (!element) {
-
-        return fallback;
-
-    }
-
-
-    return element.value;
-
-}
-
-
-/* =====================================================
-   LOADING
-===================================================== */
-
-function showLoading(
-    element
-) {
-
-    if (!element) {
+    if (!title) {
 
         return;
 
     }
 
 
-    element.innerHTML = `
+    /*
+       O HTML pode definir
+       data-default-title.
+    */
 
-        <div class="empty">
-
-            <div class="empty-icon">
-                ⏳
-            </div>
-
-            <h2>
-                Carregando...
-            </h2>
-
-        </div>
-
-    `;
-
-}
+    const defaultTitle =
+        title.dataset.defaultTitle ||
+        "Minha Página";
 
 
-/* =====================================================
-   ERRO
-===================================================== */
+    /*
+       Mantém o título existente.
+    */
 
-function showError(
-    element,
-    message
-) {
+    if (
+        !title.textContent.trim()
+    ) {
 
-    if (!element) {
-
-        return;
+        title.textContent =
+            defaultTitle;
 
     }
 
-
-    element.innerHTML = `
-
-        <div class="empty">
-
-            <div class="empty-icon">
-                ⚠️
-            </div>
-
-            <h2>
-                Erro
-            </h2>
-
-            <p>
-                ${escapeHTML(message)}
-            </p>
-
-        </div>
-
-    `;
-
 }
 
 
 /* =====================================================
-   VAZIO
+   EVENTOS EXTRAS
 ===================================================== */
 
-function emptyHTML(
-    icon,
-    title,
-    description
-) {
+function setupExtraEvents() {
 
-    return `
+    setupLogoUpload();
 
-        <div class="empty">
+    setupPresetThemes();
 
-            <div class="empty-icon">
-                ${escapeHTML(icon)}
-            </div>
+    setupThemeControls();
 
-            <h2>
-                ${escapeHTML(title)}
-            </h2>
-
-            <p>
-                ${escapeHTML(description)}
-            </p>
-
-        </div>
-
-    `;
-
-}
+    updatePageTitle();
 
 
-/* =====================================================
-   TOAST
-===================================================== */
+    /*
+       Botão remover logo
+    */
 
-function showToast(
-    message
-) {
-
-    const toast =
-        document.getElementById(
-            "toast"
-        );
-
-
-    if (!toast) {
-
-        return;
-
-    }
-
-
-    toast.textContent =
-        String(message ?? "");
-
-
-    toast.classList.add(
-        "show"
+    on(
+        "removeLogoButton",
+        "click",
+        removeLogo
     );
 
 
-    clearTimeout(
-        toastTimer
+    /*
+       Botão salvar logo
+    */
+
+    on(
+        "saveLogoButton",
+        "click",
+        saveLogoToTheme
     );
 
 
-    toastTimer =
-        setTimeout(
-            () => {
+    /*
+       Gradiente
+    */
 
-                toast.classList.remove(
-                    "show"
+    on(
+        "themeGradient",
+        "change",
+        event => {
+
+            const previewTheme = {
+
+                ...currentTheme,
+
+                gradientEnabled:
+                    event.target.checked
+
+            };
+
+
+            applyTheme(
+                previewTheme
+            );
+
+        }
+    );
+
+
+    /*
+       Direção do gradiente
+    */
+
+    on(
+        "themeGradientDirection",
+        "change",
+        event => {
+
+            const previewTheme = {
+
+                ...currentTheme,
+
+                gradientDirection:
+                    event.target.value
+
+            };
+
+
+            applyTheme(
+                previewTheme
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   GARANTIR EXECUÇÃO DOS EVENTOS EXTRAS
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        setupExtraEvents();
+
+    }
+);
+
+
+/* =====================================================
+   MELHORAR X DOS MODAIS
+===================================================== */
+
+function setupModalCloseButtons() {
+
+    document
+        .querySelectorAll(
+            "[data-close]"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+
+                        const target =
+                            button.dataset.close;
+
+
+                        closeModal(
+                            target
+                        );
+
+                    }
                 );
 
-            },
-            2800
+            }
         );
 
 }
 
 
 /* =====================================================
-   LABELS DE TEMA
+   ESC PARA FECHAR MODAL
 ===================================================== */
 
 document.addEventListener(
-    "input",
+    "keydown",
     event => {
 
         if (
-            event.target.id ===
-                "themeBorderWidth" ||
-
-            event.target.id ===
-                "themeFontScale"
+            event.key !==
+            "Escape"
         ) {
 
-            updateRangeLabels();
+            return;
 
         }
+
+
+        document
+            .querySelectorAll(
+                ".modal-overlay:not(.hidden)"
+            )
+            .forEach(
+                modal => {
+
+                    modal.classList.add(
+                        "hidden"
+                    );
+
+                }
+            );
 
     }
 );
 
 
 /* =====================================================
-   GRADIENTE
+   CORREÇÃO DE LINKS
 ===================================================== */
 
-document.addEventListener(
-    "change",
-    event => {
+function normalizeURL(
+    url
+) {
 
-        if (
-            event.target.id ===
-            "themeGradientEnabled"
-        ) {
+    url =
+        String(
+            url || ""
+        ).trim();
 
-            updateGradientControls();
 
-        }
+    if (!url) {
+
+        return "";
 
     }
-);
+
+
+    /*
+       Aceita HTTP e HTTPS.
+    */
+
+    if (
+        /^https?:\/\//i.test(
+            url
+        )
+    ) {
+
+        return url;
+
+    }
+
+
+    /*
+       Adiciona HTTPS.
+    */
+
+    return (
+        "https://" +
+        url
+    );
+
+}
 
 
 /* =====================================================
-   ACESSO GLOBAL
+   VALIDAR URL
+===================================================== */
+
+function isValidURL(
+    url
+) {
+
+    try {
+
+        const parsed =
+            new URL(
+                normalizeURL(
+                    url
+                )
+            );
+
+
+        return (
+            parsed.protocol ===
+                "http:" ||
+
+            parsed.protocol ===
+                "https:"
+        );
+
+    } catch {
+
+        return false;
+
+    }
+
+}
+
+
+/* =====================================================
+   EXPORTAR ALGUMAS FUNÇÕES
+   PARA DEBUG NO CONSOLE
 ===================================================== */
 
 window.siteApp = {
@@ -5287,6 +4946,9 @@ window.siteApp = {
 
     reloadTheme:
         loadTheme,
+
+    applyTheme:
+        applyTheme,
 
     openFolder:
         openFolder,
@@ -5304,5 +4966,5 @@ window.siteApp = {
 
 
 /* =====================================================
-   FIM
+   FIM DO SCRIPT
 ===================================================== */
