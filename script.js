@@ -13,7 +13,7 @@ const SUPABASE_URL =
     "https://pdjbwcjehmqregimlryq.supabase.co";
 
 const SUPABASE_KEY =
-    "sb_publishable_d-ODS7kpWKsuBVTLYpDcjA_UyT9FEZ";
+    "sb_publishable_d-ODS7kpWKsuBVTLYpDcjA_UyT9FEZJ";
 
 const supabaseClient =
     window.supabase.createClient(
