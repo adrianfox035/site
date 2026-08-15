@@ -3,37 +3,66 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>LinkHub</title>
 
-    <link rel="stylesheet" href="style.css">
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 </head>
 
 <body>
 
+    <!-- ==================================================
+         TOPO
+    =================================================== -->
+
     <header class="topbar">
 
-        <div class="brand">
-            🔗 <span>LinkHub</span>
+        <!-- LOGO -->
+        <div class="topbar-left">
+
+            <div
+                id="siteLogo"
+                class="site-logo"
+            >
+                🔗
+            </div>
+
         </div>
 
-        <div class="header-actions">
+
+        <!-- TÍTULO -->
+        <div class="topbar-center">
+
+            <h1 id="siteTitle">
+                LinkHub
+            </h1>
+
+        </div>
+
+
+        <!-- ADMIN -->
+        <div class="topbar-right">
 
             <button
                 id="adminButton"
                 class="admin-button"
             >
-                🔐 Entrar como administrador
+                Admin
             </button>
 
             <button
                 id="logoutButton"
-                class="logout-button hidden"
+                class="admin-button hidden"
             >
-                Sair do admin
+                Sair
             </button>
 
         </div>
@@ -41,87 +70,380 @@
     </header>
 
 
+    <!-- ==================================================
+         CONTEÚDO PRINCIPAL
+    =================================================== -->
+
     <main>
 
-        <!-- PÁGINA PRINCIPAL -->
+        <!-- ==================================================
+             PÁGINA PRINCIPAL
+        =================================================== -->
 
-        <section id="homePage">
+        <section
+            id="homePage"
+            class="page"
+        >
 
-            <div class="page-header">
+            <div class="page-heading">
 
                 <div>
-                    <h1>Minhas pastas</h1>
+
+                    <h2>
+                        Pastas
+                    </h2>
 
                     <p>
-                        Organize e compartilhe seus links.
+                        Escolha uma pasta para acessar seus links.
                     </p>
+
                 </div>
 
-                <button
-                    id="addFolderButton"
-                    class="primary-button"
-                >
-                    + Adicionar pasta
-                </button>
+
+                <!-- CONTROLES -->
+                <div class="page-controls">
+
+                    <button
+                        id="organizeButton"
+                        class="control-button"
+                    >
+                        ⚙️ Organizar
+                    </button>
+
+                    <button
+                        id="themeButton"
+                        class="control-button admin-only hidden"
+                    >
+                        🎨 Cor
+                    </button>
+
+                </div>
 
             </div>
+
+
+            <!-- PAINEL DE ORGANIZAÇÃO -->
+
+            <div
+                id="organizePanel"
+                class="organize-panel hidden"
+            >
+
+                <div class="organize-section">
+
+                    <strong>
+                        Ordenar
+                    </strong>
+
+                    <button
+                        class="sort-option"
+                        data-sort="newest"
+                    >
+                        Mais recentes
+                    </button>
+
+                    <button
+                        class="sort-option"
+                        data-sort="oldest"
+                    >
+                        Mais antigas
+                    </button>
+
+                    <button
+                        class="sort-option"
+                        data-sort="most-links"
+                    >
+                        Mais links
+                    </button>
+
+                    <button
+                        class="sort-option"
+                        data-sort="least-links"
+                    >
+                        Menos links
+                    </button>
+
+                    <button
+                        class="sort-option"
+                        data-sort="color"
+                    >
+                        Por cor
+                    </button>
+
+                </div>
+
+
+                <div class="organize-section">
+
+                    <strong>
+                        Layout
+                    </strong>
+
+                    <label>
+                        Pastas por linha
+
+                        <select id="itemsPerRow">
+
+                            <option value="1">
+                                1
+                            </option>
+
+                            <option value="2">
+                                2
+                            </option>
+
+                            <option value="3">
+                                3
+                            </option>
+
+                            <option
+                                value="4"
+                                selected
+                            >
+                                4
+                            </option>
+
+                            <option value="5">
+                                5
+                            </option>
+
+                            <option value="6">
+                                6
+                            </option>
+
+                            <option value="8">
+                                8
+                            </option>
+
+                            <option value="10">
+                                10
+                            </option>
+
+                            <option value="12">
+                                12
+                            </option>
+
+                        </select>
+
+                    </label>
+
+
+                    <button
+                        id="layoutToggle"
+                        class="layout-button"
+                    >
+                        ⬜ Grade
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- PASTAS -->
 
             <div
                 id="foldersGrid"
                 class="cards-grid"
             ></div>
 
+
+            <!-- ADICIONAR -->
+
+            <button
+                id="addFolderButton"
+                class="add-button"
+            >
+                + Adicionar pasta
+            </button>
+
         </section>
 
 
-        <!-- PÁGINA DA PASTA -->
+        <!-- ==================================================
+             PÁGINA DA PASTA
+        =================================================== -->
 
         <section
             id="folderPage"
-            class="hidden"
+            class="page hidden"
         >
 
-            <button
-                id="backButton"
-                class="back-button"
-            >
-                ← Voltar
-            </button>
+            <div class="page-heading">
 
-            <div class="page-header">
+                <div class="folder-heading">
 
-                <div>
+                    <button
+                        id="backButton"
+                        class="back-button"
+                    >
+                        ←
+                    </button>
 
-                    <h1 id="folderTitle">
-                        Pasta
-                    </h1>
+                    <div>
 
-                    <p>
-                        Links desta pasta
-                    </p>
+                        <h2 id="folderTitle">
+                            Pasta
+                        </h2>
+
+                        <p>
+                            Links desta pasta
+                        </p>
+
+                    </div>
 
                 </div>
 
-                <button
-                    id="addLinkButton"
-                    class="primary-button"
-                >
-                    + Adicionar link
-                </button>
+
+                <div class="page-controls">
+
+                    <button
+                        id="organizeLinksButton"
+                        class="control-button"
+                    >
+                        ⚙️ Organizar
+                    </button>
+
+                    <button
+                        id="themeButtonLinks"
+                        class="control-button admin-only hidden"
+                    >
+                        🎨 Cor
+                    </button>
+
+                </div>
 
             </div>
+
+
+            <!-- ORGANIZAÇÃO DOS LINKS -->
+
+            <div
+                id="organizeLinksPanel"
+                class="organize-panel hidden"
+            >
+
+                <div class="organize-section">
+
+                    <strong>
+                        Ordenar
+                    </strong>
+
+                    <button
+                        class="link-sort-option"
+                        data-sort="newest"
+                    >
+                        Mais recentes
+                    </button>
+
+                    <button
+                        class="link-sort-option"
+                        data-sort="oldest"
+                    >
+                        Mais antigos
+                    </button>
+
+                    <button
+                        class="link-sort-option"
+                        data-sort="color"
+                    >
+                        Por cor
+                    </button>
+
+                </div>
+
+
+                <div class="organize-section">
+
+                    <strong>
+                        Layout
+                    </strong>
+
+                    <label>
+
+                        Links por linha
+
+                        <select id="linksPerRow">
+
+                            <option value="1">
+                                1
+                            </option>
+
+                            <option value="2">
+                                2
+                            </option>
+
+                            <option value="3">
+                                3
+                            </option>
+
+                            <option
+                                value="4"
+                                selected
+                            >
+                                4
+                            </option>
+
+                            <option value="5">
+                                5
+                            </option>
+
+                            <option value="6">
+                                6
+                            </option>
+
+                            <option value="8">
+                                8
+                            </option>
+
+                            <option value="10">
+                                10
+                            </option>
+
+                            <option value="12">
+                                12
+                            </option>
+
+                        </select>
+
+                    </label>
+
+
+                    <button
+                        id="linkLayoutToggle"
+                        class="layout-button"
+                    >
+                        ⬜ Grade
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- LINKS -->
 
             <div
                 id="linksGrid"
                 class="cards-grid"
             ></div>
 
+
+            <button
+                id="addLinkButton"
+                class="add-button"
+            >
+                + Adicionar link
+            </button>
+
         </section>
 
     </main>
 
 
-    <!-- MODAL DE ADMIN -->
+    <!-- ==================================================
+         MODAL ADMIN
+    =================================================== -->
 
     <div
         id="adminModal"
@@ -131,37 +453,35 @@
         <div class="modal">
 
             <button
-                class="close-button"
+                class="modal-close"
                 data-close="adminModal"
             >
                 ×
             </button>
 
-            <h2>🔐 Administrador</h2>
+            <h2>
+                🔐 Administrador
+            </h2>
 
-            <p class="modal-description">
-                Digite a senha para liberar as funções administrativas.
+            <p>
+                Digite a senha para acessar as funções administrativas.
             </p>
-
-            <label for="adminPassword">
-                Senha
-            </label>
 
             <input
                 id="adminPassword"
                 type="password"
-                placeholder="Digite a senha"
+                placeholder="Senha"
                 autocomplete="off"
             >
 
-            <p
+            <div
                 id="adminError"
-                class="error-message"
-            ></p>
+                class="modal-error"
+            ></div>
 
             <button
                 id="confirmAdminButton"
-                class="primary-button full-width"
+                class="primary-button"
             >
                 Entrar
             </button>
@@ -171,7 +491,9 @@
     </div>
 
 
-    <!-- MODAL DE PASTA -->
+    <!-- ==================================================
+         MODAL PASTA
+    =================================================== -->
 
     <div
         id="folderModal"
@@ -181,7 +503,7 @@
         <div class="modal">
 
             <button
-                class="close-button"
+                class="modal-close"
                 data-close="folderModal"
             >
                 ×
@@ -191,59 +513,54 @@
                 📁 Nova pasta
             </h2>
 
-            <label for="folderName">
+            <label>
                 Nome
-            </label>
-
-            <input
-                id="folderName"
-                type="text"
-                maxlength="60"
-                placeholder="Ex.: Estudos"
-            >
-
-            <label for="folderColor">
-                Cor
-            </label>
-
-            <div class="color-input">
 
                 <input
-                    id="folderColor"
-                    type="color"
-                    value="#4f7cff"
+                    id="folderName"
+                    type="text"
+                    maxlength="60"
+                    placeholder="Nome da pasta"
                 >
 
-                <span id="folderColorValue">
-                    #4f7cff
-                </span>
+            </label>
 
-            </div>
 
-            <div class="modal-actions">
+            <label>
+                Cor
 
-                <button
-                    class="secondary-button"
-                    data-close="folderModal"
-                >
-                    Cancelar
-                </button>
+                <div class="color-input">
 
-                <button
-                    id="saveFolderButton"
-                    class="primary-button"
-                >
-                    Salvar
-                </button>
+                    <input
+                        id="folderColor"
+                        type="color"
+                        value="#4f7cff"
+                    >
 
-            </div>
+                    <span id="folderColorValue">
+                        #4f7cff
+                    </span>
+
+                </div>
+
+            </label>
+
+
+            <button
+                id="saveFolderButton"
+                class="primary-button"
+            >
+                Salvar
+            </button>
 
         </div>
 
     </div>
 
 
-    <!-- MODAL DE LINK -->
+    <!-- ==================================================
+         MODAL LINK
+    =================================================== -->
 
     <div
         id="linkModal"
@@ -253,7 +570,7 @@
         <div class="modal">
 
             <button
-                class="close-button"
+                class="modal-close"
                 data-close="linkModal"
             >
                 ×
@@ -263,59 +580,181 @@
                 🔗 Novo link
             </h2>
 
-            <label for="linkName">
+            <label>
                 Nome
-            </label>
-
-            <input
-                id="linkName"
-                type="text"
-                maxlength="80"
-                placeholder="Ex.: Google"
-            >
-
-            <label for="linkUrl">
-                Endereço do link
-            </label>
-
-            <input
-                id="linkUrl"
-                type="url"
-                placeholder="https://google.com"
-            >
-
-            <label for="linkColor">
-                Cor
-            </label>
-
-            <div class="color-input">
 
                 <input
-                    id="linkColor"
-                    type="color"
-                    value="#00a884"
+                    id="linkName"
+                    type="text"
+                    maxlength="80"
+                    placeholder="Nome do link"
                 >
 
-                <span id="linkColorValue">
-                    #00a884
-                </span>
+            </label>
 
-            </div>
 
-            <div class="modal-actions">
+            <label>
+                Link
+
+                <input
+                    id="linkUrl"
+                    type="url"
+                    placeholder="https://exemplo.com"
+                >
+
+            </label>
+
+
+            <label>
+                Cor
+
+                <div class="color-input">
+
+                    <input
+                        id="linkColor"
+                        type="color"
+                        value="#00a884"
+                    >
+
+                    <span id="linkColorValue">
+                        #00a884
+                    </span>
+
+                </div>
+
+            </label>
+
+
+            <button
+                id="saveLinkButton"
+                class="primary-button"
+            >
+                Salvar
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ==================================================
+         MODAL TEMA
+    =================================================== -->
+
+    <div
+        id="themeModal"
+        class="modal-overlay hidden"
+    >
+
+        <div class="modal theme-modal">
+
+            <button
+                class="modal-close"
+                data-close="themeModal"
+            >
+                ×
+            </button>
+
+            <h2>
+                🎨 Personalizar página
+            </h2>
+
+            <p>
+                Essas cores serão aplicadas para todos os visitantes.
+            </p>
+
+
+            <label>
+                Fundo
+
+                <input
+                    id="themeBackground"
+                    type="color"
+                >
+
+            </label>
+
+
+            <label>
+                Topo
+
+                <input
+                    id="themeTopbar"
+                    type="color"
+                >
+
+            </label>
+
+
+            <label>
+                Texto
+
+                <input
+                    id="themeText"
+                    type="color"
+                >
+
+            </label>
+
+
+            <label>
+                Títulos
+
+                <input
+                    id="themeHeading"
+                    type="color"
+                >
+
+            </label>
+
+
+            <label>
+                Bordas
+
+                <input
+                    id="themeBorder"
+                    type="color"
+                >
+
+            </label>
+
+
+            <label>
+                Botões
+
+                <input
+                    id="themeButtonColor"
+                    type="color"
+                >
+
+            </label>
+
+
+            <label>
+                Logo
+
+                <input
+                    id="themeLogo"
+                    type="color"
+                >
+
+            </label>
+
+
+            <div class="theme-actions">
 
                 <button
+                    id="resetThemeButton"
                     class="secondary-button"
-                    data-close="linkModal"
                 >
-                    Cancelar
+                    Restaurar
                 </button>
 
                 <button
-                    id="saveLinkButton"
+                    id="saveThemeButton"
                     class="primary-button"
                 >
-                    Salvar
+                    Salvar tema
                 </button>
 
             </div>
@@ -325,13 +764,18 @@
     </div>
 
 
+    <!-- TOAST -->
+
     <div
         id="toast"
         class="toast"
     ></div>
 
 
+    <!-- SUPABASE -->
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script src="script.js"></script>
 
 </body>
