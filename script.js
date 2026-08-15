@@ -399,6 +399,8 @@ function setupEvents() {
 
                 if (event.key === "Enter") {
 
+                    event.preventDefault();
+
                     loginAdmin();
 
                 }
@@ -480,7 +482,7 @@ function setupEvents() {
                 () => {
 
                     folderSort =
-                        button.dataset.sort;
+                        button.dataset.sort || "newest";
 
                     setActiveButton(
                         ".sort-option",
@@ -504,7 +506,7 @@ function setupEvents() {
                 () => {
 
                     linkSort =
-                        button.dataset.sort;
+                        button.dataset.sort || "newest";
 
                     setActiveButton(
                         ".link-sort-option",
@@ -525,9 +527,7 @@ function setupEvents() {
         event => {
 
             foldersPerRow =
-                Number(
-                    event.target.value
-                );
+                Number(event.target.value) || 4;
 
             applyLayout(
                 document.getElementById(
@@ -547,9 +547,7 @@ function setupEvents() {
         event => {
 
             linksPerRow =
-                Number(
-                    event.target.value
-                );
+                Number(event.target.value) || 4;
 
             applyLayout(
                 document.getElementById(
@@ -795,9 +793,7 @@ function setupEvents() {
         "keydown",
         event => {
 
-            if (
-                event.key !== "Escape"
-            ) {
+            if (event.key !== "Escape") {
 
                 return;
 
@@ -854,20 +850,31 @@ function on(
 
 async function loadFolders() {
 
-    const grid = document.getElementById("foldersGrid");
+    const grid =
+        document.getElementById(
+            "foldersGrid"
+        );
 
     if (!grid) {
+
         return;
+
     }
 
     showLoading(grid);
 
-    const result = await supabaseClient
-        .from("folders")
-        .select("*")
-        .order("created_at", {
-            ascending: false
-        });
+
+    const result =
+        await supabaseClient
+            .from("folders")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
 
     if (result.error) {
 
@@ -882,27 +889,55 @@ async function loadFolders() {
         );
 
         return;
+
     }
 
-    folders = result.data || [];
+
+    folders =
+        Array.isArray(result.data)
+            ? result.data
+            : [];
+
 
     await loadFolderLinkCounts();
 
+
+    /*
+       Se a pasta atual deixou de existir,
+       retorna para um estado seguro.
+    */
+
+    if (
+        currentFolderId !== null &&
+        !folders.some(
+            folder =>
+                String(folder.id) ===
+                String(currentFolderId)
+        )
+    ) {
+
+        currentFolderId = null;
+
+        showHomeInterfaceOnly();
+
+    }
+
+
     renderFolders();
 
-}
 
     /*
        Se já estamos dentro de uma pasta,
-       atualiza também o conteúdo dela.
+       atualiza também seus conteúdos.
     */
 
-    if (currentFolderId) {
+    if (currentFolderId !== null) {
 
         renderCurrentFolderContents();
 
     }
 
+}
 
 
 /* =====================================================
@@ -948,13 +983,27 @@ async function loadFolderLinkCounts() {
 
         const counts = {};
 
+
         (result.data || []).forEach(
             link => {
 
-                counts[link.folder_id] =
+                if (
+                    link.folder_id === null ||
+                    link.folder_id === undefined
+                ) {
+
+                    return;
+
+                }
+
+
+                const key =
+                    String(link.folder_id);
+
+
+                counts[key] =
                     (
-                        counts[link.folder_id] ||
-                        0
+                        counts[key] || 0
                     ) + 1;
 
             }
@@ -965,7 +1014,7 @@ async function loadFolderLinkCounts() {
             folder => {
 
                 folder.linkCount =
-                    counts[folder.id] || 0;
+                    counts[String(folder.id)] || 0;
 
             }
         );
@@ -980,16 +1029,22 @@ async function loadFolderLinkCounts() {
 
     const childCounts = {};
 
+
     folders.forEach(
         folder => {
 
-            if (folder.parent_id) {
+            if (
+                folder.parent_id !== null &&
+                folder.parent_id !== undefined
+            ) {
 
-                childCounts[folder.parent_id] =
+                const key =
+                    String(folder.parent_id);
+
+
+                childCounts[key] =
                     (
-                        childCounts[
-                            folder.parent_id
-                        ] || 0
+                        childCounts[key] || 0
                     ) + 1;
 
             }
@@ -1002,7 +1057,7 @@ async function loadFolderLinkCounts() {
         folder => {
 
             folder.childCount =
-                childCounts[folder.id] || 0;
+                childCounts[String(folder.id)] || 0;
 
         }
     );
@@ -1028,6 +1083,7 @@ function getVisibleFolders() {
 
             }
 
+
             return (
                 String(folder.parent_id) ===
                 String(currentFolderId)
@@ -1046,184 +1102,78 @@ function getVisibleFolders() {
 function renderFolders() {
 
     const grid =
-        document.getElementById("foldersGrid");
+        document.getElementById(
+            "foldersGrid"
+        );
+
 
     if (!grid) {
+
         return;
+
     }
 
-    /*
-       Quando estamos dentro de uma pasta,
-       mostramos apenas as subpastas dela.
-       
-       Na página inicial:
-       parent_id = null
-    */
-
-    const parentId =
-        currentFolderId || null;
 
     const visibleFolders =
-        folders.filter(folder => {
+        getVisibleFolders();
 
-            if (parentId === null) {
-
-                return !folder.parent_id;
-
-            }
-
-            return String(folder.parent_id) ===
-                String(parentId);
-
-        });
 
     if (!visibleFolders.length) {
 
         grid.innerHTML =
             emptyHTML(
-                "📁",
-                "Nenhuma subpasta",
-                adminMode
-                    ? "Crie uma pasta dentro desta pasta."
-                    : "Esta pasta não possui subpastas."
+                currentFolderId === null
+                    ? "📁"
+                    : "📂",
+                currentFolderId === null
+                    ? "Nenhuma pasta"
+                    : "Nenhuma subpasta",
+                currentFolderId === null
+                    ? (
+                        adminMode
+                            ? "Crie sua primeira pasta."
+                            : "Nenhuma pasta foi criada ainda."
+                    )
+                    : (
+                        adminMode
+                            ? "Crie uma pasta dentro desta pasta."
+                            : "Esta pasta não possui subpastas."
+                    )
             );
 
         return;
+
     }
+
 
     const list =
         sortFolders(
             [...visibleFolders]
         );
 
+
     grid.innerHTML = "";
 
-    list.forEach(folder => {
 
-        const card =
-            document.createElement("div");
+    list.forEach(
+        folder => {
 
-        card.className = "card";
-
-        card.style.background =
-            createCardGradient(folder.color);
-
-        card.innerHTML = `
-
-            ${
-                adminMode
-                    ? `
-                    <div class="card-actions">
-
-                        <button
-                            class="card-action edit-folder"
-                            type="button"
-                            title="Editar"
-                        >
-                            ✏️
-                        </button>
-
-                        <button
-                            class="card-action delete delete-folder"
-                            type="button"
-                            title="Excluir"
-                        >
-                            🗑️
-                        </button>
-
-                    </div>
-                    `
-                    : ""
-            }
-
-            <div>
-
-                <div class="card-name">
-                    📁 ${escapeHTML(folder.name)}
-                </div>
-
-                <div class="card-description">
-
-                    ${
-                        folder.linkCount || 0
-                    }
-
-                    ${
-                        Number(folder.linkCount) === 1
-                            ? "link"
-                            : "links"
-                    }
-
-                </div>
-
-            </div>
-
-            <div class="card-description">
-                Clique para entrar
-            </div>
-
-        `;
-
-        card.addEventListener(
-            "click",
-            () => {
-
-                openFolder(folder.id);
-
-            }
-        );
-
-        if (adminMode) {
-
-            const edit =
-                card.querySelector(".edit-folder");
-
-            const del =
-                card.querySelector(".delete-folder");
-
-            if (edit) {
-
-                edit.addEventListener(
-                    "click",
-                    event => {
-
-                        event.preventDefault();
-                        event.stopPropagation();
-
-                        openFolderModal(folder);
-
-                    }
-                );
-
-            }
-
-            if (del) {
-
-                del.addEventListener(
-                    "click",
-                    event => {
-
-                        event.preventDefault();
-                        event.stopPropagation();
-
-                        deleteFolder(folder);
-
-                    }
-                );
-
-            }
+            grid.appendChild(
+                createFolderCard(
+                    folder
+                )
+            );
 
         }
+    );
 
-        grid.appendChild(card);
-
-    });
 
     applyLayout(
         grid,
         foldersPerRow,
         folderLayout
     );
+
 }
 
 
@@ -1274,6 +1224,7 @@ function createFolderCard(
                         class="card-action edit-folder"
                         type="button"
                         title="Editar"
+                        aria-label="Editar pasta"
                     >
                         ✏️
                     </button>
@@ -1282,6 +1233,7 @@ function createFolderCard(
                         class="card-action delete delete-folder"
                         type="button"
                         title="Excluir"
+                        aria-label="Excluir pasta"
                     >
                         🗑️
                     </button>
@@ -1291,7 +1243,6 @@ function createFolderCard(
                 : ""
         }
 
-
         <div>
 
             <div class="card-name">
@@ -1300,24 +1251,19 @@ function createFolderCard(
 
             <div class="card-description">
 
-                ${
-                    folder.childCount || 0
-                }
+                ${Number(folder.childCount) || 0}
 
                 ${childText}
 
                 •
-                
-                ${
-                    folder.linkCount || 0
-                }
+
+                ${Number(folder.linkCount) || 0}
 
                 ${linkText}
 
             </div>
 
         </div>
-
 
         <div class="card-description">
             Clique para entrar
@@ -1411,12 +1357,8 @@ function sortFolders(list) {
 
             return list.sort(
                 (a, b) =>
-                    new Date(
-                        a.created_at
-                    ) -
-                    new Date(
-                        b.created_at
-                    )
+                    new Date(a.created_at) -
+                    new Date(b.created_at)
             );
 
 
@@ -1425,10 +1367,10 @@ function sortFolders(list) {
             return list.sort(
                 (a, b) =>
                     (
-                        b.linkCount || 0
+                        Number(b.linkCount) || 0
                     ) -
                     (
-                        a.linkCount || 0
+                        Number(a.linkCount) || 0
                     )
             );
 
@@ -1438,10 +1380,10 @@ function sortFolders(list) {
             return list.sort(
                 (a, b) =>
                     (
-                        a.linkCount || 0
+                        Number(a.linkCount) || 0
                     ) -
                     (
-                        b.linkCount || 0
+                        Number(b.linkCount) || 0
                     )
             );
 
@@ -1450,13 +1392,10 @@ function sortFolders(list) {
 
             return list.sort(
                 (a, b) =>
-                    String(
-                        a.color || ""
-                    ).localeCompare(
-                        String(
-                            b.color || ""
+                    String(a.color || "")
+                        .localeCompare(
+                            String(b.color || "")
                         )
-                    )
             );
 
 
@@ -1466,12 +1405,8 @@ function sortFolders(list) {
 
             return list.sort(
                 (a, b) =>
-                    new Date(
-                        b.created_at
-                    ) -
-                    new Date(
-                        a.created_at
-                    )
+                    new Date(b.created_at) -
+                    new Date(a.created_at)
             );
 
     }
@@ -1483,7 +1418,9 @@ function sortFolders(list) {
    ABRIR PASTA
 ===================================================== */
 
-async function openFolder(folderId) {
+async function openFolder(
+    folderId
+) {
 
     const folder =
         folders.find(
@@ -1492,17 +1429,23 @@ async function openFolder(folderId) {
                 String(folderId)
         );
 
+
     if (!folder) {
+
         return;
+
     }
+
 
     currentFolderId =
         folder.id;
+
 
     const title =
         document.getElementById(
             "folderTitle"
         );
+
 
     if (title) {
 
@@ -1511,25 +1454,54 @@ async function openFolder(folderId) {
 
     }
 
-    document
-        .getElementById("homePage")
-        .classList.add("hidden");
 
-    document
-        .getElementById("folderPage")
-        .classList.remove("hidden");
+    const homePage =
+        document.getElementById(
+            "homePage"
+        );
+
+
+    const folderPage =
+        document.getElementById(
+            "folderPage"
+        );
+
+
+    if (homePage) {
+
+        homePage.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (folderPage) {
+
+        folderPage.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    updateBackButton();
+
 
     /*
-       Primeiro carregamos as subpastas.
+       Mostra as subpastas.
     */
 
     renderFolders();
 
+
     /*
-       Depois carregamos os links desta pasta.
+       Carrega os links da pasta.
     */
 
-    await loadLinks(folder.id);
+    await loadLinks(
+        folder.id
+    );
 
 }
 
@@ -1542,7 +1514,7 @@ async function handleBackNavigation() {
 
     if (currentFolderId === null) {
 
-        showHome();
+        await showHome();
 
         return;
 
@@ -1557,21 +1529,30 @@ async function handleBackNavigation() {
         );
 
 
-    if (
-        !currentFolder ||
-        !currentFolder.parent_id
-    ) {
+    if (!currentFolder) {
 
-        showHome();
+        await showHome();
 
         return;
 
     }
 
 
-    await openFolder(
-        currentFolder.parent_id
-    );
+    if (
+        currentFolder.parent_id !== null &&
+        currentFolder.parent_id !== undefined
+    ) {
+
+        await openFolder(
+            currentFolder.parent_id
+        );
+
+        return;
+
+    }
+
+
+    await showHome();
 
 }
 
@@ -1615,7 +1596,8 @@ function updateBackButton() {
 
     if (
         currentFolder &&
-        currentFolder.parent_id
+        currentFolder.parent_id !== null &&
+        currentFolder.parent_id !== undefined
     ) {
 
         const parent =
@@ -1699,7 +1681,9 @@ async function loadLinks(
 
 
     currentLinks =
-        result.data || [];
+        Array.isArray(result.data)
+            ? result.data
+            : [];
 
 
     renderCurrentFolderContents();
@@ -1713,7 +1697,7 @@ async function loadLinks(
 
 function renderCurrentFolderContents() {
 
-    if (!currentFolderId) {
+    if (currentFolderId === null) {
 
         return;
 
@@ -1733,16 +1717,6 @@ function renderCurrentFolderContents() {
     }
 
 
-    const childFolders =
-        sortFolders(
-            folders.filter(
-                folder =>
-                    String(folder.parent_id) ===
-                    String(currentFolderId)
-            )
-        );
-
-
     const sortedLinks =
         sortLinks(
             [...currentLinks]
@@ -1753,24 +1727,8 @@ function renderCurrentFolderContents() {
 
 
     /*
-       Primeiro aparecem as subpastas.
-    */
-
-    childFolders.forEach(
-        folder => {
-
-            grid.appendChild(
-                createFolderCard(
-                    folder
-                )
-            );
-
-        }
-    );
-
-
-    /*
-       Depois aparecem os links.
+       As subpastas já são exibidas em foldersGrid.
+       Portanto, aqui mostramos somente os links.
     */
 
     sortedLinks.forEach(
@@ -1786,16 +1744,15 @@ function renderCurrentFolderContents() {
     );
 
 
-    if (
-        childFolders.length === 0 &&
-        sortedLinks.length === 0
-    ) {
+    if (!sortedLinks.length) {
 
         grid.innerHTML =
             emptyHTML(
-                "📂",
-                "Pasta vazia",
-                "Adicione uma subpasta ou um link."
+                "🔗",
+                "Nenhum link",
+                adminMode
+                    ? "Adicione um link nesta pasta."
+                    : "Esta pasta não possui links."
             );
 
         return;
@@ -1810,6 +1767,7 @@ function renderCurrentFolderContents() {
     );
 
 }
+
 
 /* =====================================================
    RENDER LINKS
@@ -1834,7 +1792,7 @@ function renderLinks(
 
     const list =
         sortLinks(
-            [...links]
+            [...(links || [])]
         );
 
 
@@ -1852,6 +1810,20 @@ function renderLinks(
 
         }
     );
+
+
+    if (!list.length) {
+
+        grid.innerHTML =
+            emptyHTML(
+                "🔗",
+                "Nenhum link",
+                "Não existem links para mostrar."
+            );
+
+        return;
+
+    }
 
 
     applyLayout(
@@ -1898,6 +1870,7 @@ function createLinkCard(
                         class="card-action edit-link"
                         type="button"
                         title="Editar"
+                        aria-label="Editar link"
                     >
                         ✏️
                     </button>
@@ -1906,6 +1879,7 @@ function createLinkCard(
                         class="card-action delete delete-link"
                         type="button"
                         title="Excluir"
+                        aria-label="Excluir link"
                     >
                         🗑️
                     </button>
@@ -1914,7 +1888,6 @@ function createLinkCard(
                 `
                 : ""
         }
-
 
         <div>
 
@@ -1928,7 +1901,6 @@ function createLinkCard(
 
         </div>
 
-
         <div class="card-description">
             Abrir link ↗
         </div>
@@ -1940,11 +1912,23 @@ function createLinkCard(
         "click",
         () => {
 
-            window.open(
-                normalizeURL(link.url),
-                "_blank",
-                "noopener,noreferrer"
-            );
+            const normalized =
+                normalizeURL(
+                    link.url
+                );
+
+
+            if (
+                isValidURL(normalized)
+            ) {
+
+                window.open(
+                    normalized,
+                    "_blank",
+                    "noopener,noreferrer"
+                );
+
+            }
 
         }
     );
@@ -2025,12 +2009,8 @@ function sortLinks(
 
             return list.sort(
                 (a, b) =>
-                    new Date(
-                        a.created_at
-                    ) -
-                    new Date(
-                        b.created_at
-                    )
+                    new Date(a.created_at) -
+                    new Date(b.created_at)
             );
 
 
@@ -2038,13 +2018,10 @@ function sortLinks(
 
             return list.sort(
                 (a, b) =>
-                    String(
-                        a.color || ""
-                    ).localeCompare(
-                        String(
-                            b.color || ""
+                    String(a.color || "")
+                        .localeCompare(
+                            String(b.color || "")
                         )
-                    )
             );
 
 
@@ -2054,12 +2031,8 @@ function sortLinks(
 
             return list.sort(
                 (a, b) =>
-                    new Date(
-                        b.created_at
-                    ) -
-                    new Date(
-                        a.created_at
-                    )
+                    new Date(b.created_at) -
+                    new Date(a.created_at)
             );
 
     }
@@ -2084,9 +2057,16 @@ function applyLayout(
     }
 
 
+    const safeColumns =
+        Math.max(
+            1,
+            Number(columns) || 1
+        );
+
+
     grid.style.setProperty(
         "--columns",
-        columns
+        safeColumns
     );
 
 
@@ -2173,6 +2153,13 @@ function toggleLinkLayout() {
 ===================================================== */
 
 function openAdminModal() {
+
+    if (adminMode) {
+
+        return;
+
+    }
+
 
     const modal =
         document.getElementById(
@@ -2339,7 +2326,7 @@ async function loginAdmin() {
     renderFolders();
 
 
-    if (currentFolderId) {
+    if (currentFolderId !== null) {
 
         renderCurrentFolderContents();
 
@@ -2362,15 +2349,25 @@ function logoutAdmin() {
     adminMode =
         false;
 
+
     adminPassword =
         "";
+
+
+    editingFolderId =
+        null;
+
+
+    editingLinkId =
+        null;
+
 
     updateAdminInterface();
 
     renderFolders();
 
 
-    if (currentFolderId) {
+    if (currentFolderId !== null) {
 
         renderCurrentFolderContents();
 
@@ -2448,6 +2445,17 @@ function openFolderModal(
     folder = null
 ) {
 
+    if (!adminMode) {
+
+        showToast(
+            "Apenas o administrador pode criar ou editar pastas."
+        );
+
+        return;
+
+    }
+
+
     editingFolderId =
         folder
             ? folder.id
@@ -2484,7 +2492,7 @@ function openFolderModal(
             folder
                 ? "✏️ Editar pasta"
                 : (
-                    currentFolderId
+                    currentFolderId !== null
                         ? "📁 Nova subpasta"
                         : "📁 Nova pasta"
                 );
@@ -2510,7 +2518,9 @@ function openFolderModal(
     if (color) {
 
         color.value =
-            selectedColor;
+            normalizeColor(
+                selectedColor
+            );
 
     }
 
@@ -2518,7 +2528,9 @@ function openFolderModal(
     if (colorValue) {
 
         colorValue.textContent =
-            selectedColor;
+            normalizeColor(
+                selectedColor
+            );
 
     }
 
@@ -2546,16 +2558,48 @@ function openFolderModal(
 
 async function saveFolder() {
 
+    if (!adminMode) {
+
+        showToast(
+            "Apenas o administrador pode salvar pastas."
+        );
+
+        return;
+
+    }
+
+
+    const nameElement =
+        document.getElementById(
+            "folderName"
+        );
+
+
+    const colorElement =
+        document.getElementById(
+            "folderColor"
+        );
+
+
+    if (
+        !nameElement ||
+        !colorElement
+    ) {
+
+        return;
+
+    }
+
+
     const name =
-        document
-            .getElementById("folderName")
-            .value
-            .trim();
+        nameElement.value.trim();
+
 
     const color =
-        document
-            .getElementById("folderColor")
-            .value;
+        normalizeColor(
+            colorElement.value
+        );
+
 
     if (!name) {
 
@@ -2564,24 +2608,18 @@ async function saveFolder() {
         );
 
         return;
+
     }
+
 
     let result;
 
+
     /*
-       Se estamos editando uma pasta existente.
+       Editando uma pasta.
     */
 
-    if (editingFolderId) {
-
-        if (!adminMode) {
-
-            showToast(
-                "Apenas o administrador pode editar pastas."
-            );
-
-            return;
-        }
+    if (editingFolderId !== null) {
 
         result =
             await supabaseClient.rpc(
@@ -2605,9 +2643,6 @@ async function saveFolder() {
 
     /*
        Nova pasta.
-       
-       currentFolderId será o pai.
-       Se for null, a pasta fica na raiz.
     */
 
     else {
@@ -2617,15 +2652,19 @@ async function saveFolder() {
                 .from("folders")
                 .insert({
 
-                    name: name,
+                    name,
 
-                    color: color,
+                    color,
 
                     parent_id:
-                        currentFolderId || null
+                        currentFolderId !== null
+                            ? currentFolderId
+                            : null
 
                 });
+
     }
+
 
     if (result.error) {
 
@@ -2639,33 +2678,35 @@ async function saveFolder() {
         );
 
         return;
+
     }
 
-    closeModal("folderModal");
 
-    editingFolderId = null;
+    closeModal(
+        "folderModal"
+    );
+
+
+    editingFolderId =
+        null;
+
 
     await loadFolders();
 
-    /*
-       Se estamos dentro de uma pasta,
-       renderiza novamente as subpastas.
-    */
 
-    if (currentFolderId) {
+    if (currentFolderId !== null) {
 
         renderFolders();
 
-        await loadLinks(
-            currentFolderId
-        );
-
     }
+
 
     showToast(
         "Pasta salva."
     );
+
 }
+
 
 /* =====================================================
    EXCLUIR PASTA
@@ -2676,6 +2717,13 @@ async function deleteFolder(
 ) {
 
     if (!adminMode) {
+
+        return;
+
+    }
+
+
+    if (!folder || folder.id === null) {
 
         return;
 
@@ -2708,7 +2756,7 @@ async function deleteFolder(
 
 
     const confirmed =
-        confirm(
+        window.confirm(
             message
         );
 
@@ -2750,17 +2798,27 @@ async function deleteFolder(
 
 
     /*
-       Se excluímos a pasta atual
-       ou alguma pasta acima dela,
-       voltamos para um local seguro.
+       Verifica se a pasta atual está
+       dentro da árvore excluída.
     */
 
-    if (
-        String(currentFolderId) ===
-        String(folder.id)
-    ) {
+    const deletingCurrentTree =
+        currentFolderId !== null &&
+        isFolderInsideTree(
+            currentFolderId,
+            folder.id
+        );
 
-        showHome();
+
+    if (deletingCurrentTree) {
+
+        currentFolderId =
+            null;
+
+        currentLinks =
+            [];
+
+        showHomeInterfaceOnly();
 
     }
 
@@ -2768,7 +2826,7 @@ async function deleteFolder(
     await loadFolders();
 
 
-    if (currentFolderId) {
+    if (currentFolderId !== null) {
 
         await loadLinks(
             currentFolderId
@@ -2785,6 +2843,78 @@ async function deleteFolder(
 
 
 /* =====================================================
+   VERIFICAR ÁRVORE DE PASTA
+===================================================== */
+
+function isFolderInsideTree(
+    folderId,
+    rootFolderId
+) {
+
+    let currentId =
+        folderId;
+
+
+    const visited =
+        new Set();
+
+
+    while (
+        currentId !== null &&
+        currentId !== undefined
+    ) {
+
+        const key =
+            String(currentId);
+
+
+        if (visited.has(key)) {
+
+            return false;
+
+        }
+
+
+        visited.add(key);
+
+
+        if (
+            key ===
+            String(rootFolderId)
+        ) {
+
+            return true;
+
+        }
+
+
+        const folder =
+            folders.find(
+                item =>
+                    String(item.id) ===
+                    key
+            );
+
+
+        if (!folder) {
+
+            return false;
+
+        }
+
+
+        currentId =
+            folder.parent_id;
+
+    }
+
+
+    return false;
+
+}
+
+
+/* =====================================================
    MODAL DE LINK
 ===================================================== */
 
@@ -2792,7 +2922,18 @@ function openLinkModal(
     link = null
 ) {
 
-    if (!currentFolderId) {
+    if (!adminMode) {
+
+        showToast(
+            "Apenas o administrador pode criar ou editar links."
+        );
+
+        return;
+
+    }
+
+
+    if (currentFolderId === null) {
 
         showToast(
             "Abra uma pasta primeiro."
@@ -2877,7 +3018,9 @@ function openLinkModal(
     if (color) {
 
         color.value =
-            selectedColor;
+            normalizeColor(
+                selectedColor
+            );
 
     }
 
@@ -2885,7 +3028,9 @@ function openLinkModal(
     if (colorValue) {
 
         colorValue.textContent =
-            selectedColor;
+            normalizeColor(
+                selectedColor
+            );
 
     }
 
@@ -2912,6 +3057,17 @@ function openLinkModal(
 ===================================================== */
 
 async function saveLink() {
+
+    if (!adminMode) {
+
+        showToast(
+            "Apenas o administrador pode salvar links."
+        );
+
+        return;
+
+    }
+
 
     const nameElement =
         document.getElementById(
@@ -2942,6 +3098,17 @@ async function saveLink() {
     }
 
 
+    if (currentFolderId === null) {
+
+        showToast(
+            "Abra uma pasta primeiro."
+        );
+
+        return;
+
+    }
+
+
     const name =
         nameElement.value.trim();
 
@@ -2951,7 +3118,9 @@ async function saveLink() {
 
 
     const color =
-        colorElement.value;
+        normalizeColor(
+            colorElement.value
+        );
 
 
     if (!name || !url) {
@@ -2985,18 +3154,7 @@ async function saveLink() {
     let result;
 
 
-    if (editingLinkId) {
-
-        if (!adminMode) {
-
-            showToast(
-                "Apenas o administrador pode editar links."
-            );
-
-            return;
-
-        }
-
+    if (editingLinkId !== null) {
 
         result =
             await supabaseClient.rpc(
@@ -3025,6 +3183,7 @@ async function saveLink() {
             await supabaseClient
                 .from("links")
                 .insert({
+
                     folder_id:
                         currentFolderId,
 
@@ -3033,6 +3192,7 @@ async function saveLink() {
                     url,
 
                     color
+
                 });
 
     }
@@ -3093,8 +3253,15 @@ async function deleteLink(
     }
 
 
+    if (!link) {
+
+        return;
+
+    }
+
+
     const confirmed =
-        confirm(
+        window.confirm(
             `Excluir "${link.name}"?`
         );
 
@@ -3197,14 +3364,19 @@ async function loadTheme() {
     try {
 
         const savedTheme =
-            JSON.parse(
-                result.data.value
-            );
+            typeof result.data.value === "string"
+                ? JSON.parse(
+                    result.data.value
+                )
+                : result.data.value;
 
 
         currentTheme = {
+
             ...defaultTheme,
-            ...savedTheme
+
+            ...(savedTheme || {})
+
         };
 
 
@@ -3218,6 +3390,11 @@ async function loadTheme() {
             "Tema inválido:",
             error
         );
+
+        currentTheme = {
+            ...defaultTheme
+        };
+
 
         applyTheme(
             defaultTheme
@@ -3237,8 +3414,11 @@ function applyTheme(
 ) {
 
     currentTheme = {
+
         ...defaultTheme,
-        ...theme
+
+        ...(theme || {})
+
     };
 
 
@@ -3338,7 +3518,16 @@ function applyTheme(
 
     applyLogo();
 
-    updateThemeControls();
+
+    if (
+        document.getElementById(
+            "themeModal"
+        )
+    ) {
+
+        updateThemeControls();
+
+    }
 
 }
 
@@ -3675,8 +3864,11 @@ async function saveTheme() {
 
 
     currentTheme = {
+
         ...defaultTheme,
+
         ...theme
+
     };
 
 
@@ -3715,11 +3907,12 @@ function resetTheme() {
     };
 
 
-    updateThemeControls();
-
     applyTheme(
         currentTheme
     );
+
+
+    updateThemeControls();
 
 
     showToast(
@@ -3763,11 +3956,14 @@ function renderThemePresets() {
             button.type =
                 "button";
 
+
             button.className =
                 "theme-preset";
 
+
             button.title =
                 preset.name;
+
 
             button.dataset.index =
                 index;
@@ -3785,6 +3981,7 @@ function renderThemePresets() {
 
             button.style.background =
                 background;
+
 
             button.style.borderColor =
                 preset.border;
@@ -3921,6 +4118,7 @@ function updateRangeLabels() {
             "themeBorderWidth"
         );
 
+
     const borderWidthValue =
         document.getElementById(
             "themeBorderWidthValue"
@@ -3942,6 +4140,7 @@ function updateRangeLabels() {
         document.getElementById(
             "themeFontScale"
         );
+
 
     const fontScaleValue =
         document.getElementById(
@@ -4082,11 +4281,12 @@ function resizeImage(
 
 
             reader.onerror =
-                () => reject(
-                    new Error(
-                        "Erro ao ler imagem."
-                    )
-                );
+                () =>
+                    reject(
+                        new Error(
+                            "Erro ao ler imagem."
+                        )
+                    );
 
 
             reader.onload =
@@ -4097,11 +4297,12 @@ function resizeImage(
 
 
                     image.onerror =
-                        () => reject(
-                            new Error(
-                                "Imagem inválida."
-                            )
-                        );
+                        () =>
+                            reject(
+                                new Error(
+                                    "Imagem inválida."
+                                )
+                            );
 
 
                     image.onload =
@@ -4109,6 +4310,7 @@ function resizeImage(
 
                             let width =
                                 image.width;
+
 
                             let height =
                                 image.height;
@@ -4126,13 +4328,20 @@ function resizeImage(
 
 
                             width =
-                                Math.round(
-                                    width * scale
+                                Math.max(
+                                    1,
+                                    Math.round(
+                                        width * scale
+                                    )
                                 );
 
+
                             height =
-                                Math.round(
-                                    height * scale
+                                Math.max(
+                                    1,
+                                    Math.round(
+                                        height * scale
+                                    )
                                 );
 
 
@@ -4145,6 +4354,7 @@ function resizeImage(
                             canvas.width =
                                 width;
 
+
                             canvas.height =
                                 height;
 
@@ -4153,6 +4363,19 @@ function resizeImage(
                                 canvas.getContext(
                                     "2d"
                                 );
+
+
+                            if (!context) {
+
+                                reject(
+                                    new Error(
+                                        "Canvas não suportado."
+                                    )
+                                );
+
+                                return;
+
+                            }
 
 
                             context.clearRect(
@@ -4203,11 +4426,12 @@ function resizeImage(
 
 
                                     blobReader.onerror =
-                                        () => reject(
-                                            new Error(
-                                                "Erro ao converter imagem."
-                                            )
-                                        );
+                                        () =>
+                                            reject(
+                                                new Error(
+                                                    "Erro ao converter imagem."
+                                                )
+                                            );
 
 
                                     blobReader.readAsDataURL(
@@ -4215,9 +4439,7 @@ function resizeImage(
                                     );
 
                                 },
-
                                 "image/webp",
-
                                 quality
                             );
 
@@ -4272,9 +4494,11 @@ function applyLogo() {
         image.src =
             currentTheme.logoImage;
 
+
         image.classList.remove(
             "hidden"
         );
+
 
         text.classList.add(
             "hidden"
@@ -4282,11 +4506,15 @@ function applyLogo() {
 
     } else {
 
-        image.src = "";
+        image.removeAttribute(
+            "src"
+        );
+
 
         image.classList.add(
             "hidden"
         );
+
 
         text.classList.remove(
             "hidden"
@@ -4358,11 +4586,11 @@ function removeLogoImage() {
 async function showHome() {
 
     /*
-       Se estamos dentro de uma pasta,
-       primeiro tentamos voltar para o pai.
+       Se estamos dentro de uma subpasta,
+       primeiro voltamos para o pai.
     */
 
-    if (currentFolderId) {
+    if (currentFolderId !== null) {
 
         const currentFolder =
             folders.find(
@@ -4371,9 +4599,11 @@ async function showHome() {
                     String(currentFolderId)
             );
 
+
         if (
             currentFolder &&
-            currentFolder.parent_id
+            currentFolder.parent_id !== null &&
+            currentFolder.parent_id !== undefined
         ) {
 
             await openFolder(
@@ -4381,25 +4611,70 @@ async function showHome() {
             );
 
             return;
+
         }
+
     }
 
-    /*
-       Se não existe pai,
-       voltamos para a página inicial.
-    */
 
-    currentFolderId = null;
+    currentFolderId =
+        null;
 
-    document
-        .getElementById("folderPage")
-        .classList.add("hidden");
 
-    document
-        .getElementById("homePage")
-        .classList.remove("hidden");
+    currentLinks =
+        [];
+
+
+    showHomeInterfaceOnly();
+
 
     await loadFolders();
+
+}
+
+
+/* =====================================================
+   MOSTRAR HOME SEM RECARREGAR
+===================================================== */
+
+function showHomeInterfaceOnly() {
+
+    currentFolderId =
+        null;
+
+
+    const folderPage =
+        document.getElementById(
+            "folderPage"
+        );
+
+
+    const homePage =
+        document.getElementById(
+            "homePage"
+        );
+
+
+    if (folderPage) {
+
+        folderPage.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    if (homePage) {
+
+        homePage.classList.remove(
+            "hidden"
+        );
+
+    }
+
+
+    updateBackButton();
+
 }
 
 
@@ -4410,6 +4685,13 @@ async function showHome() {
 function closeModal(
     id
 ) {
+
+    if (!id) {
+
+        return;
+
+    }
+
 
     const modal =
         document.getElementById(
@@ -4430,6 +4712,10 @@ function closeModal(
 
 }
 
+
+/* =====================================================
+   TOGGLE ELEMENT
+===================================================== */
 
 function toggleElement(
     id
@@ -4540,7 +4826,9 @@ function darkenColor(
 
 
     if (
-        clean.length !== 6
+        !/^[0-9a-fA-F]{6}$/.test(
+            clean
+        )
     ) {
 
         return "#333333";
@@ -4578,24 +4866,31 @@ function darkenColor(
         );
 
 
+    const safeAmount =
+        Math.max(
+            0,
+            Number(amount) || 0
+        );
+
+
     r =
         Math.max(
             0,
-            r - amount
+            r - safeAmount
         );
 
 
     g =
         Math.max(
             0,
-            g - amount
+            g - safeAmount
         );
 
 
     b =
         Math.max(
             0,
-            b - amount
+            b - safeAmount
         );
 
 
@@ -4868,7 +5163,7 @@ function emptyHTML(
         <div class="empty">
 
             <div class="empty-icon">
-                ${icon}
+                ${escapeHTML(icon)}
             </div>
 
             <h2>
@@ -4908,7 +5203,7 @@ function showToast(
 
 
     toast.textContent =
-        message;
+        String(message ?? "");
 
 
     toast.classList.add(
@@ -4946,10 +5241,10 @@ document.addEventListener(
 
         if (
             event.target.id ===
-            "themeBorderWidth" ||
+                "themeBorderWidth" ||
 
             event.target.id ===
-            "themeFontScale"
+                "themeFontScale"
         ) {
 
             updateRangeLabels();
