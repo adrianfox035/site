@@ -854,31 +854,20 @@ function on(
 
 async function loadFolders() {
 
-    const grid =
-        document.getElementById(
-            "foldersGrid"
-        );
+    const grid = document.getElementById("foldersGrid");
 
     if (!grid) {
-
         return;
-
     }
 
     showLoading(grid);
 
-
-    const result =
-        await supabaseClient
-            .from("folders")
-            .select("*")
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
-
+    const result = await supabaseClient
+        .from("folders")
+        .select("*")
+        .order("created_at", {
+            ascending: false
+        });
 
     if (result.error) {
 
@@ -893,17 +882,14 @@ async function loadFolders() {
         );
 
         return;
-
     }
 
-
-    folders =
-        result.data || [];
-
+    folders = result.data || [];
 
     await loadFolderLinkCounts();
 
     renderFolders();
+}
 
 
     /*
@@ -1061,68 +1047,184 @@ function getVisibleFolders() {
 function renderFolders() {
 
     const grid =
-        document.getElementById(
-            "foldersGrid"
-        );
+        document.getElementById("foldersGrid");
 
     if (!grid) {
-
         return;
-
     }
 
+    /*
+       Quando estamos dentro de uma pasta,
+       mostramos apenas as subpastas dela.
+       
+       Na página inicial:
+       parent_id = null
+    */
+
+    const parentId =
+        currentFolderId || null;
 
     const visibleFolders =
-        getVisibleFolders();
+        folders.filter(folder => {
 
+            if (parentId === null) {
+
+                return !folder.parent_id;
+
+            }
+
+            return String(folder.parent_id) ===
+                String(parentId);
+
+        });
 
     if (!visibleFolders.length) {
 
         grid.innerHTML =
             emptyHTML(
                 "📁",
-                "Nenhuma pasta",
-                currentFolderId === null
-                    ? "Crie a primeira pasta para começar."
-                    : "Esta pasta ainda não possui subpastas."
+                "Nenhuma subpasta",
+                adminMode
+                    ? "Crie uma pasta dentro desta pasta."
+                    : "Esta pasta não possui subpastas."
             );
 
         return;
-
     }
-
 
     const list =
         sortFolders(
             [...visibleFolders]
         );
 
-
     grid.innerHTML = "";
 
+    list.forEach(folder => {
 
-    list.forEach(
-        folder => {
+        const card =
+            document.createElement("div");
 
-            const card =
-                createFolderCard(
-                    folder
+        card.className = "card";
+
+        card.style.background =
+            createCardGradient(folder.color);
+
+        card.innerHTML = `
+
+            ${
+                adminMode
+                    ? `
+                    <div class="card-actions">
+
+                        <button
+                            class="card-action edit-folder"
+                            type="button"
+                            title="Editar"
+                        >
+                            ✏️
+                        </button>
+
+                        <button
+                            class="card-action delete delete-folder"
+                            type="button"
+                            title="Excluir"
+                        >
+                            🗑️
+                        </button>
+
+                    </div>
+                    `
+                    : ""
+            }
+
+            <div>
+
+                <div class="card-name">
+                    📁 ${escapeHTML(folder.name)}
+                </div>
+
+                <div class="card-description">
+
+                    ${
+                        folder.linkCount || 0
+                    }
+
+                    ${
+                        Number(folder.linkCount) === 1
+                            ? "link"
+                            : "links"
+                    }
+
+                </div>
+
+            </div>
+
+            <div class="card-description">
+                Clique para entrar
+            </div>
+
+        `;
+
+        card.addEventListener(
+            "click",
+            () => {
+
+                openFolder(folder.id);
+
+            }
+        );
+
+        if (adminMode) {
+
+            const edit =
+                card.querySelector(".edit-folder");
+
+            const del =
+                card.querySelector(".delete-folder");
+
+            if (edit) {
+
+                edit.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        openFolderModal(folder);
+
+                    }
                 );
 
-            grid.appendChild(
-                card
-            );
+            }
+
+            if (del) {
+
+                del.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+                        event.stopPropagation();
+
+                        deleteFolder(folder);
+
+                    }
+                );
+
+            }
 
         }
-    );
 
+        grid.appendChild(card);
+
+    });
 
     applyLayout(
         grid,
         foldersPerRow,
         folderLayout
     );
-
 }
 
 
@@ -1382,9 +1484,7 @@ function sortFolders(list) {
    ABRIR PASTA
 ===================================================== */
 
-async function openFolder(
-    folderId
-) {
+async function openFolder(folderId) {
 
     const folder =
         folders.find(
@@ -1393,23 +1493,17 @@ async function openFolder(
                 String(folderId)
         );
 
-
     if (!folder) {
-
         return;
-
     }
-
 
     currentFolderId =
         folder.id;
-
 
     const title =
         document.getElementById(
             "folderTitle"
         );
-
 
     if (title) {
 
@@ -1418,51 +1512,25 @@ async function openFolder(
 
     }
 
+    document
+        .getElementById("homePage")
+        .classList.add("hidden");
 
-    const homePage =
-        document.getElementById(
-            "homePage"
-        );
-
-
-    const folderPage =
-        document.getElementById(
-            "folderPage"
-        );
-
-
-    if (homePage) {
-
-        homePage.classList.add(
-            "hidden"
-        );
-
-    }
-
-
-    if (folderPage) {
-
-        folderPage.classList.remove(
-            "hidden"
-        );
-
-    }
-
-
-    updateBackButton();
-
+    document
+        .getElementById("folderPage")
+        .classList.remove("hidden");
 
     /*
-       O mesmo botão de adicionar pasta
-       agora cria uma subpasta.
+       Primeiro carregamos as subpastas.
     */
 
-    await loadLinks(
-        folder.id
-    );
+    renderFolders();
 
+    /*
+       Depois carregamos os links desta pasta.
+    */
 
-    renderCurrentFolderContents();
+    await loadLinks(folder.id);
 
 }
 
@@ -2479,32 +2547,16 @@ function openFolderModal(
 
 async function saveFolder() {
 
-    const nameElement =
-        document.getElementById(
-            "folderName"
-        );
-
-
-    const colorElement =
-        document.getElementById(
-            "folderColor"
-        );
-
-
-    if (!nameElement || !colorElement) {
-
-        return;
-
-    }
-
-
     const name =
-        nameElement.value.trim();
-
+        document
+            .getElementById("folderName")
+            .value
+            .trim();
 
     const color =
-        colorElement.value;
-
+        document
+            .getElementById("folderColor")
+            .value;
 
     if (!name) {
 
@@ -2513,12 +2565,13 @@ async function saveFolder() {
         );
 
         return;
-
     }
-
 
     let result;
 
+    /*
+       Se estamos editando uma pasta existente.
+    */
 
     if (editingFolderId) {
 
@@ -2529,9 +2582,7 @@ async function saveFolder() {
             );
 
             return;
-
         }
-
 
         result =
             await supabaseClient.rpc(
@@ -2551,34 +2602,31 @@ async function saveFolder() {
                 }
             );
 
-    } else {
+    }
 
-        /*
-           AQUI ESTÁ A PRINCIPAL MUDANÇA:
+    /*
+       Nova pasta.
+       
+       currentFolderId será o pai.
+       Se for null, a pasta fica na raiz.
+    */
 
-           Se currentFolderId for null,
-           a pasta fica na raiz.
-
-           Se currentFolderId possuir um ID,
-           a pasta será criada dentro dela.
-        */
+    else {
 
         result =
             await supabaseClient
                 .from("folders")
                 .insert({
-                    name:
-                        name,
 
-                    color:
-                        color,
+                    name: name,
+
+                    color: color,
 
                     parent_id:
-                        currentFolderId
+                        currentFolderId || null
+
                 });
-
     }
-
 
     if (result.error) {
 
@@ -2592,23 +2640,22 @@ async function saveFolder() {
         );
 
         return;
-
     }
 
+    closeModal("folderModal");
 
-    closeModal(
-        "folderModal"
-    );
-
-
-    editingFolderId =
-        null;
-
+    editingFolderId = null;
 
     await loadFolders();
 
+    /*
+       Se estamos dentro de uma pasta,
+       renderiza novamente as subpastas.
+    */
 
     if (currentFolderId) {
+
+        renderFolders();
 
         await loadLinks(
             currentFolderId
@@ -2616,15 +2663,10 @@ async function saveFolder() {
 
     }
 
-
     showToast(
-        currentFolderId
-            ? "Subpasta criada."
-            : "Pasta criada."
+        "Pasta salva."
     );
-
 }
-
 
 /* =====================================================
    EXCLUIR PASTA
