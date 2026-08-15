@@ -889,7 +889,6 @@ async function loadFolders() {
     await loadFolderLinkCounts();
 
     renderFolders();
-}
 
 
     /*
@@ -4356,46 +4355,51 @@ function removeLogoImage() {
    NAVEGAÇÃO — HOME
 ===================================================== */
 
-function showHome() {
+async function showHome() {
 
-    currentFolderId =
-        null;
+    /*
+       Se estamos dentro de uma pasta,
+       primeiro tentamos voltar para o pai.
+    */
 
+    if (currentFolderId) {
 
-    const folderPage =
-        document.getElementById(
-            "folderPage"
-        );
+        const currentFolder =
+            folders.find(
+                folder =>
+                    String(folder.id) ===
+                    String(currentFolderId)
+            );
 
+        if (
+            currentFolder &&
+            currentFolder.parent_id
+        ) {
 
-    const homePage =
-        document.getElementById(
-            "homePage"
-        );
+            await openFolder(
+                currentFolder.parent_id
+            );
 
-
-    if (folderPage) {
-
-        folderPage.classList.add(
-            "hidden"
-        );
-
+            return;
+        }
     }
 
+    /*
+       Se não existe pai,
+       voltamos para a página inicial.
+    */
 
-    if (homePage) {
+    currentFolderId = null;
 
-        homePage.classList.remove(
-            "hidden"
-        );
+    document
+        .getElementById("folderPage")
+        .classList.add("hidden");
 
-    }
+    document
+        .getElementById("homePage")
+        .classList.remove("hidden");
 
-
-    updateBackButton();
-
-    loadFolders();
-
+    await loadFolders();
 }
 
 
