@@ -255,29 +255,21 @@
      PÁGINA DA PASTA
 ===================================================== -->
 
-<section
-    id="folderPage"
-    class="page hidden"
->
+<section id="folderPage" class="hidden">
 
-    <div class="page-header">
+    <button id="backButton">
+        ← Voltar
+    </button>
 
-        <div>
+    <h1 id="folderTitle">
+        📁 Pasta
+    </h1>
 
-            <button
-                id="backButton"
-                class="back-button"
-                type="button"
-            >
-                ← Voltar
-            </button>
+    <div id="foldersGrid"></div>
 
-            <h2 id="folderTitle">
-                📁 Pasta
-            </h2>
+    <div id="linksGrid"></div>
 
-        </div>
-
+</section>
 
         <div class="header-actions">
 
@@ -412,7 +404,10 @@
     </div>
 
 
+<div id="foldersGrid"></div>
 
+<div id="linksGrid"></div>
+    
     <div
         id="linksGrid"
         class="cards-grid"
