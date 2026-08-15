@@ -141,7 +141,7 @@ const presetThemes = [
         heading: "#28103f",
         border: "#6b3fa0",
         button: "#7b4bb7",
-        logo: "#542681,
+        logo: "#542681",
         gradientEnabled: true,
         gradientStart: "#f4efff",
         gradientEnd: "#e5d8ff",
