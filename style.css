@@ -1,55 +1,79 @@
+/* =====================================================
+   VARIÁVEIS
+===================================================== */
+
 :root {
 
     --background: #f3f3f3;
-    --topbar: #ffffff;
-    --text: #111111;
-    --heading: #000000;
-    --border: #000000;
-    --button: #111111;
-    --logo: #111111;
-    --border-width: 2px;
-    --font-scale: 1;
 
-    --radius: 14px;
-    --transition: 0.2s ease;
+    --topbar: #ffffff;
+
+    --text: #111111;
+
+    --heading: #000000;
+
+    --border: #000000;
+
+    --button: #111111;
+
+    --logo: #111111;
+
+    --font-size: 16px;
+
+    --border-width: 2px;
 
 }
 
 
-/* =========================
+/* =====================================================
    RESET
-========================= */
+===================================================== */
 
 * {
+
     box-sizing: border-box;
+
+}
+
+
+html,
+body {
+
     margin: 0;
+
     padding: 0;
+
+    min-height: 100%;
+
 }
 
 
 body {
 
-    min-height: 100vh;
+    background:
+        var(--background);
 
-    background: var(--page-background, var(--background));
-
-    color: var(--text);
+    color:
+        var(--text);
 
     font-family:
         Arial,
         Helvetica,
         sans-serif;
 
+    font-size:
+        var(--font-size);
+
     transition:
-        background 0.2s ease,
-        color 0.2s ease;
+        background 0.2s,
+        color 0.2s;
 
 }
 
 
-/* =========================
+/* =====================================================
    TOPO
-========================= */
+===================================================== */
 
 .topbar {
 
@@ -62,23 +86,27 @@ body {
 
     align-items: center;
 
-    background: var(--topbar);
+    padding:
+        0 28px;
+
+    background:
+        var(--topbar);
 
     border-bottom:
-        var(--border-width) solid var(--border);
-
-    position: sticky;
-
-    top: 0;
-
-    z-index: 100;
+        var(--border-width)
+        solid
+        var(--border);
 
 }
 
 
 .topbar-left {
 
-    padding-left: 28px;
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-start;
 
 }
 
@@ -87,6 +115,8 @@ body {
 
     display: flex;
 
+    align-items: center;
+
     justify-content: center;
 
 }
@@ -94,546 +124,36 @@ body {
 
 .topbar-right {
 
-    padding-right: 28px;
-
     display: flex;
 
     justify-content: flex-end;
 
-}
-
-
-.site-logo {
-
-    font-size: 30px;
-
-    color: var(--logo);
-
-}
-
-
-.topbar h1 {
-
-    color: var(--heading);
-
-    font-size: 25px;
-
-    font-weight: 800;
-
-}
-
-
-/* =========================
-   ADMIN
-========================= */
-
-.admin-button {
-
-    border: none;
-
-    background: transparent;
-
-    color: var(--text);
-
-    cursor: pointer;
-
-    font-size: 13px;
-
-    opacity: 0.65;
-
-}
-
-
-.admin-button:hover {
-
-    opacity: 1;
-
-}
-
-
-/* =========================
-   MAIN
-========================= */
-
-main {
-
-    width:
-        min(
-            1400px,
-            calc(100% - 40px)
-        );
-
-    margin: auto;
-
-}
-
-
-.page {
-
-    padding:
-        38px 0 70px;
-
-}
-
-
-.page-heading {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: flex-end;
-
-    gap: 20px;
-
-    margin-bottom: 25px;
-
-}
-
-
-.page-heading h2 {
-
-    color: var(--heading);
-
-    font-size: 29px;
-
-    margin-bottom: 5px;
-
-}
-
-
-.page-heading p {
-
-    font-size: 14px;
-
-    opacity: 0.65;
-
-}
-
-
-.page-controls {
-
-    display: flex;
-
-    gap: 8px;
-
-}
-
-
-/* =========================
-   CONTROLES
-========================= */
-
-.control-button {
-
-    padding:
-        8px 13px;
-
-    border:
-        var(--border-width) solid var(--border);
-
-    border-radius: 8px;
-
-    background: transparent;
-
-    color: var(--text);
-
-    cursor: pointer;
-
-    font-size: 13px;
-
-}
-
-
-.control-button:hover {
-
-    background: var(--button);
-
-    color: #ffffff;
-
-}
-
-
-/* =========================
-   ORGANIZAÇÃO
-========================= */
-
-.organize-panel {
-
-    background: var(--topbar);
-
-    border:
-        var(--border-width) solid var(--border);
-
-    border-radius: 12px;
-
-    padding: 15px;
-
-    margin-bottom: 20px;
-
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 25px;
-
-}
-
-
-.organize-section {
-
-    display: flex;
-
     align-items: center;
 
-    flex-wrap: wrap;
+}
 
-    gap: 7px;
+
+#siteTitle {
+
+    margin: 0;
+
+    color:
+        var(--heading);
+
+    font-size:
+        25px;
+
+    font-weight:
+        800;
 
 }
 
 
-.organize-section strong {
+.logo {
 
-    font-size: 13px;
+    width: 48px;
 
-}
-
-
-.sort-option,
-.layout-button {
-
-    padding:
-        6px 10px;
-
-    border:
-        var(--border-width) solid var(--border);
-
-    border-radius: 7px;
-
-    background: transparent;
-
-    color: var(--text);
-
-    cursor: pointer;
-
-    font-size: 12px;
-
-}
-
-
-.sort-option:hover,
-.sort-option.active,
-.layout-button:hover {
-
-    background: var(--button);
-
-    color: #ffffff;
-
-}
-
-
-.organize-section label {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 7px;
-
-    font-size: 13px;
-
-}
-
-
-.organize-section select {
-
-    padding: 5px;
-
-    border:
-        var(--border-width) solid var(--border);
-
-    border-radius: 6px;
-
-    background: var(--topbar);
-
-    color: var(--text);
-
-}
-
-
-/* =========================
-   GRID
-========================= */
-
-.cards-grid {
-    --columns: 4;
-    display: grid;
-    grid-template-columns: repeat(var(--columns), max-content);
-    justify-content: start;
-    align-items: start;
-    gap: 18px;
-}
-
-
-.cards-grid.vertical {
-    grid-template-columns: max-content;
-    justify-content: start;
-}
-
-
-/* =========================
-   CARDS
-========================= */
-
-.card {
-
-    width: 250px;
-    min-height: 145px;
-
-    padding: 22px;
-
-    border:
-        var(--border-width) solid #000000;
-
-    border-radius: var(--radius);
-
-    color: #ffffff;
-
-    cursor: pointer;
-
-    position: relative;
-
-    overflow: hidden;
-
-    transition:
-        transform var(--transition),
-        filter var(--transition),
-        box-shadow var(--transition);
-
-}
-
-
-.card:hover {
-
-    transform:
-        translateY(-6px);
-
-    filter:
-        brightness(0.88);
-
-    box-shadow:
-        0 8px 16px
-        rgba(
-            0,
-            0,
-            0,
-            0.18
-        );
-
-}
-
-
-.card-name {
-
-    font-size: 19px;
-
-    font-weight: 800;
-
-    line-height: 1.2;
-
-    text-shadow:
-        -1px -1px 0 #000,
-         1px -1px 0 #000,
-        -1px  1px 0 #000,
-         1px  1px 0 #000;
-
-}
-
-
-.card-description {
-
-    margin-top: 7px;
-
-    font-size: 12px;
-
-    opacity: 0.9;
-
-    text-shadow:
-        -1px -1px 0 #000,
-         1px -1px 0 #000,
-        -1px  1px 0 #000,
-         1px  1px 0 #000;
-
-}
-
-
-/* =========================
-   AÇÕES
-========================= */
-
-.card-actions {
-
-    position: absolute;
-
-    top: 9px;
-
-    right: 9px;
-
-    display: flex;
-
-    gap: 5px;
-
-    z-index: 10;
-
-}
-
-
-.card-action {
-
-    width: 29px;
-
-    height: 29px;
-
-    border:
-        1px solid #000;
-
-    border-radius: 7px;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.92
-        );
-
-    cursor: pointer;
-
-}
-
-
-.card-action:hover {
-
-    transform: scale(1.08);
-
-}
-
-
-.card-action.delete {
-
-    background:
-        rgba(
-            255,
-            220,
-            220,
-            0.95
-        );
-
-}
-
-
-/* =========================
-   ADICIONAR
-========================= */
-
-.add-button {
-
-    margin-top: 20px;
-
-    padding:
-        8px 13px;
-
-    background: transparent;
-
-    color: var(--text);
-
-    border:
-        1px dashed var(--border);
-
-    border-radius: 7px;
-
-    font-size: 12px;
-
-    cursor: pointer;
-
-    opacity: 0.65;
-
-}
-
-
-.add-button:hover {
-
-    opacity: 1;
-
-    background:
-        rgba(
-            0,
-            0,
-            0,
-            0.05
-        );
-
-}
-
-
-/* =========================
-   VOLTAR
-========================= */
-
-.folder-heading {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 13px;
-
-}
-
-
-.back-button {
-
-    width: 37px;
-
-    height: 37px;
-
-    border:
-        var(--border-width) solid var(--border);
-
-    border-radius: 9px;
-
-    background: transparent;
-
-    color: var(--text);
-
-    cursor: pointer;
-
-    font-size: 18px;
-
-}
-
-
-.back-button:hover {
-
-    background: var(--button);
-
-    color: #ffffff;
-
-}
-
-
-/* =========================
-   MODAIS
-========================= */
-
-.modal-overlay {
-
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 1000;
+    height: 48px;
 
     display: flex;
 
@@ -641,333 +161,38 @@ main {
 
     justify-content: center;
 
-    padding: 20px;
+    color:
+        var(--logo);
 
-    background:
-        rgba(
-            0,
-            0,
-            0,
-            0.5
-        );
+    font-size: 28px;
+
+    overflow: hidden;
 
 }
 
 
-.modal {
+.logo img {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: contain;
+
+}
+
+
+/* =====================================================
+   PÁGINAS
+===================================================== */
+
+.page {
 
     width:
-        min(
-            430px,
-            100%
-        );
+        min(1200px, 94%);
 
-    max-height:
-        calc(100vh - 40px);
-
-    overflow-y: auto;
-
-    position: relative;
-
-    padding: 25px;
-
-    border:
-        var(--border-width) solid var(--border);
-
-    border-radius: 15px;
-
-    background: var(--topbar);
-
-    color: var(--text);
-
-}
-
-
-.modal h2 {
-
-    color: var(--heading);
-
-    margin-bottom: 8px;
-
-}
-
-
-.modal p {
-
-    font-size: 13px;
-
-    opacity: 0.7;
-
-    margin-bottom: 20px;
-
-}
-
-
-.modal-close {
-
-    position: absolute;
-
-    top: 9px;
-
-    right: 13px;
-
-    border: none;
-
-    background: transparent;
-
-    color: var(--text);
-
-    font-size: 25px;
-
-    cursor: pointer;
-
-}
-
-
-.modal label {
-
-    display: block;
-
-    margin-bottom: 16px;
-
-    font-size: 13px;
-
-}
-
-
-.modal input[type="text"],
-.modal input[type="password"],
-.modal input[type="url"] {
-
-    width: 100%;
-
-    margin-top: 7px;
-
-    padding:
-        11px 12px;
-
-    border:
-        var(--border-width) solid var(--border);
-
-    border-radius: 8px;
-
-    background: var(--background);
-
-    color: var(--text);
-
-    outline: none;
-
-}
-
-
-.color-input {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    margin-top: 7px;
-
-}
-
-
-.color-input input {
-
-    width: 45px;
-
-    height: 35px;
-
-    border: none;
-
-    cursor: pointer;
-
-}
-
-
-.color-input span {
-
-    font-family: monospace;
-
-    font-size: 12px;
-
-}
-
-
-/* =========================
-   TEMA
-========================= */
-
-.theme-modal label {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    padding-bottom: 12px;
-
-    border-bottom:
-        1px solid
-        rgba(
-            0,
-            0,
-            0,
-            0.1
-        );
-
-}
-
-
-.theme-modal input[type="color"] {
-
-    width: 50px;
-
-    height: 32px;
-
-    border: none;
-
-    cursor: pointer;
-
-}
-
-
-.theme-actions {
-
-    display: flex;
-
-    gap: 8px;
-
-    margin-top: 20px;
-
-}
-
-
-.primary-button,
-.secondary-button {
-
-    padding:
-        10px 14px;
-
-    border:
-        var(--border-width) solid var(--border);
-
-    border-radius: 8px;
-
-    cursor: pointer;
-
-    font-size: 13px;
-
-}
-
-
-.primary-button {
-
-    width: 100%;
-
-    background: var(--button);
-
-    color: #ffffff;
-
-}
-
-
-.secondary-button {
-
-    background: transparent;
-
-    color: var(--text);
-
-}
-
-
-/* =========================
-   OUTROS
-========================= */
-
-.modal-error {
-
-    min-height: 18px;
-
-    margin-bottom: 8px;
-
-    color: #c40000;
-
-    font-size: 12px;
-
-}
-
-
-.empty {
-
-    grid-column: 1 / -1;
-
-    padding: 55px 20px;
-
-    text-align: center;
-
-    opacity: 0.7;
-
-}
-
-
-.empty-icon {
-
-    font-size: 38px;
-
-    margin-bottom: 10px;
-
-}
-
-
-.toast {
-
-    position: fixed;
-
-    bottom: 25px;
-
-    left: 50%;
-
-    z-index: 2000;
-
-    padding:
-        10px 17px;
-
-    border-radius: 8px;
-
-    background: #111111;
-
-    color: #ffffff;
-
-    font-size: 13px;
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    transform:
-        translate(
-            -50%,
-            20px
-        );
-
-    transition:
-        all 0.25s ease;
-
-}
-
-
-.toast.show {
-
-    opacity: 1;
-
-    transform:
-        translate(
-            -50%,
-            0
-        );
+    margin:
+        35px auto;
 
 }
 
@@ -979,199 +204,1093 @@ main {
 }
 
 
-/* =========================
-   RESPONSIVO
-========================= */
+/* =====================================================
+   CABEÇALHO
+===================================================== */
 
-@media (max-width: 800px) {
+.page-header {
 
-    main {
+    display: flex;
 
-        width:
-            calc(100% - 25px);
+    justify-content:
+        space-between;
 
-    }
+    align-items:
+        center;
 
+    gap: 20px;
 
-    .page-heading {
-
-        align-items: flex-start;
-
-        flex-direction: column;
-
-    }
-
-
-    .cards-grid {
-        --columns: 2;
-        gap: 12px;
-    }
-
-
-    .topbar {
-
-        height: 65px;
-
-    }
-
-
-    .topbar h1 {
-
-        font-size: 20px;
-
-    }
+    margin-bottom:
+        24px;
 
 }
 
 
-@media (max-width: 480px) {
+.page-header h2 {
 
-    .cards-grid {
+    margin:
+        0 0 5px;
 
-        --columns: 1;
+    color:
+        var(--heading);
 
-    }
+    font-size:
+        26px;
+
+}
 
 
-    .organize-panel {
+.page-header p {
 
-        flex-direction: column;
+    margin: 0;
 
-        align-items: flex-start;
+    opacity: .7;
 
-    }
+}
+
+
+.header-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: flex-end;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
 
 }
 
 
 /* =====================================================
-   NOVOS CONTROLES DE TEMA
+   BOTÕES
 ===================================================== */
 
-body {
-    font-size: calc(16px * var(--font-scale));
+button,
+select,
+input {
+
+    font:
+        inherit;
+
 }
 
-.topbar h1 { font-size: calc(25px * var(--font-scale)); }
-.page-heading h2 { font-size: calc(29px * var(--font-scale)); }
-.page-heading p, .organize-section label, .organize-section strong { font-size: calc(14px * var(--font-scale)); }
-.control-button { font-size: calc(13px * var(--font-scale)); }
-.sort-option, .layout-button { font-size: calc(12px * var(--font-scale)); }
-.card-name { font-size: calc(19px * var(--font-scale)); }
-.card-description { font-size: calc(12px * var(--font-scale)); }
-.add-button { font-size: calc(12px * var(--font-scale)); }
-.admin-button { font-size: calc(13px * var(--font-scale)); }
 
-.site-logo {
-    display: flex;
-    align-items: center;
-    min-height: 38px;
+button {
+
+    cursor:
+        pointer;
+
 }
 
-.site-logo-image {
-    display: block;
-    width: 46px;
-    height: 46px;
-    object-fit: contain;
-    border-radius: 8px;
+
+.small-button {
+
+    border:
+        var(--border-width)
+        solid
+        var(--border);
+
+    background:
+        var(--topbar);
+
+    color:
+        var(--text);
+
+    padding:
+        8px 13px;
+
+    border-radius:
+        8px;
+
+    transition:
+        .18s ease;
+
 }
 
-.theme-subtitle {
-    margin: 20px 0 10px;
-    color: var(--heading);
-    font-size: calc(15px * var(--font-scale));
+
+.small-button:hover {
+
+    transform:
+        translateY(-1px);
+
 }
 
-.theme-presets {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
+
+.small-button.primary {
+
+    background:
+        var(--button);
+
+    color:
+        #ffffff;
+
 }
 
-.theme-preset {
-    min-height: 68px;
-    padding: 8px;
-    border: var(--border-width) solid var(--border);
-    border-radius: 10px;
+
+.admin-button {
+
+    border: none;
+
+    background:
+        transparent;
+
+    color:
+        var(--text);
+
+    opacity: .65;
+
+    padding:
+        7px 10px;
+
+    border-radius:
+        6px;
+
+}
+
+
+.admin-button:hover {
+
+    opacity: 1;
+
+    background:
+        rgba(0,0,0,.06);
+
+}
+
+
+.back-button {
+
+    border: none;
+
+    background: none;
+
+    color:
+        var(--text);
+
+    padding:
+        0;
+
+    margin-bottom:
+        8px;
+
+    font-size:
+        14px;
+
     cursor: pointer;
-    color: #fff;
-    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-    font-weight: 700;
-    transition: transform .15s ease, filter .15s ease;
+
 }
 
-.theme-preset:hover { transform: translateY(-2px); filter: brightness(.92); }
-.theme-preset.active { outline: 3px solid var(--button); outline-offset: 2px; }
 
-.theme-check-row {
-    display: flex !important;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+/* =====================================================
+   PAINÉIS
+===================================================== */
+
+.control-panel {
+
+    margin-bottom:
+        20px;
+
+    padding:
+        15px;
+
+    background:
+        var(--topbar);
+
+    border:
+        var(--border-width)
+        solid
+        var(--border);
+
+    border-radius:
+        12px;
+
 }
 
-.gradient-controls {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 8px;
-}
 
-.gradient-controls label { margin-bottom: 0; }
-.gradient-controls select {
-    width: 100%;
-    margin-top: 7px;
-    padding: 9px;
-    border: var(--border-width) solid var(--border);
-    border-radius: 8px;
-    background: var(--background);
-    color: var(--text);
-}
+.control-row {
 
-.gradient-controls label:last-child { grid-column: 1 / -1; }
-
-.theme-color-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 8px;
-}
-
-.theme-color-grid label {
     display: flex;
+
     align-items: center;
-    justify-content: space-between;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+}
+
+
+.control-row + .control-row {
+
+    margin-top:
+        12px;
+
+}
+
+
+.control-row strong {
+
+    margin-right:
+        4px;
+
+}
+
+
+.control-row button {
+
+    border:
+        var(--border-width)
+        solid
+        var(--border);
+
+    background:
+        var(--background);
+
+    color:
+        var(--text);
+
+    padding:
+        6px 10px;
+
+    border-radius:
+        7px;
+
+}
+
+
+.control-row button.active {
+
+    background:
+        var(--button);
+
+    color:
+        #ffffff;
+
+}
+
+
+.control-row select {
+
+    border:
+        var(--border-width)
+        solid
+        var(--border);
+
+    background:
+        var(--background);
+
+    padding:
+        6px 9px;
+
+    border-radius:
+        7px;
+
+}
+
+
+/* =====================================================
+   GRADE
+===================================================== */
+
+.cards-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            var(--columns, 4),
+            max-content
+        );
+
+    justify-content:
+        start;
+
+    align-items:
+        start;
+
+    gap:
+        18px;
+
+}
+
+
+.cards-grid.vertical {
+
+    display: flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        flex-start;
+
+}
+
+
+/* =====================================================
+   CARDS
+===================================================== */
+
+.card {
+
+    width:
+        245px;
+
+    min-height:
+        145px;
+
+    padding:
+        20px;
+
+    position:
+        relative;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    justify-content:
+        space-between;
+
+    border:
+        var(--border-width)
+        solid
+        var(--border);
+
+    border-radius:
+        14px;
+
+    color:
+        #ffffff;
+
+    cursor:
+        pointer;
+
+    overflow:
+        hidden;
+
+    text-shadow:
+        1px 1px 0 #000,
+        -1px -1px 0 #000,
+        1px -1px 0 #000,
+        -1px 1px 0 #000;
+
+    box-shadow:
+        0 3px 0 rgba(0,0,0,.15);
+
+    transition:
+        transform .18s ease,
+        filter .18s ease,
+        box-shadow .18s ease;
+
+}
+
+
+.card:hover {
+
+    transform:
+        translateY(-5px);
+
+    filter:
+        brightness(.9);
+
+    box-shadow:
+        0 8px 16px
+        rgba(0,0,0,.18);
+
+}
+
+
+.card-name {
+
+    font-size:
+        20px;
+
+    font-weight:
+        800;
+
+    overflow-wrap:
+        anywhere;
+
+}
+
+
+.card-description {
+
+    margin-top:
+        8px;
+
+    font-size:
+        13px;
+
+    opacity:
+        .95;
+
+    overflow-wrap:
+        anywhere;
+
+}
+
+
+.card-actions {
+
+    position:
+        absolute;
+
+    top:
+        8px;
+
+    right:
+        8px;
+
+    display:
+        flex;
+
+    gap:
+        5px;
+
+    z-index:
+        5;
+
+}
+
+
+.card-action {
+
+    width:
+        30px;
+
+    height:
+        30px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.8);
+
+    border-radius:
+        7px;
+
+    background:
+        rgba(0,0,0,.25);
+
+    color:
+        white;
+
+    cursor:
+        pointer;
+
+}
+
+
+.card-action:hover {
+
+    background:
+        rgba(0,0,0,.55);
+
+}
+
+
+.card-action.delete:hover {
+
+    background:
+        #a90000;
+
+}
+
+
+/* =====================================================
+   VAZIO
+===================================================== */
+
+.empty {
+
+    grid-column:
+        1 / -1;
+
+    width:
+        100%;
+
+    padding:
+        60px 20px;
+
+    text-align:
+        center;
+
+    border:
+        var(--border-width)
+        dashed
+        var(--border);
+
+    border-radius:
+        14px;
+
+    background:
+        var(--topbar);
+
+}
+
+
+.empty-icon {
+
+    font-size:
+        42px;
+
+    margin-bottom:
+        10px;
+
+}
+
+
+.empty h2 {
+
+    margin:
+        0 0 8px;
+
+    color:
+        var(--heading);
+
+}
+
+
+.empty p {
+
     margin: 0;
-    padding: 8px 10px;
-    border: var(--border-width) solid var(--border);
-    border-radius: 8px;
+
+    opacity: .7;
+
 }
 
-.theme-color-grid input[type="color"] {
-    width: 42px;
-    height: 28px;
-    border: 0;
+
+/* =====================================================
+   MODAIS
+===================================================== */
+
+.modal-overlay {
+
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    z-index:
+        1000;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        20px;
+
+    background:
+        rgba(0,0,0,.55);
+
 }
 
-.range-label {
-    margin-bottom: 12px !important;
+
+.modal {
+
+    width:
+        min(430px, 100%);
+
+    max-height:
+        90vh;
+
+    overflow:
+        auto;
+
+    position:
+        relative;
+
+    padding:
+        28px;
+
+    background:
+        var(--topbar);
+
+    color:
+        var(--text);
+
+    border:
+        var(--border-width)
+        solid
+        var(--border);
+
+    border-radius:
+        16px;
+
+    box-shadow:
+        0 20px 60px
+        rgba(0,0,0,.3);
+
 }
 
-.range-label span { display: flex; justify-content: space-between; gap: 10px; }
-.range-label input[type="range"] { width: 100%; margin-top: 8px; accent-color: var(--button); }
 
-.file-label {
-    display: block;
-    padding: 10px;
-    border: var(--border-width) dashed var(--border);
-    border-radius: 8px;
+.large-modal {
+
+    width:
+        min(700px, 100%);
+
 }
 
-.file-label input[type="file"] { display: block; width: 100%; margin-top: 8px; }
-.file-label span { display: block; margin-top: 7px; opacity: .65; font-size: 11px; }
 
-@media (max-width: 600px) {
-    .theme-presets { grid-template-columns: repeat(2, 1fr); }
-    .theme-color-grid, .gradient-controls { grid-template-columns: 1fr; }
-    .gradient-controls label:last-child { grid-column: auto; }
-    .card { width: min(250px, calc(100vw - 50px)); }
+.modal-close {
+
+    position:
+        absolute;
+
+    right:
+        12px;
+
+    top:
+        8px;
+
+    border:
+        none;
+
+    background:
+        transparent;
+
+    color:
+        var(--text);
+
+    font-size:
+        28px;
+
+    cursor:
+        pointer;
+
+}
+
+
+.modal h2 {
+
+    margin-top:
+        0;
+
+    color:
+        var(--heading);
+
+}
+
+
+.modal label {
+
+    display:
+        block;
+
+    margin:
+        15px 0 6px;
+
+    font-weight:
+        700;
+
+}
+
+
+.modal input[type="text"],
+.modal input[type="url"],
+.modal input[type="password"] {
+
+    width:
+        100%;
+
+    padding:
+        11px;
+
+    border:
+        var(--border-width)
+        solid
+        var(--border);
+
+    border-radius:
+        8px;
+
+    background:
+        var(--background);
+
+    color:
+        var(--text);
+
+    outline:
+        none;
+
+}
+
+
+.modal input:focus {
+
+    outline:
+        2px solid
+        var(--button);
+
+}
+
+
+.color-input {
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+}
+
+
+.color-input input {
+
+    width:
+        50px;
+
+    height:
+        40px;
+
+    padding:
+        2px;
+
+}
+
+
+.modal-button {
+
+    width:
+        100%;
+
+    margin-top:
+        20px;
+
+    padding:
+        11px;
+
+    border:
+        var(--border-width)
+        solid
+        var(--border);
+
+    border-radius:
+        8px;
+
+    background:
+        var(--button);
+
+    color:
+        #ffffff;
+
+    cursor:
+        pointer;
+
+}
+
+
+.modal-actions {
+
+    display:
+        flex;
+
+    gap:
+        10px;
+
+    margin-top:
+        20px;
+
+}
+
+
+.modal-actions .modal-button {
+
+    margin-top:
+        0;
+
+}
+
+
+/* =====================================================
+   TEMA
+===================================================== */
+
+.theme-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap:
+        12px;
+
+}
+
+
+.theme-grid label {
+
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    margin: 0;
+
+    padding:
+        10px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius:
+        8px;
+
+}
+
+
+.theme-grid input {
+
+    width:
+        42px;
+
+    height:
+        32px;
+
+}
+
+
+.preset-grid {
+
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap:
+        8px;
+
+    margin-top:
+        10px;
+
+}
+
+
+.preset-theme {
+
+    min-height:
+        65px;
+
+    border:
+        var(--border-width)
+        solid
+        var(--border);
+
+    border-radius:
+        10px;
+
+    color:
+        #ffffff;
+
+    font-weight:
+        800;
+
+    text-shadow:
+        1px 1px #000;
+
+    cursor:
+        pointer;
+
+    transition:
+        .15s ease;
+
+}
+
+
+.preset-theme:hover {
+
+    transform:
+        translateY(-2px);
+
+}
+
+
+/* =====================================================
+   TOAST
+===================================================== */
+
+.toast {
+
+    position:
+        fixed;
+
+    bottom:
+        25px;
+
+    left:
+        50%;
+
+    transform:
+        translate(-50%, 30px);
+
+    padding:
+        12px 18px;
+
+    border:
+        var(--border-width)
+        solid
+        var(--border);
+
+    border-radius:
+        10px;
+
+    background:
+        var(--topbar);
+
+    color:
+        var(--text);
+
+    opacity:
+        0;
+
+    pointer-events:
+        none;
+
+    transition:
+        .25s ease;
+
+    z-index:
+        2000;
+
+}
+
+
+.toast.show {
+
+    opacity:
+        1;
+
+    transform:
+        translate(-50%, 0);
+
+}
+
+
+.error {
+
+    min-height:
+        20px;
+
+    color:
+        #c00000;
+
+}
+
+
+/* =====================================================
+   RESPONSIVO
+===================================================== */
+
+@media (
+    max-width: 700px
+) {
+
+    .topbar {
+
+        height:
+            65px;
+
+        padding:
+            0 12px;
+
+    }
+
+
+    #siteTitle {
+
+        font-size:
+            19px;
+
+    }
+
+
+    .page {
+
+        width:
+            92%;
+
+        margin:
+            25px auto;
+
+    }
+
+
+    .page-header {
+
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+
+    }
+
+
+    .header-actions {
+
+        width:
+            100%;
+
+        justify-content:
+            flex-start;
+
+    }
+
+
+    .cards-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .card {
+
+        width:
+            min(100%, 350px);
+
+    }
+
+
+    .theme-grid {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+
+    .preset-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+
+    }
+
 }
