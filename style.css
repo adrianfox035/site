@@ -7,6 +7,8 @@
     --border: #000000;
     --button: #111111;
     --logo: #111111;
+    --border-width: 2px;
+    --font-scale: 1;
 
     --radius: 14px;
     --transition: 0.2s ease;
@@ -29,7 +31,7 @@ body {
 
     min-height: 100vh;
 
-    background: var(--background);
+    background: var(--page-background, var(--background));
 
     color: var(--text);
 
@@ -63,7 +65,7 @@ body {
     background: var(--topbar);
 
     border-bottom:
-        2px solid var(--border);
+        var(--border-width) solid var(--border);
 
     position: sticky;
 
@@ -228,7 +230,7 @@ main {
         8px 13px;
 
     border:
-        1px solid var(--border);
+        var(--border-width) solid var(--border);
 
     border-radius: 8px;
 
@@ -261,7 +263,7 @@ main {
     background: var(--topbar);
 
     border:
-        1px solid var(--border);
+        var(--border-width) solid var(--border);
 
     border-radius: 12px;
 
@@ -305,7 +307,7 @@ main {
         6px 10px;
 
     border:
-        1px solid var(--border);
+        var(--border-width) solid var(--border);
 
     border-radius: 7px;
 
@@ -349,7 +351,7 @@ main {
     padding: 5px;
 
     border:
-        1px solid var(--border);
+        var(--border-width) solid var(--border);
 
     border-radius: 6px;
 
@@ -365,27 +367,18 @@ main {
 ========================= */
 
 .cards-grid {
-
     --columns: 4;
-
     display: grid;
-
-    grid-template-columns:
-        repeat(
-            var(--columns),
-            minmax(0, 1fr)
-        );
-
+    grid-template-columns: repeat(var(--columns), max-content);
+    justify-content: start;
+    align-items: start;
     gap: 18px;
-
 }
 
 
 .cards-grid.vertical {
-
-    grid-template-columns:
-        minmax(0, 1fr);
-
+    grid-template-columns: max-content;
+    justify-content: start;
 }
 
 
@@ -395,12 +388,13 @@ main {
 
 .card {
 
+    width: 250px;
     min-height: 145px;
 
     padding: 22px;
 
     border:
-        2px solid #000000;
+        var(--border-width) solid #000000;
 
     border-radius: var(--radius);
 
@@ -605,7 +599,7 @@ main {
     height: 37px;
 
     border:
-        1px solid var(--border);
+        var(--border-width) solid var(--border);
 
     border-radius: 9px;
 
@@ -678,7 +672,7 @@ main {
     padding: 25px;
 
     border:
-        2px solid var(--border);
+        var(--border-width) solid var(--border);
 
     border-radius: 15px;
 
@@ -753,7 +747,7 @@ main {
         11px 12px;
 
     border:
-        1px solid var(--border);
+        var(--border-width) solid var(--border);
 
     border-radius: 8px;
 
@@ -858,7 +852,7 @@ main {
         10px 14px;
 
     border:
-        1px solid var(--border);
+        var(--border-width) solid var(--border);
 
     border-radius: 8px;
 
@@ -1009,11 +1003,8 @@ main {
 
 
     .cards-grid {
-
         --columns: 2;
-
         gap: 12px;
-
     }
 
 
@@ -1050,4 +1041,137 @@ main {
 
     }
 
+}
+
+
+/* =====================================================
+   NOVOS CONTROLES DE TEMA
+===================================================== */
+
+body {
+    font-size: calc(16px * var(--font-scale));
+}
+
+.topbar h1 { font-size: calc(25px * var(--font-scale)); }
+.page-heading h2 { font-size: calc(29px * var(--font-scale)); }
+.page-heading p, .organize-section label, .organize-section strong { font-size: calc(14px * var(--font-scale)); }
+.control-button { font-size: calc(13px * var(--font-scale)); }
+.sort-option, .layout-button { font-size: calc(12px * var(--font-scale)); }
+.card-name { font-size: calc(19px * var(--font-scale)); }
+.card-description { font-size: calc(12px * var(--font-scale)); }
+.add-button { font-size: calc(12px * var(--font-scale)); }
+.admin-button { font-size: calc(13px * var(--font-scale)); }
+
+.site-logo {
+    display: flex;
+    align-items: center;
+    min-height: 38px;
+}
+
+.site-logo-image {
+    display: block;
+    width: 46px;
+    height: 46px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.theme-subtitle {
+    margin: 20px 0 10px;
+    color: var(--heading);
+    font-size: calc(15px * var(--font-scale));
+}
+
+.theme-presets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.theme-preset {
+    min-height: 68px;
+    padding: 8px;
+    border: var(--border-width) solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    color: #fff;
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    font-weight: 700;
+    transition: transform .15s ease, filter .15s ease;
+}
+
+.theme-preset:hover { transform: translateY(-2px); filter: brightness(.92); }
+.theme-preset.active { outline: 3px solid var(--button); outline-offset: 2px; }
+
+.theme-check-row {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.gradient-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.gradient-controls label { margin-bottom: 0; }
+.gradient-controls select {
+    width: 100%;
+    margin-top: 7px;
+    padding: 9px;
+    border: var(--border-width) solid var(--border);
+    border-radius: 8px;
+    background: var(--background);
+    color: var(--text);
+}
+
+.gradient-controls label:last-child { grid-column: 1 / -1; }
+
+.theme-color-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.theme-color-grid label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0;
+    padding: 8px 10px;
+    border: var(--border-width) solid var(--border);
+    border-radius: 8px;
+}
+
+.theme-color-grid input[type="color"] {
+    width: 42px;
+    height: 28px;
+    border: 0;
+}
+
+.range-label {
+    margin-bottom: 12px !important;
+}
+
+.range-label span { display: flex; justify-content: space-between; gap: 10px; }
+.range-label input[type="range"] { width: 100%; margin-top: 8px; accent-color: var(--button); }
+
+.file-label {
+    display: block;
+    padding: 10px;
+    border: var(--border-width) dashed var(--border);
+    border-radius: 8px;
+}
+
+.file-label input[type="file"] { display: block; width: 100%; margin-top: 8px; }
+.file-label span { display: block; margin-top: 7px; opacity: .65; font-size: 11px; }
+
+@media (max-width: 600px) {
+    .theme-presets { grid-template-columns: repeat(2, 1fr); }
+    .theme-color-grid, .gradient-controls { grid-template-columns: 1fr; }
+    .gradient-controls label:last-child { grid-column: auto; }
+    .card { width: min(250px, calc(100vw - 50px)); }
 }
