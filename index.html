@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Meu Site</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+</head>
+
+
+<body>
+
+
+<header class="topbar">
+
+    <div class="topbar-left">
+
+        <div
+            id="logoContainer"
+            class="logo"
+        >
+            <span id="logoText">
+                🗂️
+            </span>
+        </div>
+
+    </div>
+
+
+    <div class="topbar-center">
+
+        <h1 id="siteTitle">
+            Meu Site
+        </h1>
+
+    </div>
+
+
+    <div class="topbar-right">
+
+        <button
+            id="adminButton"
+            class="admin-button"
+            type="button"
+        >
+            Admin
+        </button>
+
+        <button
+            id="logoutButton"
+            class="admin-button hidden"
+            type="button"
+        >
+            Sair
+        </button>
+
+    </div>
+
+</header>
+
+
+
+<main>
+
+
+<!-- =====================================================
+     PÁGINA INICIAL
+===================================================== -->
+
+<section
+    id="homePage"
+    class="page"
+>
+
+    <div class="page-header">
+
+        <div>
+
+            <button
+                id="backButton"
+                class="small-button hidden"
+                type="button"
+            >
+                ← Voltar
+            </button>
+
+            <h2 id="folderTitle">
+                📁 Pastas
+            </h2>
+
+            <p id="pageSubtitle">
+                Escolha uma pasta para começar.
+            </p>
+
+        </div>
+
+
+        <div class="header-actions">
+
+            <button
+                id="organizeButton"
+                class="small-button"
+                type="button"
+            >
+                ⚙️ Organizar
+            </button>
+
+
+            <button
+                id="themeButton"
+                class="small-button admin-only hidden"
+                type="button"
+            >
+                🎨 Cor
+            </button>
+
+
+            <button
+                id="addFolderButton"
+                class="small-button primary"
+                type="button"
+            >
+                + Pasta
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <div
+        id="organizePanel"
+        class="control-panel hidden"
+    >
+
+        <div class="control-row">
+
+            <strong>
+                Ordenar:
+            </strong>
+
+            <button
+                class="sort-option active"
+                data-sort="newest"
+            >
+                Mais recentes
+            </button>
+
+            <button
+                class="sort-option"
+                data-sort="oldest"
+            >
+                Mais antigas
+            </button>
+
+            <button
+                class="sort-option"
+                data-sort="most-links"
+            >
+                Mais links
+            </button>
+
+            <button
+                class="sort-option"
+                data-sort="least-links"
+            >
+                Menos links
+            </button>
+
+            <button
+                class="sort-option"
+                data-sort="color"
+            >
+                Por cor
+            </button>
+
+        </div>
+
+
+        <div class="control-row">
+
+            <strong>
+                Por linha:
+            </strong>
+
+            <select id="itemsPerRow">
+
+                <option value="1">
+                    1
+                </option>
+
+                <option value="2">
+                    2
+                </option>
+
+                <option value="3">
+                    3
+                </option>
+
+                <option
+                    value="4"
+                    selected
+                >
+                    4
+                </option>
+
+                <option value="5">
+                    5
+                </option>
+
+                <option value="6">
+                    6
+                </option>
+
+                <option value="8">
+                    8
+                </option>
+
+            </select>
+
+
+            <button
+                id="layoutToggle"
+                class="small-button"
+                type="button"
+            >
+                ⬜ Grade
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <div
+        id="foldersGrid"
+        class="cards-grid"
+    ></div>
+
+
+
+    <!-- =====================================================
+         LINKS DA PASTA ATUAL (só aparece dentro de uma pasta)
+    ===================================================== -->
+
+    <div id="linksSection" class="hidden">
+
+        <div class="page-header">
+
+            <div>
+
+                <h3>
+                    🔗 Links
+                </h3>
+
+            </div>
+
+
+            <div class="header-actions">
+
+                <button
+                    id="organizeLinksButton"
+                    class="small-button"
+                    type="button"
+                >
+                    ⚙️ Organizar
+                </button>
+
+
+                <button
+                    id="themeButtonLinks"
+                    class="small-button admin-only hidden"
+                    type="button"
+                >
+                    🎨 Cor
+                </button>
+
+
+                <button
+                    id="addLinkButton"
+                    class="small-button primary"
+                    type="button"
+                >
+                    + Link
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <div
+            id="organizeLinksPanel"
+            class="control-panel hidden"
+        >
+
+            <div class="control-row">
+
+                <strong>
+                    Ordenar:
+                </strong>
+
+                <button
+                    class="link-sort-option active"
+                    data-sort="newest"
+                >
+                    Mais recentes
+                </button>
+
+                <button
+                    class="link-sort-option"
+                    data-sort="oldest"
+                >
+                    Mais antigos
+                </button>
+
+                <button
+                    class="link-sort-option"
+                    data-sort="color"
+                >
+                    Por cor
+                </button>
+
+            </div>
+
+
+            <div class="control-row">
+
+                <strong>
+                    Por linha:
+                </strong>
+
+                <select id="linksPerRow">
+
+                    <option value="1">
+                        1
+                    </option>
+
+                    <option value="2">
+                        2
+                    </option>
+
+                    <option value="3">
+                        3
+                    </option>
+
+                    <option
+                        value="4"
+                        selected
+                    >
+                        4
+                    </option>
+
+                    <option value="5">
+                        5
+                    </option>
+
+                    <option value="6">
+                        6
+                    </option>
+
+                    <option value="8">
+                        8
+                    </option>
+
+                </select>
+
+
+                <button
+                    id="linkLayoutToggle"
+                    class="small-button"
+                    type="button"
+                >
+                    ⬜ Grade
+                </button>
+
+            </div>
+
+        </div>
+
+
+
+        <div
+            id="linksGrid"
+            class="cards-grid"
+        ></div>
+
+    </div>
+
+</section>
+
+</main>
+
+
+
+<!-- =====================================================
+     MODAL ADMIN
+===================================================== -->
+
+<div
+    id="adminModal"
+    class="modal-overlay hidden"
+>
+
+    <div class="modal">
+
+        <button
+            class="modal-close"
+            data-close="adminModal"
+            type="button"
+        >
+            ×
+        </button>
+
+        <h2>
+            🔐 Administrador
+        </h2>
+
+        <input
+            id="adminPassword"
+            type="password"
+            placeholder="Senha"
+            autocomplete="off"
+        >
+
+        <p
+            id="adminError"
+            class="error"
+        ></p>
+
+        <button
+            id="confirmAdminButton"
+            class="modal-button"
+            type="button"
+        >
+            Entrar
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     MODAL PASTA
+===================================================== -->
+
+<div
+    id="folderModal"
+    class="modal-overlay hidden"
+>
+
+    <div class="modal">
+
+        <button
+            class="modal-close"
+            data-close="folderModal"
+            type="button"
+        >
+            ×
+        </button>
+
+        <h2 id="folderModalTitle">
+            📁 Nova pasta
+        </h2>
+
+
+        <label>
+            Nome
+        </label>
+
+        <input
+            id="folderName"
+            type="text"
+            maxlength="100"
+            placeholder="Nome da pasta"
+        >
+
+
+        <label>
+            Cor
+        </label>
+
+        <div class="color-input">
+
+            <input
+                id="folderColor"
+                type="color"
+                value="#4f7cff"
+            >
+
+            <span id="folderColorValue">
+                #4f7cff
+            </span>
+
+        </div>
+
+
+        <button
+            id="saveFolderButton"
+            class="modal-button"
+            type="button"
+        >
+            Salvar
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     MODAL LINK
+===================================================== -->
+
+<div
+    id="linkModal"
+    class="modal-overlay hidden"
+>
+
+    <div class="modal">
+
+        <button
+            class="modal-close"
+            data-close="linkModal"
+            type="button"
+        >
+            ×
+        </button>
+
+        <h2 id="linkModalTitle">
+            🔗 Novo link
+        </h2>
+
+
+        <label>
+            Nome
+        </label>
+
+        <input
+            id="linkName"
+            type="text"
+            maxlength="150"
+            placeholder="Nome do link"
+        >
+
+
+        <label>
+            Link
+        </label>
+
+        <input
+            id="linkUrl"
+            type="text"
+            placeholder="https://exemplo.com"
+        >
+
+
+        <label>
+            Cor
+        </label>
+
+        <div class="color-input">
+
+            <input
+                id="linkColor"
+                type="color"
+                value="#00a884"
+            >
+
+            <span id="linkColorValue">
+                #00a884
+            </span>
+
+        </div>
+
+
+        <button
+            id="saveLinkButton"
+            class="modal-button"
+            type="button"
+        >
+            Salvar
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     MODAL TEMA
+===================================================== -->
+
+<div
+    id="themeModal"
+    class="modal-overlay hidden"
+>
+
+    <div class="modal large-modal">
+
+        <button
+            class="modal-close"
+            data-close="themeModal"
+            type="button"
+        >
+            ×
+        </button>
+
+
+        <h2>
+            🎨 Aparência
+        </h2>
+
+
+        <div class="theme-grid">
+
+            <label>
+                Fundo
+                <input
+                    id="themeBackground"
+                    type="color"
+                >
+            </label>
+
+            <label>
+                Topo
+                <input
+                    id="themeTopbar"
+                    type="color"
+                >
+            </label>
+
+            <label>
+                Texto
+                <input
+                    id="themeText"
+                    type="color"
+                >
+            </label>
+
+            <label>
+                Títulos
+                <input
+                    id="themeHeading"
+                    type="color"
+                >
+            </label>
+
+            <label>
+                Bordas
+                <input
+                    id="themeBorder"
+                    type="color"
+                >
+            </label>
+
+            <label>
+                Botões
+                <input
+                    id="themeButtonColor"
+                    type="color"
+                >
+            </label>
+
+            <label>
+                Logo
+                <input
+                    id="themeLogo"
+                    type="color"
+                >
+            </label>
+
+        </div>
+
+
+        <label>
+            Tamanho da letra
+        </label>
+
+        <input
+            id="themeFontSize"
+            type="range"
+            min="12"
+            max="24"
+            value="16"
+        >
+
+        <span id="themeFontSizeValue">
+            16px
+        </span>
+
+
+        <label>
+            Espessura das linhas
+        </label>
+
+        <input
+            id="themeBorderWidth"
+            type="range"
+            min="0"
+            max="6"
+            value="2"
+        >
+
+        <span id="themeBorderWidthValue">
+            2px
+        </span>
+
+
+        <label>
+            URL da imagem da logo
+        </label>
+
+        <input
+            id="themeLogoImage"
+            type="url"
+            placeholder="https://exemplo.com/logo.png"
+        >
+
+
+        <h3>
+            Temas prontos
+        </h3>
+
+        <div
+            id="presetThemes"
+            class="preset-grid"
+        ></div>
+
+
+        <div class="modal-actions">
+
+            <button
+                id="resetThemeButton"
+                class="small-button"
+                type="button"
+            >
+                Restaurar
+            </button>
+
+            <button
+                id="saveThemeButton"
+                class="modal-button"
+                type="button"
+            >
+                Salvar tema
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     TOAST
+===================================================== -->
+
+<div
+    id="toast"
+    class="toast"
+></div>
+
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
