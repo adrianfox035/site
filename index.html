@@ -7,7 +7,7 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
     >
 
     <title>Meu Site</title>
@@ -35,7 +35,13 @@
             id="logoContainer"
             class="logo"
         >
-            <span id="logoText">
+            <img
+                id="siteLogoImage"
+                class="hidden"
+                alt="Logo"
+            >
+
+            <span id="siteLogoText">
                 🗂️
             </span>
         </div>
@@ -80,7 +86,7 @@
 
 
 <!-- =====================================================
-     PÁGINA INICIAL
+     PÁGINA ÚNICA (pastas + links, início ou dentro de pasta)
 ===================================================== -->
 
 <section
@@ -105,7 +111,7 @@
             </h2>
 
             <p id="pageSubtitle">
-                Escolha uma pasta para começar.
+                Escolha uma pasta ou abra um link.
             </p>
 
         </div>
@@ -139,6 +145,15 @@
                 + Pasta
             </button>
 
+
+            <button
+                id="addLinkButton"
+                class="small-button primary"
+                type="button"
+            >
+                + Link
+            </button>
+
         </div>
 
     </div>
@@ -167,21 +182,14 @@
                 class="sort-option"
                 data-sort="oldest"
             >
-                Mais antigas
+                Mais antigos
             </button>
 
             <button
                 class="sort-option"
-                data-sort="most-links"
+                data-sort="name"
             >
-                Mais links
-            </button>
-
-            <button
-                class="sort-option"
-                data-sort="least-links"
-            >
-                Menos links
+                Nome
             </button>
 
             <button
@@ -197,41 +205,36 @@
         <div class="control-row">
 
             <strong>
+                Agrupar:
+            </strong>
+
+            <button
+                id="groupModeToggle"
+                class="small-button"
+                type="button"
+                title="Alterna a ordem entre pastas e links"
+            >
+                🔀 Misturado
+            </button>
+
+        </div>
+
+
+        <div class="control-row">
+
+            <strong>
                 Por linha:
             </strong>
 
             <select id="itemsPerRow">
 
-                <option value="1">
-                    1
-                </option>
-
-                <option value="2">
-                    2
-                </option>
-
-                <option value="3">
-                    3
-                </option>
-
-                <option
-                    value="4"
-                    selected
-                >
-                    4
-                </option>
-
-                <option value="5">
-                    5
-                </option>
-
-                <option value="6">
-                    6
-                </option>
-
-                <option value="8">
-                    8
-                </option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4" selected>4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="8">8</option>
 
             </select>
 
@@ -251,160 +254,9 @@
 
 
     <div
-        id="foldersGrid"
+        id="itemsGrid"
         class="cards-grid"
     ></div>
-
-
-
-    <!-- =====================================================
-         LINKS DA PASTA ATUAL (só aparece dentro de uma pasta)
-    ===================================================== -->
-
-    <div id="linksSection" class="hidden">
-
-        <div class="page-header">
-
-            <div>
-
-                <h3>
-                    🔗 Links
-                </h3>
-
-            </div>
-
-
-            <div class="header-actions">
-
-                <button
-                    id="organizeLinksButton"
-                    class="small-button"
-                    type="button"
-                >
-                    ⚙️ Organizar
-                </button>
-
-
-                <button
-                    id="themeButtonLinks"
-                    class="small-button admin-only hidden"
-                    type="button"
-                >
-                    🎨 Cor
-                </button>
-
-
-                <button
-                    id="addLinkButton"
-                    class="small-button primary"
-                    type="button"
-                >
-                    + Link
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <div
-            id="organizeLinksPanel"
-            class="control-panel hidden"
-        >
-
-            <div class="control-row">
-
-                <strong>
-                    Ordenar:
-                </strong>
-
-                <button
-                    class="link-sort-option active"
-                    data-sort="newest"
-                >
-                    Mais recentes
-                </button>
-
-                <button
-                    class="link-sort-option"
-                    data-sort="oldest"
-                >
-                    Mais antigos
-                </button>
-
-                <button
-                    class="link-sort-option"
-                    data-sort="color"
-                >
-                    Por cor
-                </button>
-
-            </div>
-
-
-            <div class="control-row">
-
-                <strong>
-                    Por linha:
-                </strong>
-
-                <select id="linksPerRow">
-
-                    <option value="1">
-                        1
-                    </option>
-
-                    <option value="2">
-                        2
-                    </option>
-
-                    <option value="3">
-                        3
-                    </option>
-
-                    <option
-                        value="4"
-                        selected
-                    >
-                        4
-                    </option>
-
-                    <option value="5">
-                        5
-                    </option>
-
-                    <option value="6">
-                        6
-                    </option>
-
-                    <option value="8">
-                        8
-                    </option>
-
-                </select>
-
-
-                <button
-                    id="linkLayoutToggle"
-                    class="small-button"
-                    type="button"
-                >
-                    ⬜ Grade
-                </button>
-
-            </div>
-
-        </div>
-
-
-
-        <div
-            id="linksGrid"
-            class="cards-grid"
-        ></div>
-
-    </div>
 
 </section>
 
@@ -462,6 +314,57 @@
 
 
 <!-- =====================================================
+     MODAL DESBLOQUEAR PASTA
+===================================================== -->
+
+<div
+    id="unlockModal"
+    class="modal-overlay hidden"
+>
+
+    <div class="modal">
+
+        <button
+            class="modal-close"
+            data-close="unlockModal"
+            type="button"
+        >
+            ×
+        </button>
+
+        <h2>
+            🔒 Pasta trancada
+        </h2>
+
+        <p>Digite a senha desta pasta para entrar.</p>
+
+        <input
+            id="unlockPassword"
+            type="password"
+            placeholder="Senha da pasta"
+            autocomplete="off"
+        >
+
+        <p
+            id="unlockError"
+            class="error"
+        ></p>
+
+        <button
+            id="confirmUnlockButton"
+            class="modal-button"
+            type="button"
+        >
+            Desbloquear
+        </button>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
      MODAL PASTA
 ===================================================== -->
 
@@ -485,9 +388,7 @@
         </h2>
 
 
-        <label>
-            Nome
-        </label>
+        <label>Nome</label>
 
         <input
             id="folderName"
@@ -497,9 +398,7 @@
         >
 
 
-        <label>
-            Cor
-        </label>
+        <label>Cor</label>
 
         <div class="color-input">
 
@@ -509,9 +408,65 @@
                 value="#4f7cff"
             >
 
-            <span id="folderColorValue">
-                #4f7cff
-            </span>
+            <span id="folderColorValue">#4f7cff</span>
+
+        </div>
+
+
+        <label>Imagem (opcional)</label>
+
+        <input
+            id="folderImageInput"
+            type="file"
+            accept="image/*"
+        >
+
+        <p class="field-hint" id="folderImageName">Nenhuma imagem selecionada</p>
+
+        <button
+            id="removeFolderImageButton"
+            class="small-button"
+            type="button"
+        >
+            Remover imagem
+        </button>
+
+
+        <div class="switch-row">
+
+            <label class="switch-label">
+                <input
+                    id="folderLocked"
+                    type="checkbox"
+                >
+                🔒 Pasta trancada (pede senha para entrar)
+            </label>
+
+        </div>
+
+        <div id="folderPasswordRow" class="hidden">
+
+            <label>Senha da pasta</label>
+
+            <input
+                id="folderPasswordInput"
+                type="text"
+                placeholder="Senha para abrir esta pasta"
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="switch-row">
+
+            <label class="switch-label">
+                <input
+                    id="folderAdminOnly"
+                    type="checkbox"
+                >
+                👁️ Visível somente para o admin
+            </label>
 
         </div>
 
@@ -554,9 +509,7 @@
         </h2>
 
 
-        <label>
-            Nome
-        </label>
+        <label>Nome</label>
 
         <input
             id="linkName"
@@ -566,9 +519,7 @@
         >
 
 
-        <label>
-            Link
-        </label>
+        <label>Link</label>
 
         <input
             id="linkUrl"
@@ -577,9 +528,7 @@
         >
 
 
-        <label>
-            Cor
-        </label>
+        <label>Cor</label>
 
         <div class="color-input">
 
@@ -589,9 +538,52 @@
                 value="#00a884"
             >
 
-            <span id="linkColorValue">
-                #00a884
-            </span>
+            <span id="linkColorValue">#00a884</span>
+
+        </div>
+
+
+        <label>Imagem (opcional)</label>
+
+        <input
+            id="linkImageInput"
+            type="file"
+            accept="image/*"
+        >
+
+        <p class="field-hint" id="linkImageName">Nenhuma imagem selecionada</p>
+
+        <button
+            id="removeLinkImageButton"
+            class="small-button"
+            type="button"
+        >
+            Remover imagem
+        </button>
+
+
+        <div class="switch-row" id="linkPinnedRow">
+
+            <label class="switch-label">
+                <input
+                    id="linkPinnedHome"
+                    type="checkbox"
+                >
+                🏠 Também mostrar na página inicial
+            </label>
+
+        </div>
+
+
+        <div class="switch-row">
+
+            <label class="switch-label">
+                <input
+                    id="linkAdminOnly"
+                    type="checkbox"
+                >
+                👁️ Visível somente para o admin
+            </label>
 
         </div>
 
@@ -630,92 +622,119 @@
         </button>
 
 
-        <h2>
-            🎨 Aparência
-        </h2>
+        <h2>🎨 Aparência</h2>
 
+
+        <h3>Temas prontos</h3>
+
+        <div
+            id="themePresets"
+            class="preset-grid"
+        ></div>
+
+
+        <h3>Cores</h3>
 
         <div class="theme-grid">
 
             <label>
                 Fundo
-                <input
-                    id="themeBackground"
-                    type="color"
-                >
+                <input id="themeBackground" type="color">
             </label>
 
             <label>
                 Topo
-                <input
-                    id="themeTopbar"
-                    type="color"
-                >
+                <input id="themeTopbar" type="color">
             </label>
 
             <label>
                 Texto
-                <input
-                    id="themeText"
-                    type="color"
-                >
+                <input id="themeText" type="color">
             </label>
 
             <label>
                 Títulos
-                <input
-                    id="themeHeading"
-                    type="color"
-                >
+                <input id="themeHeading" type="color">
             </label>
 
             <label>
                 Bordas
-                <input
-                    id="themeBorder"
-                    type="color"
-                >
+                <input id="themeBorder" type="color">
             </label>
 
             <label>
                 Botões
-                <input
-                    id="themeButtonColor"
-                    type="color"
-                >
+                <input id="themeButtonColor" type="color">
             </label>
 
             <label>
                 Logo
-                <input
-                    id="themeLogo"
-                    type="color"
-                >
+                <input id="themeLogo" type="color">
             </label>
 
         </div>
 
 
-        <label>
-            Tamanho da letra
-        </label>
+        <h3>Gradiente de fundo</h3>
+
+        <div class="switch-row">
+
+            <label class="switch-label">
+                <input
+                    id="themeGradientEnabled"
+                    type="checkbox"
+                >
+                Ativar gradiente no fundo da página
+            </label>
+
+        </div>
+
+        <div id="gradientControls" class="hidden">
+
+            <div class="theme-grid">
+
+                <label>
+                    Início
+                    <input id="themeGradientStart" type="color">
+                </label>
+
+                <label>
+                    Fim
+                    <input id="themeGradientEnd" type="color">
+                </label>
+
+            </div>
+
+            <label>Direção</label>
+
+            <select id="themeGradientDirection">
+                <option value="135deg">Diagonal ↘</option>
+                <option value="45deg">Diagonal ↗</option>
+                <option value="90deg">Esquerda → Direita</option>
+                <option value="180deg">Cima → Baixo</option>
+                <option value="radial">Radial (círculo)</option>
+            </select>
+
+        </div>
+
+
+        <h3>Ajustes avançados</h3>
+
+        <label>Tamanho da letra</label>
 
         <input
-            id="themeFontSize"
+            id="themeFontScale"
             type="range"
-            min="12"
-            max="24"
-            value="16"
+            min="0.8"
+            max="1.4"
+            step="0.05"
+            value="1"
         >
 
-        <span id="themeFontSizeValue">
-            16px
-        </span>
+        <span id="themeFontScaleValue">100%</span>
 
 
-        <label>
-            Espessura das linhas
-        </label>
+        <label>Espessura das linhas</label>
 
         <input
             id="themeBorderWidth"
@@ -725,30 +744,39 @@
             value="2"
         >
 
-        <span id="themeBorderWidthValue">
-            2px
-        </span>
+        <span id="themeBorderWidthValue">2px</span>
 
 
-        <label>
-            URL da imagem da logo
-        </label>
+        <label>Arredondamento dos cards</label>
+
+        <input
+            id="themeRadius"
+            type="range"
+            min="0"
+            max="30"
+            value="14"
+        >
+
+        <span id="themeRadiusValue">14px</span>
+
+
+        <h3>Logo</h3>
 
         <input
             id="themeLogoImage"
-            type="url"
-            placeholder="https://exemplo.com/logo.png"
+            type="file"
+            accept="image/*"
         >
 
+        <p class="field-hint" id="themeLogoImageName">Nenhuma imagem selecionada</p>
 
-        <h3>
-            Temas prontos
-        </h3>
-
-        <div
-            id="presetThemes"
-            class="preset-grid"
-        ></div>
+        <button
+            id="removeLogoImageButton"
+            class="small-button"
+            type="button"
+        >
+            Remover logo
+        </button>
 
 
         <div class="modal-actions">
